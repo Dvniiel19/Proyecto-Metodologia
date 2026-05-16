@@ -1,8 +1,9 @@
+"use strict";
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
-  name: 'rol',
-  tableName: 'roles',
+  name: 'roles',
+  tableName: 'rol',
   columns: {
     id: {
       primary: true,
