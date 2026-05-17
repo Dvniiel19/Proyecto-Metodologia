@@ -3,24 +3,22 @@
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
-    name: 'Checklist',
-    tableName: 'checklist',
+    name: 'EvaluacionFinal',
+    tableName: 'evaluacion_final',
     columns: {
-        id_check: {
+        id_evaluacion: {
             primary: true,
             type: 'int',
             generated: true,
         },
-        completado: {
-            type: 'boolean', // Indica si la tarea está completada o no
+        nota: {
+            type: 'int', //entero porque va a ser de 1-5
             nullable: false,
         },
-        foto_servicio: {
-            type: 'varchar', //para alamacer irl
+        comentarios: {
+            type: 'varchar',
             length: 255,
             nullable: true,
         },
     },
 });
-
-//falta relacionar con agenda y tarea

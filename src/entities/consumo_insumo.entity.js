@@ -1,20 +1,21 @@
-"use strict";
+"use strict"; 
+
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
-    name: 'Rol',
-    tableName: 'roles',
+    name: 'ConsumoInsumo',
+    tableName: 'consumo_insumo',
     columns: {
-        id_rol: {
+        id_consumo: {
             primary: true,
             type: 'int',
             generated: true,
         },
-        nombre_rol: {
-            type: 'varchar',
-            length: 255,
-            unique: true,
+        cantidad_utilizada: {
+            type: 'int',
             nullable: false,
         },
     },
 });
+
+//relacionar con agenda y insumos

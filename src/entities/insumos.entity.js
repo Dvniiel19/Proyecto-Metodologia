@@ -3,29 +3,22 @@
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
-    name: 'Cliente',
-    tableName: 'clientes',
+    name: 'Insumos',
+    tableName: 'insumos',
     columns: {
-        id_cliente: {
+        id_insumo: {
             primary: true,
             type: 'int',
             generated: true,
         },
-        nombre: {
+        nombre_insumo: {
             type: 'varchar',
             length: 255,
             nullable: false,
         },
-        telefono: {
-            type: 'varchar',
-            length: 20,
+        stock: {
+            type: 'int',
             nullable: false,
-        },
-        historial_servicios: {
-            type: 'text',
-            nullable: true,
         },
     },
 });
-
-//falta relacionar con la tabla usuario
