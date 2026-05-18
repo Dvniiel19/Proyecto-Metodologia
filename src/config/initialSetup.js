@@ -1,33 +1,9 @@
-/* require('reflect-metadata');
-const AppDataSource = require('./db');
-const usuarioentity = require('../entities/usuarioentity');
-
-const initialSetup = async () => {
-  try {
-    console.log('🔄 Iniciando configuración inicial...');
-    
-    await AppDataSource.initialize();
-    console.log('✅ Conexión establecida');
-
-    // Sincronizar tablas (crear si no existen)
-    await AppDataSource.synchronize(true);
-    console.log('✅ Tablas creadas/sincronizadas');
-
-  } catch (error) {
-    console.error('❌ Error durante la configuración inicial:', error);
-    process.exit(1);
-  }
-    
-};
-
-initialSetup();*/
-
 require('reflect-metadata');
 const AppDataSource = require('./db');
 
 const initialSetup = async () => {
   try {
-    console.log('🔄 Conectando a la base de datos...');
+    console.log('🔄 Iniciando configuración inicial...');
     
     // Al inicializar, TypeORM sincroniza automáticamente las entidades de db.js
     await AppDataSource.initialize();
