@@ -1,15 +1,14 @@
-/* servicio de rol contiene la logica de negocio para manejar 
-los roles de los usuarios */
+
 
 const db = require('../config/db');
-const Rol = require('../entities/rol.entity');
+const Trabajador = require('../entities/trabajador.entity');
 
 const trabajadorRepository = db.getRepository(Trabajador);
 
 /**
  * crear un nuevo trabajador
- * @param {Object} datosTrabajador - { id, nombre, apellido, telefono}
- * @return {Object} el rol creado
+ * @param {Object} datosTrabajador 
+ * @return {Object} 
 */
 
 const crearTrabajador = async (datosTrabajador) => {
@@ -18,44 +17,41 @@ const crearTrabajador = async (datosTrabajador) => {
 };
 
 /**
- * obtener todos los roles
- * @return {Array} array de todos los rol
+ * obtener todos los trabajadores
+ * @return {Array} 
  */
 
 const obtenerTodosLosTrabajadores = async () => {
     return await trabajadorRepository.find();
-    return [];
 };
 
 /**
- * obtener rol por id
- * @param {Number} id_rol - ID del rol
- * @param {Object} datosActualizados - campos a actualizar
- * @returns {Object | null} rol encontrato o null
+ * obtener trabajadores por id
+ * @param {Number} id_rol 
+ * @param {Object} datosActualizados 
+ * @returns {Object | null}
  */
 
 const obtenerTrabajadorPorId = async (id_trabajador) => {
     return await trabajadorRepository.findOneBy({id_trabajador});
-    return null;
 };
 
 /**
- * actualizar un rol existente
- * @param {Number} id_trabajador - id del rol
- * @param {Objetct} datosActualizados - campos a actualizar
- * @returns {Object | null} -el rol actualizado o null si no existe  
+ * actualizar un trabajador existente
+ * @param {Number} id_trabajador 
+ * @param {Object} datosActualizados -
+ * @returns {Object | null}
  */
 
-const actualizarRol = async (id_trabajador, datosActualizados) => {
-    await rolRepository.update(id_trabajador,datosActualizados);
+const actualizarTrabajador = async (id_trabajador, datosActualizados) => {
+    await trabajadorRepository.update(id_trabajador,datosActualizados);
     return await obtenerTrabajadorPorId(id_trabajador);
-    //return null;
 }
 
 /**
- * eliminar un rol
- * @param {Number} id_trabajador - id del rol
- * @return {Boolean} true si se elimino, false si no existe
+ * eliminar un trabajador
+ * @param {Number} id_trabajador 
+ * @return {Boolean} 
  */
 
 const eliminarTrabajador = async (id_trabajador) => {

@@ -1,15 +1,14 @@
-/* servicio de rol contiene la logica de negocio para manejar 
-los roles de los usuarios */
+
 
 const db = require('../config/db');
-const Usuario = require('../entities/rol.entity');
+const Usuario = require('../entities/usuario.entity');
 
 const usuarioRepository = db.getRepository(Usuario);
 
 /**
  * crear un nuevo usuario
- * @param {Object} datosUsuario - { id, correo, contraseña}
- * @return {Object} el usuario creado
+ * @param {Object} datosUsuario 
+ * @return {Object}
 */
 
 const crearUsuario = async (datosUsuario) => {
@@ -18,44 +17,41 @@ const crearUsuario = async (datosUsuario) => {
 };
 
 /**
- * obtener todos los roles
- * @return {Array} array de todos los rol
+ * obtener todos los usuarios
+ * @return {Array} 
  */
 
 const obtenerTodosLosUsuarios = async () => {
     return await usuarioRepository.find();
-    return [];
 };
 
 /**
- * obtener rol por id
- * @param {Number} id_usuario - ID del rol
- * @param {Object} datosActualizados - campos a actualizar
- * @returns {Object | null} rol encontrato o null
+ * obtener usuario por id
+ * @param {Number} id_usuario 
+ * @param {Object} datosActualizados 
+ * @returns {Object | null} 
  */
 
 const obtenerUsuarioPorId = async (id_usuario) => {
     return await usuarioRepository.findOneBy({id_usuario});
-    return null;
 };
 
 /**
- * actualizar un rol existente
- * @param {Number} id_usuario - id del rol
- * @param {Objetct} datosActualizados - campos a actualizar
- * @returns {Object | null} -el rol actualizado o null si no existe  
+ * actualizar un usuario existente
+ * @param {Number} id_usuario 
+ * @param {Object} datosActualizados 
+ * @returns {Object | null} 
  */
 
 const actualizarUsuario = async (id_usuario, datosActualizados) => {
     await usuarioRepository.update(id_usuario,datosActualizados);
     return await obtenerRolPorId(id_usuario);
-    //return null;
 }
 
 /**
- * eliminar un rol
- * @param {Number} id_usuario - id del rol
- * @return {Boolean} true si se elimino, false si no existe
+ * eliminar un usuario
+ * @param {Number} id_usuario 
+ * @return {Boolean} 
  */
 
 const eliminarUsuario = async (id_usuario) => {
