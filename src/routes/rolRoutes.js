@@ -1,28 +1,28 @@
 /**
- * Rutas de Usuarios
- * Aquí definimos los endpoints relacionados con usuarios
+ * Rutas de Roles
+ * Aquí definimos los endpoints relacionados con roles
  */
 
 const express = require('express');
 const router = express.Router();
 const rolController = require('../controllers/rolController');
 
-// POST /usuarios - Crear un nuevo usuario (IMPLEMENTADO)
+// POST /rol - Crear un nuevo rol (IMPLEMENTADO)
 router.post('/', rolController.crearRol);
 
-// GET /usuarios - Obtener todos los usuarios
+// GET /rol - Obtener todos los roles
 // TODO: Descomenta la siguiente línea cuando implementes la función en el controlador
 router.get('/', rolController.obtenerTodosLosRol);
 
-//GET /usuarios/:id - Obtener un usuario específico
+//GET /rol/:id - Obtener un rol específico
 // TODO: Descomenta la siguiente línea cuando implementes la función en el controlador
 router.get('/:id_rol', rolController.obtenerRolPorId);
 
-// PATCH /usuarios/:id - Actualizar un usuario
+// PATCH /rol/:id - Actualizar un rol
 // TODO: Descomenta la siguiente línea cuando implementes la función en el controlador
 router.patch('/:id_rol', rolController.actualizarRol);
 
-// DELETE /usuarios/:id - Eliminar un usuario
+// DELETE /rol/:id - Eliminar un rol
 // TODO: Descomenta la siguiente línea cuando implementes la función en el controlador
 router.delete('/:id_rol', rolController.eliminarRol);
 

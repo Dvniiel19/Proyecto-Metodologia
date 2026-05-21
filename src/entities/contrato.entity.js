@@ -21,8 +21,8 @@ module.exports = new EntitySchema({
         },
         precio: {
             type: 'decimal',
-            precision: 10,
-            scale: 2,
+            precision: 10, 
+            scale: 2, 
             nullable: false,
         },
     },
