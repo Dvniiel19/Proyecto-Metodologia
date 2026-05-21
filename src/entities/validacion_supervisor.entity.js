@@ -3,10 +3,10 @@
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
-    name: 'ValicacionSupervisor',
+    name: 'ValidacionSupervisor',
     tableName: 'validacion_supervisor',
     columns: {
-        id_valicacion: {
+        id_validacion: {
             primary: true,
             type:'int',
             generated: true,

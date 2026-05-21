@@ -27,6 +27,8 @@ app.get('/', (req, res) => {
 });
 
 // manejo de rutas no encontradas
+const rolRoutes = require('./routes/rolRoutes');
+app.use('/rol', rolRoutes);
 
 app.use((req,res)=> {
     res.status(404).json({
