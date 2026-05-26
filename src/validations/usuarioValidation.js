@@ -16,7 +16,7 @@ const createUsuarioSchema = Joi.object({
       'string.email': 'Debes ingresar un correo valido',
       'any.required': 'El correo es un campo obligatorio'
     }),
-  contraseña: Joi.string()
+  contrasena: Joi.string() 
     .min(8)
     .max(21) // en base a la contraseña de apple 
     .pattern(/[A-Z]/, 'Letra mayuscula')

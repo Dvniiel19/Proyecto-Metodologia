@@ -17,7 +17,7 @@ module.exports = new EntitySchema({
             unique: true, //para evitar correos duplicados
             nullable: false, //para que no se puedan dejar vacíos
         },
-        contraseña: {
+        contrasena: {
             type: 'varchar',
             length: 255,
             nullable: false, //para que no se puedan dejar vacíos   

@@ -18,22 +18,22 @@ const crearUsuario = async (req, res) => {
             );
         }
 
-        // validamos la contraseña del usuario
-        const contraseña = req.body.contraseña;
+        // validamos la contrasena del usuario
+        const contrasena = req.body.contrasena;
         
-        if (!contraseña || contraseña.length < 8) {
+        if (!contrasena || contrasena.length < 8) {
             return sendError(res, 'La contraseña debe tener minimo 8 caracteres', 400);
         }
-        if (!/[A-Z]/.test(contraseña)) {
+        if (!/[A-Z]/.test(contrasena)) {
             return sendError(res, 'La contraseña debe tener minimo una letra mayuscula', 400);
         }
-        if (!/[a-z]/.test(contraseña)){
+        if (!/[a-z]/.test(contrasena)){
             return sendError(res, 'La contraseña debe tener minimo una letra minuscula', 400);
         }
-        if (!/\d/.test(contraseña)) {
+        if (!/\d/.test(contrasena)) {
             return sendError(res, 'La contraseña debe tener minimo un numero', 400);
         }
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(contraseña)) {
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) {
             return sendError(res, 'La contraseña debe tener minimo un caracter especial', 400);
         }
 
@@ -97,23 +97,23 @@ const actualizarUsuario = async (req, res) => {
             );
         }
 
-        // validamos la contraseña 
-        const contraseña = req.body.contraseña;
+        // validamos la contrasena 
+        const contrasena = req.body.contrasena;
         
-        if (contraseña) {
-            if (contraseña.length < 8) {
+        if (contrasena) {
+            if (contrasena.length < 8) {
                 return sendError(res, 'La contraseña debe tener minimo 8 caracteres', 400);
             }
-            if (!/[A-Z]/.test(contraseña)) {
+            if (!/[A-Z]/.test(contrasena)) {
                 return sendError(res, 'La contraseña debe tener minimo una letra mayuscula', 400);
             }
-            if (!/[a-z]/.test(contraseña)){
+            if (!/[a-z]/.test(contrasena)){
                 return sendError(res, 'La contraseña debe tener minimo una letra minuscula', 400);
             }
-            if (!/\d/.test(contraseña)) {
+            if (!/\d/.test(contrasena)) {
                 return sendError(res, 'La contraseña debe tener minimo un numero', 400);
             }
-            if (!/[!@#$%^&*(),.?":{}|<>]/.test(contraseña)) {
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) {
                 return sendError(res, 'La contraseña debe tener minimo un caracter especial', 400);
             }
         }
