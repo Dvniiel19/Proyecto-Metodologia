@@ -16,6 +16,21 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        agenda: {
+            target: 'Agenda',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_servicio'},
+            inverseSide: 'asignar_servicio',
+        },
+        trabajador: {
+            target: 'Trabajador',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_trabajador'},
+            inverseSide: 'asignar_servicio',
+        },
+    },
+    
 });
 
 //falta relacionarla con servicio, trabajador, coordinador(usuario)

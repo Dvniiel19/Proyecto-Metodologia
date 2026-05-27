@@ -27,6 +27,24 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        usuario: {
+            target: 'Usuario',
+            type: 'one-to-one',
+            joinColumn: { name: 'id_usuario'},
+            inverseSide: 'trabajador',
+        },
+        asignar_servicio: {
+            target: 'AsignarServicio',
+            type: 'one-to-many',
+            inverseSide: 'trabajador',
+        },
+        asistencias: {
+            target: 'Asistencia',
+            type: 'one-to-many',
+            inverseSide: 'trabajador',
+        },
+    },
 });
 
 //falta relacionar con la tabla usuario

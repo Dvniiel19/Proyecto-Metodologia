@@ -23,6 +23,28 @@ module.exports = new EntitySchema({
             nullable: false, //para que no se puedan dejar vacíos   
         },
     },
+    relations: {
+        rol: {
+            target: 'Rol',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_rol'}, 
+            inverseSide: 'usuarios',
+            nullable: false,
+        },
+        trabajador: {
+            target: 'Trabajador',
+            type: 'one-to-one',
+            inverseSide: 'usuario',
+        },
+        cliente: {
+            target: 'Cliente',
+            type: 'one-to-one',
+            inverseSide: 'usuario',
+        },
+        asignar_servicio: {
+            target: 'AsignarServicio',
+            type: 'one-to-many',
+            inverseSide: 'usuario_asignador',
+        },
+    },
 });
-
-//falta relacionarla con la tabla rol 

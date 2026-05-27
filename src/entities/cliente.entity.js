@@ -16,6 +16,11 @@ module.exports = new EntitySchema({
             length: 255,
             nullable: false,
         },
+        apellido: {
+            type: 'varchar',
+            length: 255,
+            nullable: false
+        },
         telefono: {
             type: 'varchar',
             length: 20,
@@ -26,6 +31,25 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
+    relations: {
+        usuario: {
+            target: 'Usuario',
+            type: 'one-to-one',
+            joinColumn: { name: 'id_usuario'},
+            inverseSide: 'clientes',
+        },
+        contrato: {
+            target: 'Contrato',
+            type: 'one-to-many',
+            inverseSide: 'clientes',
+        },
+        establecimientos: {
+            target: 'Establecimiento',
+            type: 'one-to-many',
+            inverseSide: 'clientes',
+        },
+    },
+    
 });
 
 //falta relacionar con la tabla usuario

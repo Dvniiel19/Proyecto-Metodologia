@@ -17,4 +17,11 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        usuario: {
+            target: 'Usuario', 
+            type: 'one-to-many', // de un rol a muchos usuarios
+            inverseSide: 'rol' 
+        },
+    },
 });
