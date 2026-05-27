@@ -15,6 +15,9 @@ const Tarea = require('../entities/tarea.entity');
 const Checklist = require('../entities/checklist.entity');
 const ValidacionSupervisor = require('../entities/validacion_supervisor.entity');
 const EvaluacionFinal = require('../entities/evaluacion_final.entity');
+const ConsumoInsumo = require('../entities/consumo_insumo.entity');
+const Insumo = require('../entities/insumos.entity');
+const Transaccion = require('../entities/transacciones.entity')
 
 const AppDataSource = new DataSource({
   type: 'postgres',
@@ -26,8 +29,9 @@ const AppDataSource = new DataSource({
   synchronize: true, // Crea automáticamente las tablas en base a las entidades
   logging: false,
   entities: 
-  [ Agenda, AsignarServicio, Asistencia, Checklist, Cliente, Contrato, EvaluacionFinal, 
-    Establecimiento,  Rol, Tarea, Trabajador, Usuario, ValidacionSupervisor ],
+  [ Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
+    Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente
+  ],
 });
 
 module.exports = AppDataSource;
