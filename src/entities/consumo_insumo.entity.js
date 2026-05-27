@@ -16,6 +16,20 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        insumo: {
+            target: 'Insumo',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_insumo'},
+            inverseSide: 'consumo_insumo',
+        },
+        agenda: {
+            target: 'Agenda',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_servicio'},
+            inverseSide: 'consumo_insumo', 
+        },
+    },
 });
 
 //relacionar con agenda y insumos

@@ -22,6 +22,19 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        cliente: {
+            target: 'Cliente',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_cliente'},
+            inverseSide: 'establecimientos',
+        },
+        agendas: {
+            target: 'Agenda',
+            type: 'one-to-many',
+            inverseSide: 'establecimiento',
+        },
+    },
 });
 
 //falta relacionar con la tabla cliente}
