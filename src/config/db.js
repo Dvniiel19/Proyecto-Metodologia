@@ -1,7 +1,8 @@
 const { DataSource } = require('typeorm');
-require('dotenv').config();
+// require('dotenv').config();
+require('dotenv').config({ path: './src/.env' });
 
-//importar todas las entidades
+// importar todas las entidades
 const Rol = require('../entities/rol.entity');
 const Usuario = require('../entities/usuario.entity');
 const Trabajador = require('../entities/trabajador.entity');
@@ -21,15 +22,14 @@ const Transaccion = require('../entities/transacciones.entity')
 
 const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  username: process.env.DB_USERNAME || 'daniel',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DATABASE || 'servicio_aseo',
+  url: process.env.DATABASE_URL, // Utilizamos la URL completa que nos da Supabase
+  ssl: { 
+    rejectUnauthorized: false // REQUERIDO para conectarse a Supabase desde fuera de su red
+  },
   synchronize: true, // Crea automáticamente las tablas en base a las entidades
   logging: false,
-  entities: 
-  [ Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
+  entities: [ 
+    Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
     Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente
   ],
 });
