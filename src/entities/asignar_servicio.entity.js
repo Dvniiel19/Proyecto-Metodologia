@@ -32,5 +32,3 @@ module.exports = new EntitySchema({
     },
     
 });
-
-//falta relacionarla con servicio, trabajador, coordinador(usuario)
