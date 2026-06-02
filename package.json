@@ -1,12 +1,10 @@
 {
   "name": "backend-usuarios",
   "version": "1.0.0",
-  "description": "Backend sencillo para gestión de usuarios - Material educativo",
+  "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "setup": "node src/config/initialSetup.js"
+    "dev": "nodemon --signal SIGTERM src/index.js"
   },
   "keywords": [
     "backend",

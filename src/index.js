@@ -32,6 +32,9 @@ const agendaRoutes = require('./routes/agendaRoutes');
 const rolRoutes = require('./routes/rolRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
+const asignarServicioRoutes = require('./routes/asignarServicioRoutes');
+
+app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
 app.use('/usuario', usuarioRoutes);
