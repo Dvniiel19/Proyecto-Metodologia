@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 
 // manejo de rutas no encontradas
 const contratoRoutes = require('./routes/contratoRoutes');
+const agendaRoutes = require('./routes/agendaRoutes');
 const rolRoutes = require('./routes/rolRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
@@ -37,6 +38,7 @@ app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
 app.use('/usuario', usuarioRoutes);
+app.use('/agenda', agendaRoutes);
 app.use('/cliente', clienteRoutes);
 
 app.use((req,res)=> {
