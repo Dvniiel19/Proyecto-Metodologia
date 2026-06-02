@@ -51,5 +51,3 @@ module.exports = new EntitySchema({
     },
     
 });
-
-//falta relacionar con la tabla usuario

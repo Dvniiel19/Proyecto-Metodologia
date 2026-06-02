@@ -21,4 +21,11 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        consumos: {
+            target: 'ConsumoInsumo',
+            type: 'one-to-many', 
+            inverseSide: 'insumo',
+        }
+    },
 });

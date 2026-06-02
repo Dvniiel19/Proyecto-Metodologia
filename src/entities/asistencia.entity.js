@@ -35,5 +35,3 @@ module.exports = new EntitySchema({
         },
     },
 });
-
-//falta relacionar con trabajadores y agenda

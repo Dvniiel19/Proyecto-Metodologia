@@ -58,5 +58,3 @@ module.exports = new EntitySchema({
     },
 });
 
-
-//falta relacionarla con establecimiento y contrato
