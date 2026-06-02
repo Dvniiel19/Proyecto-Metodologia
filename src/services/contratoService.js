@@ -3,7 +3,7 @@
 const db = require('../config/db');
 const Contrato = require('../entities/contrato.entity');
 
-const contratoRepository = db.getRepository(Contra);
+const contratoRepository = db.getRepository(Contrato);
 
 /**
  * crear un nuevo contrato

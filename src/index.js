@@ -27,9 +27,11 @@ app.get('/', (req, res) => {
 });
 
 // manejo de rutas no encontradas
+const contratoRoutes = require('./routes/contratoRoutes');
 const rolRoutes = require('./routes/rolRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
+app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/cliente', clienteRoutes);
