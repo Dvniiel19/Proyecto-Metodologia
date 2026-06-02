@@ -1,61 +1,78 @@
 /**
- * Validaciones para Roles
+ * Validaciones para Contratos
  * Aquí definimos las reglas que deben cumplir los datos
  */
 
 const Joi = require('joi');
 
 // Esquema para crear un contrato
-const createfechainicioContratoSchema = Joi.object({
-  fechain_contrato: Joi.string()
-    .trim() // Elimina espacios en blanco al inicio y al final
-    .min(10)
-    .max(20) // Coincide con el length: 20 de tu EntitySchema     
+const createContratoSchema = Joi.object({
+  fecha_inicio: Joi.date()
+    .iso() 
     .required()
-    .pattern(/^[+0-9\s]+$/) //numeros, espacios y el signo +
     .messages({
-      'string.base': 'La fecha de inicio del contrato debe ser correcta',
-      'string.empty': 'La fecha de inicio del contrato no puede estar vacía',
-      'string.min': 'La fecha de inicio del contrato debe tener almenos 10 caracteres',
-      'string.max': 'La fecha de inicio del contrato no puede exceder los 20 caracteres',
-      'any.required': 'La fecha de inicio del contrato es un campo obligatorio'
+      'date.base': 'La fecha de inicio debe ser una fecha valida',
+      'date.format': 'La fecha de inicio debe tener formato  YYYY-MM-DD',
+      'any.required': 'La fecha de inicio es un campo obligatorio'
+    }),
+
+  fecha_fin: Joi.date()
+    .iso()
+    .min(Joi.ref('fecha_inicio')) // Validar que la fecha_fin sea mayor o igual a fecha_inicio
+    .required()
+    .messages({
+      'date.base': 'La fecha de fin debe ser una fecha valida',
+      'date.format': 'La fecha de fin debe tener formato ISO (ej. YYYY-MM-DD)',
+      'date.min': 'La fecha de fin no puede ser anterior a la fecha de inicio',
+      'any.required': 'La fecha de fin es un campo obligatorio'
+    }),
+
+  precio: Joi.number()
+    .positive() // Asegura que el precio sea mayor a 0
+    .precision(5) 
+    .required()
+    .messages({
+      'number.base': 'El precio debe ser un numero',
+      'number.positive': 'El precio debe ser mayor a 0',
+      'number.precision': 'El precio no puede tener más de 5 decimales',
+      'any.required': 'El precio es un campo obligatorio'
     })
 });
 
-
-const fechafinSchema = Joi.object({
-  fechafin_contrato: Joi.string()
-    .trim()
-    .min(10)
-    .max(20)
-    .pattern(/^[+0-9\s]+$/) //numeros, espacios y el signo +
+// Esquema para actualizar un contrato (PATCH)
+const updateContratoSchema = Joi.object({
+  fecha_inicio: Joi.date()
+    .iso()
     .optional()
     .messages({
-      'string.base': 'La fecha de finalización del contrato debe ser correcta',
-      'string.empty': 'La fecha de finalización del contrato no puede estar vacía',
-      'string.min': 'La fecha de finalización del contrato debe tener al menos 10 caracteres',
-      'string.max': 'La fecha de finalización del contrato no puede exceder los 20 caracteres'
-    })
-});
+      'date.base': 'La fecha de inicio debe ser una fecha valida',
+      'date.format': 'La fecha de inicio debe tener formato YYYY-MM-DD'
+    }),
 
-const precioContratoSchema = Joi.object({
-  precio_contrato: Joi.string()
-    .trim() // Elimina espacios en blanco al inicio y al final
-    .min(10)
-    .max(20) // Coincide con el length: 20 de tu EntitySchema     
-    .required()
-    .pattern(/^[+0-9\s]+$/) //numeros, espacios y el signo +
+  fecha_fin: Joi.date()
+    .iso()
+    .min(Joi.ref('fecha_inicio'))
+    .optional()
     .messages({
-      'string.base': 'el precio del contrato debe ser correcta',
-      'string.empty': 'El precio del contrato no puede estar vacío',
-      'string.min': 'El precio del contrato debe tener al menos 10 caracteres',
-      'string.max': 'El precio del contrato no puede exceder los 20 caracteres',
-      'any.required': 'El precio del contrato es un campo obligatorio'
+      'date.base': 'La fecha de fin debe ser una fecha valida',
+      'date.format': 'La fecha de fin debe tener formato YYYY-MM-DD',
+      'date.min': 'La fecha de fin no puede ser anterior a la fecha de inicio'
+    }),
+
+  precio: Joi.number()
+    .positive()
+    .precision(5)
+    .optional()
+    .messages({
+      'number.base': 'El precio debe ser un numero',
+      'number.positive': 'El precio debe ser mayor a 0',
+      'number.precision': 'El precio no puede tener mas de 5 decimales'
     })
+}).min(1).messages({
+  'object.min': 'Debes enviar al menos un campo para actualizar'
 });
 
 module.exports = {
-  createfechainicioContratoSchema,
-  fechafinSchema,
-  precioContratoSchema
+  createContratoSchema,
+  updateContratoSchema
 };
