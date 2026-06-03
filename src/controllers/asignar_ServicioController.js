@@ -1,6 +1,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const AsignarServicioService = require('../services/asignar_servicioService');
-const { createAsignarServicioSchema, updateasignarServicioSchema } = require('../validations/asignarServicioValidation');
+const { createAsignarServicioSchema, updateasignarServicioSchema } = require('../validations/asignar_ServicioValidation');
 
 /** post /asignarServicio
  * crear un nuevo asignarServicio

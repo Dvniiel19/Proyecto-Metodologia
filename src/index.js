@@ -32,13 +32,6 @@ const contratoRoutes = require('./routes/contratoRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
 const rolRoutes = require('./routes/rolRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
-const insumosRoutes = require('./routes/insumosRoutes');
-const asignarServicioRoutes = require('./routes/asignarServicioRoutes');
-const tareaRoutes = require('./routes/tareaRoutes');
-const checklistRoutes = require('./routes/checklistRoutes');
-
-app.use('/asignarServicio', asignarServicioRoutes);
-app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/agenda', agendaRoutes);

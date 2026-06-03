@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const asignarServicioController = require('../controllers/asignarServicioController');
+const asignarServicioController = require('../controllers/asignar_ServicioController');
 
 // POST /asignarServicio - Crear un nuevo asignarServicio
 
