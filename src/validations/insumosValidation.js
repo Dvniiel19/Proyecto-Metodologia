@@ -6,7 +6,7 @@ const Joi = require('joi');
  * Validación para crear un Consumo de Insumo (req.body)
  * POST /insumos
  */
-const createinsumosSchema = Joi.object({
+const createInsumosSchema = Joi.object({
     nombre_insumo: Joi.string()
         .min(2)
         .max(100)
@@ -36,7 +36,7 @@ const createinsumosSchema = Joi.object({
  * Validación para actualizar un Consumo de Insumo (req.body)
  * PATCH /insumos/:id
  */
-const updateinsumosSchema = Joi.object({
+const updateInsumosSchema = Joi.object({
     nombre_insumo: Joi.string()
         .min(2)
         .max(100)
@@ -59,6 +59,6 @@ const updateinsumosSchema = Joi.object({
 }).min(1); 
 
 module.exports = {
-    createinsumosSchema,
-    updateinsumosSchema
+    createInsumosSchema,
+    updateInsumosSchema
 };
