@@ -5,15 +5,15 @@
 
 const express = require('express');
 const router = express.Router();
-const asignarChecklistController = require('../controllers/checklistServicioController');
+const checklistController = require('../controllers/checklistServicioController');
 
 // POST /checklist - Crear un nuevo checklist
 
-router.post('/', checklistController.createchecklist);
+router.post('/', checklistController.crearChecklist);
 
 // GET /checklist - Obtener todos los checklists
 
-router.get('/', checklistController.obtenerTodosLoscheklist);
+router.get('/', checklistController.obtenerTodosLosChecklist);
 
 //GET /checklist/:id - Obtener un checklist específico
 
