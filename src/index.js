@@ -38,6 +38,8 @@ const tareaRoutes = require('./routes/tareaRoutes');
 const checklistRoutes = require('./routes/checklistRoutes');
 const establecimientoRoutes = require('./routes/establecimientoRoutes');
 const asistenciaRoutes = require('./routes/asistenciaRoutes');
+const establecimientoRoutes = require('./routes/establecimientoRoutes');
+const trabajadorRoutes = require('./routes/trabajadorRoutes');
 
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
@@ -49,7 +51,8 @@ app.use('/checklist', checklistRoutes);
 app.use('/tarea', tareaRoutes);
 app.use('/insumos', insumosRoutes);
 app.use('/establecimiento', establecimientoRoutes);
-app.use('/asistencia', asistenciaRoutes);
+app.use('/trabajador', trabajadorRoutes);
+
 app.use((req,res)=> {
     res.status(404).json({
         success: false,
