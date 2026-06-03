@@ -21,4 +21,12 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
+    relations: {
+        agenda: {
+            target: 'Agenda',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_servicio'}, 
+            inverseSide: 'evaluaciones',
+        }
+    },
 });

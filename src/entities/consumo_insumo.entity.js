@@ -31,5 +31,3 @@ module.exports = new EntitySchema({
         },
     },
 });
-
-//relacionar con agenda y insumos

@@ -16,10 +16,10 @@ module.exports = new EntitySchema({
             type: 'date',
             nullable: false,
         },
-        estado: { //pendiente, completada
-            type: 'varchar',
-            length: 50,
+        estado: { 
+            type: 'boolean',
             nullable: false,
+            default: false,  
         },
     },
     relations: {
@@ -58,5 +58,3 @@ module.exports = new EntitySchema({
     },
 });
 
-
-//falta relacionarla con establecimiento y contrato

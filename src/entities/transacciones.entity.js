@@ -36,6 +36,13 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        contrato: {
+            target: 'Contrato', 
+            type: 'many-to-one', 
+            joinColumn: { name: 'id_contrato' }, 
+            inverseSide: 'transacciones', 
+        }
+    },
 });
 
-//relacionar con contrato

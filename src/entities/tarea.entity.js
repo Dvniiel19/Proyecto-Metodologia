@@ -17,5 +17,12 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    relations: {
+        checklists: {
+            target: 'Checklist',
+            type: 'one-to-many', 
+            inverseSide: 'tarea', 
+        },
+    },
 });
 
