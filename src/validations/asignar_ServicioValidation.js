@@ -4,7 +4,7 @@
 const Joi = require('joi');
 
 // Esquema para crear un evento en la agenda
-const createfehaprogramaSchema = Joi.object({
+const createAsignar_ServicioSchema = Joi.object({
   fecha_programada: Joi.date()
     .iso() // Asegura formato YYYY-MM-DD
     .required()
@@ -22,7 +22,7 @@ const createfehaprogramaSchema = Joi.object({
 });
 
 // Esquema para actualizar un evento en la agenda (PATCH)
-const updatefehaprogramaSchema = Joi.object({
+const updateAsignar_ServicioSchema = Joi.object({
   fecha_programada: Joi.date()
     .iso()
     .optional()
@@ -41,6 +41,6 @@ const updatefehaprogramaSchema = Joi.object({
 }); 
 
 module.exports = {
-  createfehaprogramaSchema,
-  updatefehaprogramaSchema
+  createAsignar_ServicioSchema,
+  updateAsignar_ServicioSchema
 };
