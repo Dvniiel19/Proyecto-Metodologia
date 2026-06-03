@@ -6,7 +6,7 @@
 const Joi = require('joi');
 
 // Esquema para crear un contrato
-const createasistenciaSchema = Joi.object({
+const createAsistenciaSchema = Joi.object({
   hora_inicio: Joi.date()
     .iso() 
     .required()
@@ -31,7 +31,7 @@ const createasistenciaSchema = Joi.object({
 
 
 // Esquema para actualizar un contrato (PATCH)
-const updateasistenciaSchema = Joi.object({
+const updateAsistenciaSchema = Joi.object({
   hora_inicio: Joi.date()
     .iso()
     .optional()
@@ -40,7 +40,7 @@ const updateasistenciaSchema = Joi.object({
       'date.format': 'La fecha de inicio debe tener formato YYYY-MM-DD'
     }),
 
-  fecha_fin: Joi.date()
+  hora_fin: Joi.date()
     .iso()
     .min(Joi.ref('fecha_inicio'))
     .optional()
@@ -64,6 +64,6 @@ const updateasistenciaSchema = Joi.object({
 });
 
 module.exports = {
-  createContratoSchema,
-  updateContratoSchema
+  createAsistenciaSchema,
+  updateAsistenciaSchema
 };
