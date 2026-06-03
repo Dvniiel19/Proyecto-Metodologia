@@ -1,7 +1,8 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const usuarioService = require('../services/usuarioService');
 const { createUsuarioSchema, updateUsuarioSchema } = require('../validations/usuarioValidation');
-
+//funcion para encriptar contraseña
+const {encrypt} = require('../utils/bcryptUtils');
 /** post /usuario
  * crear un nuevo usuario
  */
@@ -37,6 +38,10 @@ const crearUsuario = async (req, res) => {
             return sendError(res, 'La contraseña debe tener minimo un caracter especial', 400);
         }
 
+        //encriptamos la contraseña usando la funcion
+        console.log("Contraseña original: ", value.contrasena);
+        value.contrasena = await encrypt(value.contrasena);
+        console.log("Contraseña encriptada: ", value.contrasena);
         const usuarioCreado = await usuarioService.crearUsuario(value);
         return sendSuccess(
             res,
@@ -116,6 +121,8 @@ const actualizarUsuario = async (req, res) => {
             if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) {
                 return sendError(res, 'La contraseña debe tener minimo un caracter especial', 400);
             }
+            //encriptamos al actualizar
+            validacion.value.contrasena = await encrypt(validacion.value.contrasena);
         }
 
         const obtenerid = req.params.id_usuario;

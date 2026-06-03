@@ -34,6 +34,16 @@ const createUsuarioSchema = Joi.object({
       'patron_numero': 'La contraseña debe tener minimo un numero',
       'patron_especial': 'La contraseña debe tener minimo un caracter especial',
       'any.required': 'La contraseña es un campo obligatorio'
+    }),
+    rol: Joi.number() //relacion
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      'number.base': 'El rol debe ser un numero',
+      'number.integer': 'El rol debe ser un numero entero', // porque id_rol= un rol especifico
+      'number.positive': 'El rol debe ser un numero positivo',
+      'any.required': 'El rol es un campo obligatorio'
     })
 });
 
@@ -66,12 +76,23 @@ const updateUsuarioSchema = Joi.object({
       'patron_numero': 'La contraseña debe tener minimo un numero',
       'patron_especial': 'La contraseña debe tener minimo un caracter especial',
       
+    }),
+    rol: Joi.number() //relacion
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      'number.base': 'El rol debe ser un numero',
+      'number.integer': 'El rol debe ser un numero entero', // porque id_rol= un rol especifico
+      'number.positive': 'El rol debe ser un numero positivo',
+      'any.required': 'El rol es un campo obligatorio'
     })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo (correo o contraseña) para actualizar'
 });
 
 module.exports = {
+  
   createUsuarioSchema,
   updateUsuarioSchema
 };
