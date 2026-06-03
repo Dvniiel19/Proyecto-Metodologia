@@ -1,12 +1,12 @@
 /**
- * Validaciones para Contratos
+ * Validaciones para asistencias
  * Aquí definimos las reglas que deben cumplir los datos
  */
 
 const Joi = require('joi');
 
-// Esquema para crear un contrato
-const createAsistenciaSchema = Joi.object({
+// Esquema para crear un asistencia
+const createasistenciaSchema = Joi.object({
   hora_inicio: Joi.date()
     .iso() 
     .required()
@@ -30,8 +30,8 @@ const createAsistenciaSchema = Joi.object({
 })
 
 
-// Esquema para actualizar un contrato (PATCH)
-const updateAsistenciaSchema = Joi.object({
+// Esquema para actualizar un asistencia (PATCH)
+const updateasistenciaSchema = Joi.object({
   hora_inicio: Joi.date()
     .iso()
     .optional()
@@ -40,7 +40,7 @@ const updateAsistenciaSchema = Joi.object({
       'date.format': 'La fecha de inicio debe tener formato YYYY-MM-DD'
     }),
 
-  hora_fin: Joi.date()
+  fecha_fin: Joi.date()
     .iso()
     .min(Joi.ref('fecha_inicio'))
     .optional()
@@ -64,6 +64,6 @@ const updateAsistenciaSchema = Joi.object({
 });
 
 module.exports = {
-  createAsistenciaSchema,
-  updateAsistenciaSchema
+  createasistenciaSchema,
+  updateasistenciaSchema
 };
