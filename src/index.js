@@ -37,6 +37,8 @@ const asignarServicioRoutes = require('./routes/asignarServicioRoutes');
 const tareaRoutes = require('./routes/tareaRoutes');
 const checklistRoutes = require('./routes/checklistRoutes');
 
+
+
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
