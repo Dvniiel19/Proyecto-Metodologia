@@ -1,3 +1,8 @@
+/**
+ * Rutas de establecimiento
+ * Aquí definimos los endpoints relacionados con los establecimientos
+ */
+
 const express = require('express');
 const router = express.Router();
 const establecimientoController = require('../controllers/establecimientoController');

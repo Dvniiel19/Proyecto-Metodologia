@@ -92,6 +92,7 @@ const updateUsuarioSchema = Joi.object({
 });
 
 module.exports = {
+  
   createUsuarioSchema,
   updateUsuarioSchema
 };
