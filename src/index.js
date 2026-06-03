@@ -27,14 +27,16 @@ app.get('/', (req, res) => {
 });
 
 // manejo de rutas no encontradas
+const clienteRoutes = require('./routes/clienteRoutes');
 const contratoRoutes = require('./routes/contratoRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
 const rolRoutes = require('./routes/rolRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
-const clienteRoutes = require('./routes/clienteRoutes');
+const insumosRoutes = require('./routes/insumosRoutes');
 const asignarServicioRoutes = require('./routes/asignarServicioRoutes');
 const tareaRoutes = require('./routes/tareaRoutes');
 const establecimientoRoutes = require('./routes/establecimientoRoutes');
+const checklistRoutes = require('./routes/checklistRoutes');
 
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
@@ -42,8 +44,10 @@ app.use('/rol', rolRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/agenda', agendaRoutes);
 app.use('/cliente', clienteRoutes);
+app.use('/checklist', checklistRoutes);
 app.use('/tarea', tareaRoutes);
 app.use('/establecimiento', establecimientoRoutes);
+app.use('/insumos', insumosRoutes);
 
 app.use((req,res)=> {
     res.status(404).json({
