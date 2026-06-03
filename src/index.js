@@ -39,6 +39,7 @@ const checklistRoutes = require('./routes/checklistRoutes');
 const establecimientoRoutes = require('./routes/establecimientoRoutes');
 const asistenciaRoutes = require('./routes/asistenciaRoutes');
 const consumo_insumoRoutes = require('./routes/consumo_insumoRoutes');
+const evaluacion_finalRoutes = require('./routes/evaluacion_finalRoutes');
 
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
@@ -52,6 +53,7 @@ app.use('/insumos', insumosRoutes);
 app.use('/establecimiento', establecimientoRoutes);
 app.use('/asistencia', asistenciaRoutes);
 app.use('/consumo_insumo', consumo_insumoRoutes);
+app.use('/evaluacion_final', evaluacion_finalRoutes);
 app.use((req,res)=> {
     res.status(404).json({
         success: false,
