@@ -13,7 +13,7 @@ router.post('/', asignarServicioController.createAsignarServicio);
 
 // GET /asignarServicio - Obtener todos los asignarServicios
 
-router.get('/', asignarServicioController.obtenerTodosLosasignarServicio);
+router.get('/', asignarServicioController.obtenerTodosLosAsignarServicio);
 
 //GET /asignarServicio/:id - Obtener un asignarServicio específico
 
