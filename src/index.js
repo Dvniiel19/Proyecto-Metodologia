@@ -41,6 +41,7 @@ const asistenciaRoutes = require('./routes/asistenciaRoutes');
 const consumoInsumoRoutes = require('./routes/consumoInsumoRoutes');
 const evaluacionFinalRoutes = require('./routes/evaluacionFinalRoutes');
 const validacionSupervisorRoutes = require('./routes/validacionSupervisorRoutes');
+const trabajadorRoutes = require('./routes/trabajadorRoutes');
 
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
@@ -53,9 +54,10 @@ app.use('/tarea', tareaRoutes);
 app.use('/insumos', insumosRoutes);
 app.use('/establecimiento', establecimientoRoutes);
 app.use('/asistencia', asistenciaRoutes);
-app.use('/consumo_insumo', consumoInsumoRoutes);
-app.use('/evaluacion_final', evaluacionFinalRoutes);
-app.use('/validacion_supervisor', validacionSupervisorRoutes);
+app.use('/consumoInsumo', consumoInsumoRoutes);
+app.use('/evaluacionFinal', evaluacionFinalRoutes);
+app.use('/validacionSupervisor', validacionSupervisorRoutes);
+app.use('/trabajadorService', trabajadorRoutes);
 app.use((req,res)=> {
     res.status(404).json({
         success: false,
