@@ -58,7 +58,7 @@ const updateUsuarioSchema = Joi.object({
       'string.email': 'Debes ingresar un correo valido'
     }),
 
-  contraseña: Joi.string()
+  contrasena: Joi.string()
     .min(8)
     .max(21)
     .pattern(/[A-Z]/, 'Letra mayuscula')

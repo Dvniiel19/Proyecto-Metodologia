@@ -6,7 +6,7 @@
 const Joi = require('joi');
 
 // Esquema para crear un asistencia
-const createasistenciaSchema = Joi.object({
+const createAsistenciaSchema = Joi.object({
   hora_inicio: Joi.date()
     .iso() 
     .required()
@@ -31,7 +31,7 @@ const createasistenciaSchema = Joi.object({
 
 
 // Esquema para actualizar un asistencia (PATCH)
-const updateasistenciaSchema = Joi.object({
+const updateAsistenciaSchema = Joi.object({
   hora_inicio: Joi.date()
     .iso()
     .optional()
@@ -64,6 +64,6 @@ const updateasistenciaSchema = Joi.object({
 });
 
 module.exports = {
-  createasistenciaSchema,
-  updateasistenciaSchema
+  createAsistenciaSchema,
+  updateAsistenciaSchema
 };

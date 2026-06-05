@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const checklistController = require('../controllers/checklistServicioController');
+const checklistController = require('../controllers/checklistController');
 
 // POST /checklist - Crear un nuevo checklist
 

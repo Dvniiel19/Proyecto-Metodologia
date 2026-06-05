@@ -5,20 +5,20 @@
 
 const express = require('express');
 const router = express.Router();
-const evaluacion_finalController = require('../controllers/evaluacion_finalController');
+const evaluacionFinalController = require('../controllers/evaluacionFinalController');
 // POST /evaluacion_final - Crear un nuevo evaluacion_final
-router.post('/', evaluacion_finalController.crearEvaluacion_Final);
+router.post('/', evaluacionFinalController.crearEvaluacionFinal);
 
 // GET /evaluacion_final - Obtener todos los evaluacion_final
-router.get('/', evaluacion_finalController.obtenerTodosLosEvaluacion_Final);
+router.get('/', evaluacionFinalController.obtenerTodasLasEvaluacionFinal);
 
 //GET /evaluacion_final/:id - Obtener un evaluacion_final específico
-router.get('/:id_evaluacion_final', evaluacion_finalController.obtenerEvaluacion_FinalPorId);
+router.get('/:id_evaluacion', evaluacionFinalController.obtenerEvaluacionFinalPorId);
 
 // PATCH /evaluacion_final/:id - Actualizar un evaluacion_final
-router.patch('/:id_evaluacion_final', evaluacion_finalController.actualizarEvaluacion_Final);
+router.patch('/:id_evaluacion', evaluacionFinalController.actualizarEvaluacionFinal);
 
 // DELETE /evaluacion_final/:id - Eliminar un evaluacion_final
-router.delete('/:id_evaluacion_final', evaluacion_finalController.eliminarEvaluacion_Final);
+router.delete('/:id_evaluacion', evaluacionFinalController.eliminarEvaluacionFinal);
 
 module.exports = router;

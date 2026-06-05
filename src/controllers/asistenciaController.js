@@ -1,14 +1,14 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const asistenciaService = require('../services/agendaService');
-const { createasistenciaSchema, updateasistenciaSchema } = require('../validations/asistenciaValidation');
+const asistenciaService = require('../services/asistenciaService');
+const { createAsistenciaSchema, updateAsistenciaSchema } = require('../validations/asistenciaValidation');
 
 /** post /asistencia
  * crear un nuevo registro de asistencia
  */
-const crearasistencia = async (req, res) => {
+const crearAsistencia = async (req, res) => {
     try {
         // validamos los datos de entrada con joi
-        const { error, value } = createasistenciaSchema.validate(req.body);
+        const { error, value } = createAsistenciaSchema.validate(req.body);
         if (error) {
             return sendError(
                 res,
@@ -18,7 +18,7 @@ const crearasistencia = async (req, res) => {
             );
         }
         // llamamos al servicio para crear el agenda
-        const asistenciaCreada = await asistenciaService.crearasistencia(value);
+        const asistenciaCreada = await asistenciaService.crearAsistencia(value);
         // respondemos con exito
         return sendSuccess(
             res,
@@ -35,9 +35,9 @@ const crearasistencia = async (req, res) => {
 /** get /asistencia
  * obtiene todos los registros de asistencia
  */
-const obtenerTodosLosasistencia = async (req, res) => {
+const obtenerTodasLasAsistencia = async (req, res) => { 
     try {
-        const asistencia = await asistenciaService.obtenerTodosLosasistencias();
+        const asistencia = await asistenciaService.obtenerTodasLasAsistencias();
         return sendSuccess(res, asistencia, 'asistencia obtenidos exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener asistencia', 500);
@@ -47,7 +47,7 @@ const obtenerTodosLosasistencia = async (req, res) => {
 /** get /asistencia/:id
  * obtiene un registro de asistencia por id
  */
-const obtenerasistenciaPorId = async (req, res) => {
+const obtenerAsistenciaPorId = async (req, res) => {
     try {
         const { id_asistencia } = req.params;
         // llamar al servicio obtenerasistenciaPorId(id_asistencia)
@@ -67,9 +67,9 @@ const obtenerasistenciaPorId = async (req, res) => {
 /** patch /asistencia/:id
  * actualizar asistencia
  */
-const actualizarasistencia = async (req, res) => {
+const actualizarAsistencia = async (req, res) => {
     try {
-        const validacion = updateasistenciaSchema.validate(req.body);
+        const validacion = updateAsistenciaSchema.validate(req.body);
         
         // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
@@ -97,11 +97,11 @@ const actualizarasistencia = async (req, res) => {
 /** delete /asistencia/:id
  * eliminar asistencia
  */
-const eliminarasistencia = async (req, res) => {
+const eliminarAsistencia = async (req, res) => {
     try {
         const { id_asistencia } = req.params;
         // llamar al servicio eliminarasistencia(id_asistencia)
-        const eliminado = await asistenciaService.eliminarasistencia(id_asistencia);
+        const eliminado = await asistenciaService.eliminarAsistencia(id_asistencia);
         
         // si no se elimino retornar error 404
         if (!eliminado) {
@@ -115,9 +115,9 @@ const eliminarasistencia = async (req, res) => {
 };
 
 module.exports = {
-    crearasistencia,
-    obtenerTodosLosasistencia,
-    obtenerasistenciaPorId,
-    actualizarasistencia,
-    eliminarasistencia
+    crearAsistencia,
+    obtenerTodasLasAsistencia,
+    obtenerAsistenciaPorId,
+    actualizarAsistencia,
+    eliminarAsistencia
 };

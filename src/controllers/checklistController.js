@@ -18,7 +18,7 @@ const crearChecklist = async (req, res) => {
             );
         }
         // llamamos al servicio para crear el checklist
-        const checklistCreado = await checklistService.crearchecklist(value);
+        const checklistCreado = await checklistService.crearChecklist(value);
         // respondemos con exito
         return sendSuccess(
             res,

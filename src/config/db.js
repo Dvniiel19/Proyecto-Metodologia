@@ -10,13 +10,13 @@ const Cliente = require('../entities/cliente.entity');
 const Establecimiento = require('../entities/establecimiento.entity');
 const Contrato = require('../entities/contrato.entity');
 const Agenda = require('../entities/agenda.entity');
-const AsignarServicio = require('../entities/asignar_servicio.entity');
+const AsignarServicio = require('../entities/asignarServicio.entity');
 const Asistencia = require('../entities/asistencia.entity');
 const Tarea = require('../entities/tarea.entity');
 const Checklist = require('../entities/checklist.entity');
-const ValidacionSupervisor = require('../entities/validacion_supervisor.entity');
-const EvaluacionFinal = require('../entities/evaluacion_final.entity');
-const ConsumoInsumo = require('../entities/consumo_insumo.entity');
+const ValidacionSupervisor = require('../entities/validacionSupervisor.entity');
+const EvaluacionFinal = require('../entities/evaluacionFinal.entity');
+const ConsumoInsumo = require('../entities/consumoInsumo.entity');
 const Insumo = require('../entities/insumos.entity');
 const Transaccion = require('../entities/transacciones.entity')
 

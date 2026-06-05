@@ -6,7 +6,7 @@ const Joi = require('joi');
  * Validación para crear un Consumo de Insumo (req.body)
  * POST /consumo_insumo
  */
-const createConsumo_insumoSchema = Joi.object({
+const createConsumoinsumoSchema = Joi.object({
     cantidad_utilizada: Joi.number()
         .integer()
         .positive() // Exige que el consumo sea mayor a 0
@@ -45,7 +45,7 @@ const createConsumo_insumoSchema = Joi.object({
  * Validación para actualizar un Consumo de Insumo (req.body)
  * PATCH /consumo_insumo/:id
  */
-const updateConsumo_insumoSchema = Joi.object({
+const updateConsumoinsumoSchema = Joi.object({
     cantidad_utilizada: Joi.number()
         .integer()
         .positive()
@@ -75,6 +75,6 @@ const updateConsumo_insumoSchema = Joi.object({
 }).min(1); // Exige que al menos se envíe un campo para actualizar (cantidad, id_insumo o id_servicio)
 
 module.exports = {
-    createConsumo_insumoSchema,
-    updateConsumo_insumoSchema
+    createConsumoinsumoSchema,
+    updateConsumoinsumoSchema
 };

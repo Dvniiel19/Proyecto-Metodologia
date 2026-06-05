@@ -1,7 +1,7 @@
 
 
 const db = require('../config/db');
-const AsignarServicio = require('../entities/asignar_servicio.entity');
+const AsignarServicio = require('../entities/asignarServicio.entity');
 
 const asignarServicioRepository = db.getRepository(AsignarServicio);
 
