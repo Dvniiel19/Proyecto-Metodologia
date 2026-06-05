@@ -1,7 +1,7 @@
 
 
 const db = require('../config/db');
-const ValidacionSupervisor = require('../entities/validacion_supervisor.entity');
+const ValidacionSupervisor = require('../entities/validacionSupervisor.entity');
 
 const validacionRepository = db.getRepository(ValidacionSupervisor);
 

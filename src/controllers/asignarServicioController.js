@@ -1,6 +1,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const asignar_servicioService = require('../services/asignar_servicioService');
-const { createAsignarServicioSchema, updateAsignarServicioSchema } = require('../validations/asignar_ServicioValidation');
+const asignarServicioService = require('../services/asignarServicioService');
+const { createAsignarServicioSchema, updateAsignarServicioSchema } = require('../validations/asignarServicioValidation');
 
 /** post /asignarServicio
  * crear un nuevo asignarServicio
@@ -18,7 +18,7 @@ const createAsignarServicio = async (req, res) => {
             );
         }
         // llamamos al servicio para crear el cliente
-        const asignarServicioCreado = await asignar_servicioService.crearAsignarServicio(value);
+        const asignarServicioCreado = await asignarservicioService.crearAsignarServicio(value);
         // respondemos con exito
         return sendSuccess(
             res,
@@ -37,7 +37,7 @@ const createAsignarServicio = async (req, res) => {
  */
 const obtenerTodosLosAsignarServicio = async (req, res) => {
     try {
-        const asignarServicio = await asignar_servicioService.obtenerTodosLosAsignarServicios();
+        const asignarServicio = await asignarServicioService.obtenerTodosLosAsignarServicios();
         return sendSuccess(res, asignarServicio, 'asignarServicio obtenidos exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener asignarServicio', 500);
@@ -49,9 +49,9 @@ const obtenerTodosLosAsignarServicio = async (req, res) => {
  */
 const obtenerAsignarServicioPorId = async (req, res) => {
     try {
-        const { id_asignarServicio } = req.params;
+        const { id_asignacionServicio } = req.params;
         // llamar al servicio obtenerasignarServicioPorId(id_asignarServicio)
-        const asignarServicio = await asignar_servicioService.obtenerAsignarServicioPorId(id_asignarServicio); 
+        const asignarServicio = await asignarServicioService.obtenerAsignarServicioPorId(id_asignacionServicio); 
         
         // si no existe retrona el error 404
         if (!asignarServicio) {
@@ -69,7 +69,7 @@ const obtenerAsignarServicioPorId = async (req, res) => {
  */
 const actualizarAsignarServicio = async (req, res) => {
     try {
-        const validacion = updateAsignar_ServicioSchema.validate(req.body);
+        const validacion = updateAsignarServicioSchema.validate(req.body);
         
         // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
@@ -81,8 +81,8 @@ const actualizarAsignarServicio = async (req, res) => {
             );
         }
 
-        const obtenerid = req.params.id_asignarServicio;
-        const resultado = await asignar_servicioService.actualizarAsignarServicio(obtenerid, validacion.value);
+        const obtenerid = req.params.id_asignacionServicio;
+        const resultado = await asignarServicioService.actualizarAsignarServicio(obtenerid, validacion.value);
     
         if (!resultado) {
             return sendError(res, 'asignarServicio no encontrado', 404);
@@ -99,9 +99,9 @@ const actualizarAsignarServicio = async (req, res) => {
  */
 const eliminarAsignarServicio = async (req, res) => {
     try {
-        const { id_asignarServicio } = req.params;
+        const { id_asignacionServicio } = req.params;
         // llamar al servicio eliminarasignarServicio(id_asignarServicio)
-        const eliminado = await asignar_servicioService.eliminarAsignarServicio(id_asignarServicio);
+        const eliminado = await asignar_servicioService.eliminarAsignarServicio(id_asignacionServicio);
 
         // si no se elimino retornar error 404
         if (!eliminado) {

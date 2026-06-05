@@ -6,7 +6,7 @@ const Joi = require('joi');
  * Validación para crear un Evaluacion_Final (req.body)
  * POST /evaluacion_final
  */
-const createevaluacion_finalSchema = Joi.object({
+const createEvaluacionFinalSchema = Joi.object({
      nota: Joi.string()
         .min(1)
         .max(5) // Límite exacto de tu TypeORM
@@ -39,7 +39,7 @@ const createevaluacion_finalSchema = Joi.object({
  * Validación para actualizar un Evaluacion_Final (req.body)
  * PATCH /evaluacion_final/:id
  */
-const updateevaluacion_finalSchema = Joi.object({
+const updateEvaluacionFinalSchema = Joi.object({
     nota: Joi.string()
         .min(1)
         .max(5)
@@ -66,6 +66,6 @@ const updateevaluacion_finalSchema = Joi.object({
 }).min(1); // Exige que al menos se envíe un campo (nota, comentario o id_evaluacion) para actualizar
 
 module.exports = {
-    createevaluacion_finalSchema,
-    updateevaluacion_finalSchema
+    createEvaluacionFinalSchema,
+    updateEvaluacionFinalSchema
 };

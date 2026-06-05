@@ -6,7 +6,7 @@ const Joi = require('joi');
  * Validación para crear un Consumo de Insumo (req.body)
  * POST /consumo_insumo
  */
-const createValidacion_supervisorSchema = Joi.object({
+const createValidacionSupervisorSchema = Joi.object({
    id_validacion: Joi.number()
         .integer()
         .positive() // Exige que el consumo sea mayor a 0
@@ -40,7 +40,7 @@ const createValidacion_supervisorSchema = Joi.object({
  * Validación para actualizar la validacion de supervisor (req.body)
  * PATCH /validacion_supervisor/:id
  */
-const updateValidacion_supervisorSchema = Joi.object({
+const updateValidacionSupervisorSchema = Joi.object({
     id_validacion: Joi.number()
         .integer()
         .positive() // Exige que el consumo sea mayor a 0
@@ -73,6 +73,6 @@ const updateValidacion_supervisorSchema = Joi.object({
 }).min(1); // Exige que al menos se envíe un campo para actualizar (cantidad, id_insumo o id_servicio)
 
 module.exports = {
-    createValidacion_supervisorSchema,
-    updateValidacion_supervisorSchema
+    createValidacionSupervisorSchema,
+    updateValidacionSupervisorSchema
 };

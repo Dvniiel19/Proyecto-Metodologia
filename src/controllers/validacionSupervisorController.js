@@ -1,14 +1,14 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const validacion_supervisorService = require('../services/validacion_supervisorService');
-const { createValidacion_supervisorSchema, updateValidacion_supervisorSchema } = require('../validations/validacion_supervisorValidation');
+const validacion_supervisorService = require('../services/validacionSupervisorService');
+const { createValidacion_supervisorSchema, updateValidacion_supervisorSchema } = require('../validations/validacionSupervisorValidation');
 
 /** post /validacion_supervisor
  * crear un nueva validacion de supervisor
  */
-const crearValidacion_supervisor = async (req, res) => {
+const crearValidacionSupervisor = async (req, res) => {
     try {
         // validamos los datos de entrada con joi
-        const { error, value } = createValidacion_supervisorSchema.validate(req.body);
+        const { error, value } = createValidacionSupervisorSchema.validate(req.body);
         if (error) {
             return sendError(
                 res,
@@ -18,11 +18,11 @@ const crearValidacion_supervisor = async (req, res) => {
             );
         }
         // llamamos al servicio para crear el contrato
-        const validacion_supervisorCreado = await validacion_supervisorService.crearValidacion_supervisor(value);
+        const validacionSupervisorCreado = await validacionSupervisorService.crearValidacionSupervisor(value);
         // respondemos con exito
         return sendSuccess(
             res,
-            validacion_supervisorCreado,
+            validacionSupervisorCreado,
             'Validacion de supervisor creada con exito',
             201
         );
@@ -35,10 +35,10 @@ const crearValidacion_supervisor = async (req, res) => {
 /** get /validacion_supervisor
  * obtiene todos las validaciones de supervisor
  */
-const obtenerTodosLasValidaciones_supervisor = async (req, res) => {
+const obtenerTodasLasValidacioneSupervisor = async (req, res) => {
     try {
-        const validacion_supervisor = await validacion_supervisorService.obtenerTodosLasValidaciones_supervisor();
-        return sendSuccess(res, validacion_supervisor, 'Validaciones de supervisor obtenidas exitosamente');
+        const validacionSupervisor = await validacionSupervisorService.obtenerTodasLasValidacioneSupervisor();
+        return sendSuccess(res, validacionSupervisor, 'Validaciones de supervisor obtenidas exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener validaciones de supervisor', 500);
     }
@@ -47,17 +47,17 @@ const obtenerTodosLasValidaciones_supervisor = async (req, res) => {
 /** get /validacion_supervisor/:id
  * obtiene una validacion de supervisor especifica por id
  */
-const obtenerValidacion_supervisorPorId = async (req, res) => {
+const obtenerValidacionSupervisorPorId = async (req, res) => {
     try {
-        const { id_validacion_supervisor } = req.params;
+        const { id_validacion } = req.params;
         // llamar al servicio obtenerValidacion_supervisorPorId(id_validacion_supervisor)
-        const validacion_supervisor = await validacion_supervisorService.obtenerValidacion_supervisorPorId(id_validacion_supervisor); 
+        const validacionSupervisor = await validacionSupervisorService.obtenerValidacionSupervisorPorId(id_validacion); 
         
         // si no existe retrona el error 404
-        if (!validacion_supervisor) {
+        if (!validacionSupervisor) {
             return sendError(res, 'Validacion de supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, validacion_supervisor, 'Validacion de supervisor obtenida correctamente');
+            return sendSuccess(res, validacionSupervisor, 'Validacion de supervisor obtenida correctamente');
         }
     } catch (error) {
         return sendError(res, 'Error al obtener la validacion de supervisor', 500);
@@ -67,9 +67,9 @@ const obtenerValidacion_supervisorPorId = async (req, res) => {
 /** patch /validacion_supervisor/:id
  * actualizar validacion de supervisor
  */
-const actualizarValidacion_supervisor = async (req, res) => {
+const actualizarValidacionSupervisor = async (req, res) => {
     try {
-        const validacion = updateValidacion_supervisorSchema.validate(req.body);
+        const validacion = updateValidacionSupervisorSchema.validate(req.body);
         
         // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
@@ -82,7 +82,7 @@ const actualizarValidacion_supervisor = async (req, res) => {
         }
 
         const obtenerid = req.params.id_validacion_supervisor;
-        const resultado = await validacion_supervisorService.actualizarValidacion_supervisor(obtenerid, validacion.value);
+        const resultado = await validacionSupervisorService.actualizarValidacionSupervisor(obtenerid, validacion.value);
     
         if (!resultado) {
             return sendError(res, 'Validacion de supervisor no encontrada', 404);
@@ -97,11 +97,11 @@ const actualizarValidacion_supervisor = async (req, res) => {
 /** delete /validacion_supervisor/:id
  * eliminar validacion de supervisor
  */
-const eliminarValidacion_supervisor = async (req, res) => {
+const eliminarValidacionSupervisor = async (req, res) => {
     try {
-        const { id_validacion_supervisor } = req.params;
+        const { id_validacion} = req.params;
         // llamar al servicio eliminarValidacion_supervisor(id_validacion_supervisor)
-        const eliminado = await validacion_supervisorService.eliminarValidacion_supervisor(id_validacion_supervisor);
+        const eliminado = await validacionSupervisorService.eliminarValidacionSupervisor(id_validacion);
         
         // si no se elimino retornar error 404
         if (!eliminado) {
@@ -115,9 +115,9 @@ const eliminarValidacion_supervisor = async (req, res) => {
 };
 
 module.exports = {
-    crearValidacion_supervisor,
-    obtenerTodosLasValidaciones_supervisor,
-    obtenerValidacion_supervisorPorId,
-    actualizarValidacion_supervisor,
-    eliminarValidacion_supervisor
+    crearValidacionSupervisor,
+    obtenerTodasLasValidacioneSupervisor,
+    obtenerValidacionSupervisorPorId,
+    actualizarValidacionSupervisor,
+    eliminarValidacionSupervisor
 };

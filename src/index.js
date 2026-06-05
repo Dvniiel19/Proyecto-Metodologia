@@ -33,14 +33,14 @@ const agendaRoutes = require('./routes/agendaRoutes');
 const rolRoutes = require('./routes/rolRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const insumosRoutes = require('./routes/insumosRoutes');
-const asignarServicioRoutes = require('./routes/asignar_ServicioRoutes');
+const asignarServicioRoutes = require('./routes/asignarServicioRoutes');
 const tareaRoutes = require('./routes/tareaRoutes');
 const checklistRoutes = require('./routes/checklistRoutes');
 const establecimientoRoutes = require('./routes/establecimientoRoutes');
 const asistenciaRoutes = require('./routes/asistenciaRoutes');
-const consumo_insumoRoutes = require('./routes/consumo_insumoRoutes');
-const evaluacion_finalRoutes = require('./routes/evaluacion_finalRoutes');
-const validacion_supervisorRoutes = require('./routes/validacion_supervisorRoutes');
+const consumoInsumoRoutes = require('./routes/consumoInsumoRoutes');
+const evaluacionFinalRoutes = require('./routes/evaluacionFinalRoutes');
+const validacionSupervisorRoutes = require('./routes/validacionSupervisorRoutes');
 
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
@@ -53,9 +53,9 @@ app.use('/tarea', tareaRoutes);
 app.use('/insumos', insumosRoutes);
 app.use('/establecimiento', establecimientoRoutes);
 app.use('/asistencia', asistenciaRoutes);
-app.use('/consumo_insumo', consumo_insumoRoutes);
-app.use('/evaluacion_final', evaluacion_finalRoutes);
-app.use('/validacion_supervisor', validacion_supervisorRoutes);
+app.use('/consumo_insumo', consumoInsumoRoutes);
+app.use('/evaluacion_final', evaluacionFinalRoutes);
+app.use('/validacion_supervisor', validacionSupervisorRoutes);
 app.use((req,res)=> {
     res.status(404).json({
         success: false,

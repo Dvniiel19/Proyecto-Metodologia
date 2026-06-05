@@ -1,7 +1,7 @@
 
 
 const db = require('../config/db');
-const ConsumoInsumo = require('../entities/consumo_insumo.entity');
+const ConsumoInsumo = require('../entities/consumoInsumo.entity');
 
 const consumoRepository = db.getRepository(ConsumoInsumo);
 

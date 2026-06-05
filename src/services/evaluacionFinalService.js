@@ -1,7 +1,7 @@
 
 
 const db = require('../config/db');
-const EvaluacionFinal = require('../entities/evaluacion_final.entity');
+const EvaluacionFinal = require('../entities/evaluacionFinal.entity');
 
 const evaluacionRepository = db.getRepository(EvaluacionFinal);
 
