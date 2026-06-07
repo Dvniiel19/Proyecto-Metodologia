@@ -1,6 +1,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const validacion_supervisorService = require('../services/validacionSupervisorService');
-const { createValidacion_supervisorSchema, updateValidacion_supervisorSchema } = require('../validations/validacionSupervisorValidation');
+const validacionSupervisorService = require('../services/validacionSupervisorService');
+const { createValidacionSupervisorSchema, updateValidacionSupervisorSchema } = require('../validations/validacionSupervisorValidation');
 
 /** post /validacion_supervisor
  * crear un nueva validacion de supervisor
@@ -81,7 +81,7 @@ const actualizarValidacionSupervisor = async (req, res) => {
             );
         }
 
-        const obtenerid = req.params.id_validacion_supervisor;
+        const obtenerid = req.params.id_validacion;
         const resultado = await validacionSupervisorService.actualizarValidacionSupervisor(obtenerid, validacion.value);
     
         if (!resultado) {

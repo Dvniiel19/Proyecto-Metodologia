@@ -33,7 +33,7 @@ const obtenerTodasLasAsistencias = async () => {
  */
 
 const obtenerAsistenciaPorId = async (id_asistencia) => {
-    return await asistencialRepository.findOneBy({id_asistencia});
+    return await asistenciaRepository.findOneBy({id_asistencia});
 };
 
 /**

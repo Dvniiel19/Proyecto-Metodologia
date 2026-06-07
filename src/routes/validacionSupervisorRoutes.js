@@ -17,14 +17,14 @@ router.get('/', validacionSupervisorController.obtenerTodasLasValidacioneSupervi
 
 //GET /validacion_supervisor/:id - Obtener una validacion de supervisor específica
 
-router.get('/:id_validacion_supervisor', validacionSupervisorController.obtenerValidacionSupervisorPorId);
+router.get('/:id_validacion', validacionSupervisorController.obtenerValidacionSupervisorPorId);
 
 // PATCH /validacion_supervisor/:id - Actualizar una validacion de supervisor
 
-router.patch('/:id_validacion_supervisor', validacionSupervisorController.actualizarValidacionSupervisor);
+router.patch('/:id_validacion', validacionSupervisorController.actualizarValidacionSupervisor);
 
 // DELETE /validacion_supervisor/:id - Eliminar una validacion de supervisor
 
-router.delete('/:id_validacion_supervisor', validacionSupervisorController.eliminarValidacionSupervisor);
+router.delete('/:id_validacion', validacionSupervisorController.eliminarValidacionSupervisor);
 
 module.exports = router;

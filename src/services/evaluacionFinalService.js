@@ -11,7 +11,7 @@ const evaluacionRepository = db.getRepository(EvaluacionFinal);
  * @return {Object} 
 */
 
-const crearEvaluacion = async (datosEvaluacion) => {
+const crearEvaluacionFinal = async (datosEvaluacion) => {
     const nuevaEvaluacion = evaluacionRepository.create(datosEvaluacion);
     return await evaluacionRepository.save(nuevaEvaluacion);
 };
@@ -21,7 +21,7 @@ const crearEvaluacion = async (datosEvaluacion) => {
  * @return {Array} 
  */
 
-const obtenerTodasLasEvaluaciones = async () => {
+const obtenerTodasLasEvaluacionFinal = async () => {
     return await evaluacionRepository.find();
 };
 
@@ -32,7 +32,7 @@ const obtenerTodasLasEvaluaciones = async () => {
  * @returns {Object | null} 
  */
 
-const obtenerEvaluacionPorId = async (id_evaluacion) => {
+const obtenerEvaluacionFinalPorId = async (id_evaluacion) => {
     return await evaluacionRepository.findOneBy({id_evaluacion});
 };
 
@@ -43,9 +43,9 @@ const obtenerEvaluacionPorId = async (id_evaluacion) => {
  * @returns {Object | null}  
  */
 
-const actualizarEvaluacion = async (id_evaluacion, datosActualizados) => {
+const actualizarEvaluacionFinal = async (id_evaluacion, datosActualizados) => {
     await evaluacionRepository.update(id_evaluacion,datosActualizados);
-    return await obtenerEvaluacionPorId(id_evaluacion);
+    return await obtenerEvaluacionFinalPorId(id_evaluacion);
 }
 
 /**
@@ -54,7 +54,7 @@ const actualizarEvaluacion = async (id_evaluacion, datosActualizados) => {
  * @return {Boolean} 
  */
 
-const eliminarEvaluacion = async (id_evaluacin) => {
+const eliminarEvaluacionFinal = async (id_evaluacion) => {
     const result = await evaluacionRepository.delete(id_evaluacion);
     if(result.affected ===0) {
         return false;
@@ -63,9 +63,9 @@ const eliminarEvaluacion = async (id_evaluacin) => {
 };
 
 module.exports = {
-    crearEvaluacion,
-    obtenerTodasLasEvaluaciones,
-    obtenerEvaluacionPorId,
-    actualizarEvaluacion,
-    eliminarEvaluacion,
+    crearEvaluacionFinal,
+    obtenerTodasLasEvaluacionFinal,
+    obtenerEvaluacionFinalPorId,
+    actualizarEvaluacionFinal,
+    eliminarEvaluacionFinal,
 };

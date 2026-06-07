@@ -11,7 +11,7 @@ const consumoRepository = db.getRepository(ConsumoInsumo);
  * @return {Object} 
 */
 
-const crearConsumo = async (datosConsumo) => {
+const crearConsumoInsumo = async (datosConsumo) => {
     const nuevoConsumo = consumoRepository.create(datosConsumo);
     return await consumoRepository.save(nuevoConsumo);
 };
@@ -21,7 +21,7 @@ const crearConsumo = async (datosConsumo) => {
  * @return {Array} array de todos los rol
  */
 
-const obtenerTodosLosConsumos = async () => {
+const obtenerTodosLosConsumoInsumo = async () => {
     return await consumoRepository.find();
 };
 
@@ -32,7 +32,7 @@ const obtenerTodosLosConsumos = async () => {
  * @returns {Object | null} 
  */
 
-const obtenerConsumoPorId = async (id_consumo) => {
+const obtenerConsumoInsumoPorId = async (id_consumo) => {
     return await consumoRepository.findOneBy({id_consumo});
 };
 
@@ -43,7 +43,7 @@ const obtenerConsumoPorId = async (id_consumo) => {
  * @returns {Object | null} 
  */
 
-const actualizarConsumo = async (id_consumo, datosActualizados) => {
+const actualizarConsumoInsumo = async (id_consumo, datosActualizados) => {
     await consumoRepository.update(id_consumo,datosActualizados);
     return await obtenerConsumoPorId(id_consumo);
 }
@@ -54,7 +54,7 @@ const actualizarConsumo = async (id_consumo, datosActualizados) => {
  * @return {Boolean} 
  */
 
-const eliminarConsumo = async (id_consumo) => {
+const eliminarConsumoInsumo = async (id_consumo) => {
     const result = await consumoRepository.delete(id_consumo);
     if(result.affected ===0) {
         return false;
@@ -63,9 +63,9 @@ const eliminarConsumo = async (id_consumo) => {
 };
 
 module.exports = {
-    crearConsumo,
-    obtenerTodosLosConsumos,
-    obtenerConsumoPorId,
-    actualizarConsumo,
-    eliminarConsumo,
+    crearConsumoInsumo,
+    obtenerTodosLosConsumoInsumo,
+    obtenerConsumoInsumoPorId,
+    actualizarConsumoInsumo,
+    eliminarConsumoInsumo,
 };

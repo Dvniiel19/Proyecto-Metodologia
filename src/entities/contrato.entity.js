@@ -4,7 +4,7 @@ const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
     name: 'Contrato',
-    tableName: 'contratos',
+    tableName: 'contrato',
     columns: {
         id_contrato: {
             primary: true,
@@ -31,12 +31,12 @@ module.exports = new EntitySchema({
             target: 'Cliente',
             type: 'many-to-one',
             joinColumn: {name: 'id_cliente'},
-            inverseSide: 'contratos',
+            inverseSide: 'contrato',
         },
         agenda: {
             target: 'Agenda',
             type: 'one-to-many',
-            inverseSide: 'contratos',
+            inverseSide: 'contrato',
         },
     },
 });

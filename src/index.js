@@ -57,7 +57,7 @@ app.use('/asistencia', asistenciaRoutes);
 app.use('/consumoInsumo', consumoInsumoRoutes);
 app.use('/evaluacionFinal', evaluacionFinalRoutes);
 app.use('/validacionSupervisor', validacionSupervisorRoutes);
-app.use('/trabajadorService', trabajadorRoutes);
+app.use('/trabajador', trabajadorRoutes);
 app.use((req,res)=> {
     res.status(404).json({
         success: false,

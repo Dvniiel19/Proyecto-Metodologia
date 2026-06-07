@@ -18,7 +18,7 @@ const crearEstablecimiento = async (req, res) => {
             );
         }
         // llamamos al servicio para crear el establecimiento
-        const establecimientoCreado = await establecimientoService.crearestablecimiento(value);
+        const establecimientoCreado = await establecimientoService.crearEstablecimiento(value);
         // respondemos con exito
         return sendSuccess(
             res,
