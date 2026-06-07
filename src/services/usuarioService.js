@@ -45,7 +45,7 @@ const obtenerUsuarioPorId = async (id_usuario) => {
 
 const actualizarUsuario = async (id_usuario, datosActualizados) => {
     await usuarioRepository.update(id_usuario,datosActualizados);
-    return await obtenerRolPorId(id_usuario);
+    return await obtenerUsuarioPorId(id_usuario);
 }
 
 /**

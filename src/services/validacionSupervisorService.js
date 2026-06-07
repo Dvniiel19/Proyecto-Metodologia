@@ -11,7 +11,7 @@ const validacionRepository = db.getRepository(ValidacionSupervisor);
  * @return {Object} 
 */
 
-const crearValidacion= async (datosValidacion) => {
+const crearValidacionSupervisor = async (datosValidacion) => {
     const nuevaValidacion = validacionRepository.create(datosValidacion);
     return await validacionRepository.save(nuevaValidacion);
 };
@@ -21,7 +21,7 @@ const crearValidacion= async (datosValidacion) => {
  * @return {Array}
  */
 
-const obtenerTodasLasValidaciones = async () => {
+const obtenerTodasLasValidacioneSupervisor = async () => {
     return await validacionRepository.find();
 };
 
@@ -32,7 +32,7 @@ const obtenerTodasLasValidaciones = async () => {
  * @returns {Object | null} 
  */
 
-const obtenerValidacionPorId = async (id_validacion) => {
+const obtenerValidacionSupervisorPorId= async (id_validacion) => {
     return await validacionRepository.findOneBy({id_validacion});
 };
 
@@ -43,7 +43,7 @@ const obtenerValidacionPorId = async (id_validacion) => {
  * @returns {Object | null} 
  */
 
-const actualizarValidacion = async (id_validacion, datosActualizados) => {
+const actualizarValidacionSupervisor = async (id_validacion, datosActualizados) => {
     await validacionRepository.update(id_validacion,datosActualizados);
     return await obtenerValidacionPorId(id_validacion);
 }
@@ -54,7 +54,7 @@ const actualizarValidacion = async (id_validacion, datosActualizados) => {
  * @return {Boolean} 
  */
 
-const eliminarValidacion = async (id_validacion) => {
+const  eliminarValidacionSupervisor= async (id_validacion) => {
     const result = await validacionRepository.delete(id_validacion);
     if(result.affected ===0) {
         return false;
@@ -63,9 +63,9 @@ const eliminarValidacion = async (id_validacion) => {
 };
 
 module.exports = {
-    crearValidacion,
-    obtenerTodasLasValidaciones,
-    obtenerValidacionPorId,
-    actualizarValidacion,
-    eliminarValidacion,
+    crearValidacionSupervisor,
+    obtenerTodasLasValidacioneSupervisor,
+    obtenerValidacionSupervisorPorId,
+    actualizarValidacionSupervisor,
+    eliminarValidacionSupervisor,
 };

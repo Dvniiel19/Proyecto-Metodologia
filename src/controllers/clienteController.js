@@ -18,7 +18,7 @@ const crearCliente = async (req, res) => {
             );
         }
         // llamamos al servicio para crear el cliente
-        const clienteCreado = await clienteService.crearcliente(value);
+        const clienteCreado = await clienteService.crearCliente(value);
         // respondemos con exito
         return sendSuccess(
             res,
@@ -37,7 +37,7 @@ const crearCliente = async (req, res) => {
  */
 const obtenerTodosLosCliente = async (req, res) => {
     try {
-        const cliente = await clienteService.obtenerTodosLosClientes();
+        const cliente = await clienteService.obtenerTodosLosCliente();
         return sendSuccess(res, cliente, 'cliente obtenidos exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener cliente', 500);

@@ -13,7 +13,7 @@ router.post('/', tareaController.crearTarea);
 
 // GET /tarea - Obtener todas las tareas
 
-router.get('/', tareaController.obtenerTodosLasTarea);
+router.get('/', tareaController.obtenerTodasLasTarea);
 
 //GET /tarea/:id - Obtener una tarea específico
 

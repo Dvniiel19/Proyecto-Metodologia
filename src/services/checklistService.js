@@ -27,13 +27,13 @@ const obtenerTodosLosCheckList = async () => {
 
 /**
  * obtener checklist por id
- * @param {Number} id_check
+ * @param {Number} id_checklist
  * @param {Object} datosActualizados 
  * @returns {Object | null} 
  */
 
-const obtenerCheckListPorId = async (id_check) => {
-    return await checklistRepository.findOneBy({id_check});
+const obtenerCheckListPorId = async (id_checklist) => {
+    return await checklistRepository.findOneBy({id_checklist});
 };
 
 /**
@@ -43,19 +43,19 @@ const obtenerCheckListPorId = async (id_check) => {
  * @returns {Object | null} 
  */
 
-const actualizarCheckList = async (id_check, datosActualizados) => {
-    await checklistRepository.update(id_check,datosActualizados);
-    return await obtenerCheckListPorId(id_check);
+const actualizarCheckList = async (id_checklist, datosActualizados) => {
+    await checklistRepository.update(id_checklist,datosActualizados);
+    return await obtenerCheckListPorId(id_checklist);
 }
 
 /**
  * eliminar una checklist
- * @param {Number} id_check 
+ * @param {Number} id_checklist
  * @return {Boolean} 
  */
 
-const eliminarCheckList = async (id_check) => {
-    const result = await checklistRepository.delete(id_check);
+const eliminarCheckList = async (id_checklist) => {
+    const result = await checklistRepository.delete(id_checklist);
     if(result.affected ===0) {
         return false;
     }

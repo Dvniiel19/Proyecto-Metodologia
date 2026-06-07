@@ -37,7 +37,7 @@ const crearConsumoInsumo = async (req, res) => {
  */
 const obtenerTodosLosConsumoInsumo = async (req, res) => {
     try {
-        const consumoInsumo = await consumoInsumoService.obtenerTodosLosConsumoInsumos();
+        const consumoInsumo = await consumoInsumoService.obtenerTodosLosConsumoInsumo();
         return sendSuccess(res, consumoInsumo, 'consumo insumo obtenidos exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener consumo_insumo', 500);

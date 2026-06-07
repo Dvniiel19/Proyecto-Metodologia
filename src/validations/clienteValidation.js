@@ -47,7 +47,7 @@ const createClienteSchema = Joi.object({
       'string.pattern.base': 'El formato del telefono es invalido. Solo se aceptan numeros, espacios y el signo +',
       'any.required': 'El telefono es un campo obligatorio'
     }),
-  historial_servicio: Joi.string()
+  historial_servicios: Joi.string()
     .trim()
     .min(10)
     .max(300) 
@@ -100,7 +100,7 @@ const updateClienteSchema = Joi.object({
       'string.max': 'El telefono no puede exceder los 20 caracteres',
       'string.pattern.base': 'El formato del telefono es invalido. Solo se aceptan numeros, espacios y el signo +'
     }),
-  historial_servicio: Joi.string()
+  historial_servicios: Joi.string()
     .trim()
     .min(10)
     .max(300) 

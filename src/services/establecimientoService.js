@@ -44,8 +44,8 @@ const obtenerEstablecimientoPorId = async (id_establecimiento) => {
  */
 
 const actualizarEstablecimiento = async (id_establecimiento, datosActualizados) => {
-    await establecintoRepository.update(id_establecimiento,datosActualizados);
-    return await obtenerRolPorId(id_rol);
+    await establecimientoRepository.update(id_establecimiento,datosActualizados);
+    return await obtenerEstablecimientoPorId(id_establecimiento);
 }
 
 /**
