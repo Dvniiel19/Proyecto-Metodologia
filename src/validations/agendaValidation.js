@@ -20,7 +20,26 @@ const createAgendaSchema = Joi.object({
     .optional()
     .messages({
       'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
-    })
+    }),
+    id_establecimiento: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del establecimiento debe ser un número.',
+            'number.integer': 'El ID del establecimiento debe ser un número entero.',
+            'number.positive': 'El ID del establecimiento debe ser un número positivo.'
+        }),
+
+    id_contrato: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del contrato debe ser un número.',
+            'number.integer': 'El ID del contrato debe ser un número entero.',
+            'number.positive': 'El ID del contrato debe ser un número positivo.'
+        })
 });
 
 // Esquema para actualizar un evento en la agenda (PATCH)
@@ -37,7 +56,26 @@ const updateAgendaSchema = Joi.object({
     .optional()
     .messages({
       'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
-    })
+    }),
+    id_establecimiento: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del establecimiento debe ser un número.',
+            'number.integer': 'El ID del establecimiento debe ser un número entero.',
+            'number.positive': 'El ID del establecimiento debe ser un número positivo.'
+        }),
+
+    id_contrato: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del contrato debe ser un número.',
+            'number.integer': 'El ID del contrato debe ser un número entero.',
+            'number.positive': 'El ID del contrato debe ser un número positivo.'
+        })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 }); 
