@@ -26,6 +26,28 @@ const createAsistenciaSchema = Joi.object({
       'string.pattern.base': 'La hora de salida debe tener formato HH:MM:SS',
       'any.required': 'La hora de salida es un campo obligatorio'
     }),
+    id_trabajador: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del trabajador debe ser un número.',
+            'number.integer': 'El ID del trabajador debe ser un número entero.',
+            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'any.required': 'El ID del trabajador es un campo obligatorio.'
+        }),
+
+    id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un número.',
+            'number.integer': 'El ID del servicio debe ser un número entero.',
+            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'any.required': 'El ID del servicio es un campo obligatorio.'
+        })
+
 });
 
 
@@ -47,7 +69,29 @@ const updateAsistenciaSchema = Joi.object({
       'string.base': 'La hora de salida debe ser texto',
       'string.pattern.base': 'La hora de salida debe tener formato HH:MM:SS',
       'any.required': 'La hora de salida es un campo obligatorio'
-    })
+    }),
+    id_trabajador: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del trabajador debe ser un número.',
+            'number.integer': 'El ID del trabajador debe ser un número entero.',
+            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'any.required': 'El ID del trabajador es un campo obligatorio.'
+        }),
+
+    id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un número.',
+            'number.integer': 'El ID del servicio debe ser un número entero.',
+            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'any.required': 'El ID del servicio es un campo obligatorio.'
+        })
+
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 });
