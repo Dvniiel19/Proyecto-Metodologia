@@ -46,7 +46,16 @@ const createTrabajadorSchema = Joi.object({
       'string.max': 'El telefono no puede exceder los 20 caracteres',
       'string.pattern.base': 'El formato del telefono es invalido. Solo se aceptan numeros, espacios y el signo +',
       'any.required': 'El telefono es un campo obligatorio'
-    })
+    }),
+    id_usuario: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del usuario debe ser un numero.',
+            'number.integer': 'El ID del usuario debe ser un numero entero.',
+            'number.positive': 'El ID del usuario debe ser un numero positivo.'
+        })
 });
 
 // Esquema para actualizar un trabajador
@@ -87,7 +96,16 @@ const updateTrabajadorSchema = Joi.object({
       'string.min': 'El telefono debe tener al menos 8 caracteres',
       'string.max': 'El telefono no puede exceder los 20 caracteres',
       'string.pattern.base': 'El formato del telefono es invalido. Solo se aceptan numeros, espacios y el signo +'
-    })
+    }),
+    id_usuario: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del usuario debe ser un numero.',
+            'number.integer': 'El ID del usuario debe ser un numero entero.',
+            'number.positive': 'El ID del usuario debe ser un numero positivo.'
+        })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 }); // Al menos debe enviarse un campo en el PATCH
