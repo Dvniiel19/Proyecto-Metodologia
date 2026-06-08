@@ -25,7 +25,28 @@ const createValidacionSupervisorSchema = Joi.object({
                 'string.min': 'La observación debe tener al menos 1 caracteres.',
                 'string.max': 'La observación no puede exceder los 225 caracteres.'
             }),
-});
+            id_servicio: Joi.number()
+                .integer()
+                .positive()
+                .required()
+                .messages({
+                'number.base': 'El ID del servicio debe ser un numero.',
+                'number.integer': 'El ID del servicio debe ser un numero entero.',
+                'number.positive': 'El ID del servicio debe ser un numero positivo.',
+                'any.required': 'El ID del servicio es un campo obligatorio.'
+                }),
+
+                id_usuario: Joi.number()
+                .integer()
+                .positive()
+                .required()
+                .messages({
+                'number.base': 'El ID del usuario supervisor debe ser un numero.',
+                'number.integer': 'El ID del usuario supervisor debe ser un numero entero.',
+                'number.positive': 'El ID del usuario supervisor debe ser un numero positivo.',
+                'any.required': 'El ID del usuario supervisor es un campo obligatorio.'
+                })
+                });
 
 /**
  * Validación para actualizar la validacion de supervisor (req.body)
@@ -49,7 +70,28 @@ const updateValidacionSupervisorSchema = Joi.object({
                 'string.empty': 'La observación no puede estar vacía.',
                 'string.min': 'La observación debe tener al menos 1 caracteres.',
                 'string.max': 'La observación no puede exceder los 225 caracteres.'
-        }),
+        }),id_servicio: Joi.number()
+                .integer()
+                .positive()
+                .required()
+                .messages({
+                'number.base': 'El ID del servicio debe ser un numero.',
+                'number.integer': 'El ID del servicio debe ser un numero entero.',
+                'number.positive': 'El ID del servicio debe ser un numero positivo.',
+                'any.required': 'El ID del servicio es un campo obligatorio.'
+                }),
+
+                id_usuario: Joi.number()
+                .integer()
+                .positive()
+                .required()
+                .messages({
+                'number.base': 'El ID del usuario supervisor debe ser un numero.',
+                'number.integer': 'El ID del usuario supervisor debe ser un numero entero.',
+                'number.positive': 'El ID del usuario supervisor debe ser un numero positivo.',
+                'any.required': 'El ID del usuario supervisor es un campo obligatorio.'
+                })
+            
 }).min(1); // Exige que al menos se envíe un campo para actualizar (cantidad, id_insumo o id_servicio)
 
 module.exports = {
