@@ -18,7 +18,39 @@ const createAsignarServicioSchema = Joi.object({
     .optional()
     .messages({
       'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
-    })
+    }),
+    id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un número.',
+            'number.integer': 'El ID del servicio debe ser un número entero.',
+            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'any.required': 'El ID del servicio es un campo obligatorio.'
+        }),
+
+    id_trabajador: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del trabajador debe ser un número.',
+            'number.integer': 'El ID del trabajador debe ser un número entero.',
+            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'any.required': 'El ID del trabajador es un campo obligatorio.'
+        }),
+
+    id_usuario: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del usuario coordinador debe ser un número.',
+            'number.integer': 'El ID del usuario coordinador debe ser un número entero.',
+            'number.positive': 'El ID del usuario coordinador debe ser un número positivo.',
+            'any.required': 'El ID del usuario coordinador es un campo obligatorio.'
+        })
 });
 
 // Esquema para actualizar un evento en la agenda (PATCH)
@@ -35,7 +67,39 @@ const updateAsignarServicioSchema = Joi.object({
     .optional()
     .messages({
       'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
-    })
+    }),
+    id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un número.',
+            'number.integer': 'El ID del servicio debe ser un número entero.',
+            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'any.required': 'El ID del servicio es un campo obligatorio.'
+        }),
+
+    id_trabajador: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del trabajador debe ser un número.',
+            'number.integer': 'El ID del trabajador debe ser un número entero.',
+            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'any.required': 'El ID del trabajador es un campo obligatorio.'
+        }),
+
+    id_usuario: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del usuario coordinador debe ser un número.',
+            'number.integer': 'El ID del usuario coordinador debe ser un número entero.',
+            'number.positive': 'El ID del usuario coordinador debe ser un número positivo.',
+            'any.required': 'El ID del usuario coordinador es un campo obligatorio.'
+        })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 }); 
