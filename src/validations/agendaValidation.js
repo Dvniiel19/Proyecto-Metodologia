@@ -26,9 +26,9 @@ const createAgendaSchema = Joi.object({
         .positive()
         .optional()
         .messages({
-            'number.base': 'El ID del establecimiento debe ser un número.',
-            'number.integer': 'El ID del establecimiento debe ser un número entero.',
-            'number.positive': 'El ID del establecimiento debe ser un número positivo.'
+            'number.base': 'El ID del establecimiento debe ser un numero.',
+            'number.integer': 'El ID del establecimiento debe ser un numero entero.',
+            'number.positive': 'El ID del establecimiento debe ser un numero positivo.'
         }),
 
     id_contrato: Joi.number()
@@ -36,9 +36,9 @@ const createAgendaSchema = Joi.object({
         .positive()
         .optional()
         .messages({
-            'number.base': 'El ID del contrato debe ser un número.',
-            'number.integer': 'El ID del contrato debe ser un número entero.',
-            'number.positive': 'El ID del contrato debe ser un número positivo.'
+            'number.base': 'El ID del contrato debe ser un numero.',
+            'number.integer': 'El ID del contrato debe ser un numero entero.',
+            'number.positive': 'El ID del contrato debe ser un numero positivo.'
         })
 });
 
@@ -62,9 +62,9 @@ const updateAgendaSchema = Joi.object({
         .positive()
         .optional()
         .messages({
-            'number.base': 'El ID del establecimiento debe ser un número.',
-            'number.integer': 'El ID del establecimiento debe ser un número entero.',
-            'number.positive': 'El ID del establecimiento debe ser un número positivo.'
+            'number.base': 'El ID del establecimiento debe ser un numero.',
+            'number.integer': 'El ID del establecimiento debe ser un numero entero.',
+            'number.positive': 'El ID del establecimiento debe ser un numero positivo.'
         }),
 
     id_contrato: Joi.number()
@@ -72,9 +72,9 @@ const updateAgendaSchema = Joi.object({
         .positive()
         .optional()
         .messages({
-            'number.base': 'El ID del contrato debe ser un número.',
-            'number.integer': 'El ID del contrato debe ser un número entero.',
-            'number.positive': 'El ID del contrato debe ser un número positivo.'
+            'number.base': 'El ID del contrato debe ser un numero.',
+            'number.integer': 'El ID del contrato debe ser un numero entero.',
+            'number.positive': 'El ID del contrato debe ser un numero positivo.'
         })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'

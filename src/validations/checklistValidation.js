@@ -23,6 +23,27 @@ const createChecklistSchema = Joi.object({
             'string.base': 'La foto debe ser un texto.',
             'string.uri': 'La foto debe ser un enlace (URL) válido.',
             'string.max': 'El enlace no puede exceder los 2000 caracteres.'
+        }),
+        id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
+            'any.required': 'El ID del servicio es un campo obligatorio.'
+        }),
+
+    id_tarea: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID de la tarea debe ser un numero.',
+            'number.integer': 'El ID de la tarea debe ser un numero entero.',
+            'number.positive': 'El ID de la tarea debe ser un numero positivo.',
+            'any.required': 'El ID de la tarea es un campo obligatorio.'
         })
 });
 
@@ -41,7 +62,7 @@ const updateChecklistSchema = Joi.object({
         .optional()
         .messages({
             'string.base': 'La foto debe ser un texto.',
-            'string.uri': 'La foto debe ser un enlace (URL) válido.',
+            'string.uri': 'La foto debe ser un enlace (URL) valido.',
             'string.max': 'El enlace no puede exceder los 255 caracteres.'
         }),
 

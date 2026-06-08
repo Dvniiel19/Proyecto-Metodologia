@@ -24,9 +24,9 @@ const createAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del servicio debe ser un número.',
-            'number.integer': 'El ID del servicio debe ser un número entero.',
-            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
             'any.required': 'El ID del servicio es un campo obligatorio.'
         }),
 
@@ -35,9 +35,9 @@ const createAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del trabajador debe ser un número.',
-            'number.integer': 'El ID del trabajador debe ser un número entero.',
-            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'number.base': 'El ID del trabajador debe ser un numero.',
+            'number.integer': 'El ID del trabajador debe ser un numero entero.',
+            'number.positive': 'El ID del trabajador debe ser un numero positivo.',
             'any.required': 'El ID del trabajador es un campo obligatorio.'
         }),
 
@@ -46,9 +46,9 @@ const createAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del usuario coordinador debe ser un número.',
-            'number.integer': 'El ID del usuario coordinador debe ser un número entero.',
-            'number.positive': 'El ID del usuario coordinador debe ser un número positivo.',
+            'number.base': 'El ID del usuario coordinador debe ser un numero.',
+            'number.integer': 'El ID del usuario coordinador debe ser un numero entero.',
+            'number.positive': 'El ID del usuario coordinador debe ser un numero positivo.',
             'any.required': 'El ID del usuario coordinador es un campo obligatorio.'
         })
 });
@@ -73,9 +73,9 @@ const updateAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del servicio debe ser un número.',
-            'number.integer': 'El ID del servicio debe ser un número entero.',
-            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
             'any.required': 'El ID del servicio es un campo obligatorio.'
         }),
 
@@ -84,9 +84,9 @@ const updateAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del trabajador debe ser un número.',
-            'number.integer': 'El ID del trabajador debe ser un número entero.',
-            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'number.base': 'El ID del trabajador debe ser un numero.',
+            'number.integer': 'El ID del trabajador debe ser un numero entero.',
+            'number.positive': 'El ID del trabajador debe ser un numero positivo.',
             'any.required': 'El ID del trabajador es un campo obligatorio.'
         }),
 
@@ -95,9 +95,9 @@ const updateAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del usuario coordinador debe ser un número.',
-            'number.integer': 'El ID del usuario coordinador debe ser un número entero.',
-            'number.positive': 'El ID del usuario coordinador debe ser un número positivo.',
+            'number.base': 'El ID del usuario coordinador debe ser un numero.',
+            'number.integer': 'El ID del usuario coordinador debe ser un numero entero.',
+            'number.positive': 'El ID del usuario coordinador debe ser un numero positivo.',
             'any.required': 'El ID del usuario coordinador es un campo obligatorio.'
         })
 }).min(1).messages({
