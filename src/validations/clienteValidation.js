@@ -59,6 +59,15 @@ const createClienteSchema = Joi.object({
       'string.max': 'El texto no puede exceder los 300 caracteres',
       'any.required': 'El texto es un campo obligatorio'
     }),
+    id_usuario: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del usuario debe ser un numero.',
+            'number.integer': 'El ID del usuario debe ser un numero entero.',
+            'number.positive': 'El ID del usuario debe ser un numero positivo.'
+        })
 });
 
 // Esquema para actualizar un trabajador
@@ -110,7 +119,16 @@ const updateClienteSchema = Joi.object({
       'string.empty': 'El texto no puede estar vacio',
       'string.min': 'El texto debe tener al menos 10 caracteres',
       'string.max': 'El texto no puede exceder los 300 caracteres'
-    })
+    }),
+    id_usuario: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .messages({
+            'number.base': 'El ID del usuario debe ser un numero.',
+            'number.integer': 'El ID del usuario debe ser un numero entero.',
+            'number.positive': 'El ID del usuario debe ser un numero positivo.'
+        })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 }); // Al menos debe enviarse un campo en el PATCH
