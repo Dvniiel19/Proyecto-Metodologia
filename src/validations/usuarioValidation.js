@@ -35,7 +35,7 @@ const createUsuarioSchema = Joi.object({
       'patron_especial': 'La contraseña debe tener minimo un caracter especial',
       'any.required': 'La contraseña es un campo obligatorio'
     }),
-    rol: Joi.number() //relacion
+    id_rol: Joi.number() //relacion
     .integer()
     .positive()
     .required()
@@ -77,7 +77,7 @@ const updateUsuarioSchema = Joi.object({
       'patron_especial': 'La contraseña debe tener minimo un caracter especial',
       
     }),
-    rol: Joi.number() //relacion
+    id_rol: Joi.number() //relacion
     .integer()
     .positive()
     .required()
