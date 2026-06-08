@@ -28,7 +28,7 @@ module.exports = new EntitySchema({
             target: 'Rol',
             type: 'many-to-one',
             joinColumn: { name: 'id_rol'}, 
-            inverseSide: 'usuarios',
+            inverseSide: 'usuario',
             nullable: false,
         },
         trabajador: {
@@ -44,7 +44,7 @@ module.exports = new EntitySchema({
         asignar_servicio: {
             target: 'AsignarServicio',
             type: 'one-to-many',
-            inverseSide: 'usuario_asignador',
+            inverseSide: 'usuario',
         },
     },
 });

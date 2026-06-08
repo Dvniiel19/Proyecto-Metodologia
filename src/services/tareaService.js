@@ -19,7 +19,7 @@ const crearTarea = async (datosTarea) => {
  * @return {Array} 
  */
 
-const obtenerTodasLasTreas = async ()=> {
+const obtenerTodasLasTarea = async ()=> {
     return await tareaRepository.find();
     return [];
 };
@@ -63,7 +63,7 @@ const eliminarTarea = async (id_tarea) => {
 
 module.exports = {
     crearTarea,
-    obtenerTodasLasTreas,
+    obtenerTodasLasTarea,
     obtenerTareaPorId,
     actualizarTarea,
     eliminarTarea

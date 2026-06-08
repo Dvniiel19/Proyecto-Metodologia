@@ -18,7 +18,7 @@ const crearTarea = async (req, res) => {
             );
         }
         // llamamos al servicio para crear la tarea
-        const tareaCreado = await tareaService.creartarea(value);
+        const tareaCreado = await tareaService.crearTarea(value);
         // respondemos con exito
         return sendSuccess(
             res,
@@ -35,9 +35,9 @@ const crearTarea = async (req, res) => {
 /** get /tarea
  * obtiene todos los tareas
  */
-const obtenerTodosLasTarea = async (req, res) => {
+const obtenerTodasLasTarea = async (req, res) => {
     try {
-        const tarea = await tareaService.obtenerTodosLasTarea();
+        const tarea = await tareaService.obtenerTodasLasTarea();
         return sendSuccess(res, tarea, 'tareas obtenidas exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener tarea', 500);
@@ -116,7 +116,7 @@ const eliminarTarea = async (req, res) => {
 
 module.exports = {
     crearTarea,
-    obtenerTodosLasTarea,
+    obtenerTodasLasTarea,
     obtenerTareaPorId,
     actualizarTarea,
     eliminarTarea

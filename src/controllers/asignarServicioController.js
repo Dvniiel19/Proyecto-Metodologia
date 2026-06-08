@@ -1,13 +1,13 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
-const AsignarServicioService = require('../services/asignar_servicioService');
-const { createAsignarServicioSchema, updateasignarServicioSchema } = require('../validations/asignarServicioValidation');
+const asignarServicioService = require('../services/asignarServicioService');
+const { createAsignarServicioSchema, updateAsignarServicioSchema } = require('../validations/asignarServicioValidation');
 
 /** post /asignarServicio
  * crear un nuevo asignarServicio
  */
-const createAsignarServicio = async (req, res) => {
+const crearAsignacion = async (req, res) => {
     try {
-        // validamos los datos de entrada con joi
+        // validamos los datos de entrada con joi usando el nombre correcto
         const { error, value } = createAsignarServicioSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -17,61 +17,57 @@ const createAsignarServicio = async (req, res) => {
                 error.details.map(err => err.message)
             );
         }
-        // llamamos al servicio para crear el cliente
-        const asignarServicioCreado = await AsignarServicioService.crearAsignarServicio(value);
-        // respondemos con exito
+        const asignarServicioCreado = await asignarServicioService.crearAsignacion(value);
+        
         return sendSuccess(
             res,
-            asignarServicioCreado   ,
-            'asignarServicio creado con exito',
+            asignarServicioCreado,
+            'Asignación de servicio creada con exito',
             201
         );
     } catch (error) {
         console.error(error);
-        return sendError(res, 'Error al crear el asignarServicio', 500);
+        return sendError(res, 'Error al crear la asignación de servicio', 500);
     }
 };
 
-/** get /cliente
- * obtiene todos los clientes
+/** get /asignarServicio
+ * obtiene todas las asignaciones
  */
-const obtenerTodosLosasignarServicio = async (req, res) => {
+const obtenerTodasLasAsignaciones = async (req, res) => {
     try {
-        const asignarServicio = await AsignarServicioService.obtenerTodosLosasignarServicios();
-        return sendSuccess(res, asignarServicio, 'asignarServicio obtenidos exitosamente');
+        const asignarServicio = await asignarServicioService.obtenerTodasLasAsignaciones();
+        return sendSuccess(res, asignarServicio, 'Asignaciones obtenidas exitosamente');
     } catch (error) {
-        return sendError(res, 'Error al obtener asignarServicio', 500);
+        return sendError(res, 'Error al obtener las asignaciones', 500);
     }
 };
 
-/** get /cliente/:id
- * obtiene un cliente especifico por id
+/** get /asignarServicio/:id
+ * obtiene una asignacion especifica por id
  */
-const obtenerAsignarServicioPorId = async (req, res) => {
+const obtenerAsignacionPorId = async (req, res) => {
     try {
-        const { id_asignarServicio } = req.params;
-        // llamar al servicio obtenerasignarServicioPorId(id_asignarServicio)
-        const asignarServicio = await AsignarServicioService.obtenerAsignarServicioPorId(id_asignarServicio); 
+        const { id_asignacion } = req.params;
+        const asignarServicio = await asignarServicioService.obtenerAsignacionPorId(id_asignacion); 
         
-        // si no existe retrona el error 404
         if (!asignarServicio) {
-            return sendError(res, 'asignarServicio no encontrado', 404);
+            return sendError(res, 'Asignación no encontrada', 404);
         } else {
-            return sendSuccess(res, asignarServicio, 'asignarServicio obtenido correctamente');
+            return sendSuccess(res, asignarServicio, 'Asignación obtenida correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al obtener el asignarServicio', 500);
+        return sendError(res, 'Error al obtener la asignación', 500);
     }
 };
 
-/** patch /cliente/:id
- * actualizar cliente
+/** patch /asignarServicio/:id
+ * actualizar asignacion
  */
-const actualizarAsignarServicio = async (req, res) => {
+const actualizarAsignacion= async (req, res) => {
     try {
-        const validacion = updatefehaprogramaSchema.validate(req.body);
+        const validacion = updateAsignarServicioSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -81,43 +77,41 @@ const actualizarAsignarServicio = async (req, res) => {
             );
         }
 
-        const obtenerid = req.params.id_asignarServicio;
-        const resultado = await AsignarServicioService.actualizarAsignarServicio(obtenerid, validacion.value);
+        const obtenerid = req.params.id_asignacion;
+        const resultado = await asignarServicioService.actualizarAsignacion(obtenerid, validacion.value);
     
         if (!resultado) {
-            return sendError(res, 'asignarServicio no encontrado', 404);
+            return sendError(res, 'Asignación no encontrada', 404);
         } else {
-            return sendSuccess(res, resultado, 'asignarServicio actualizado correctamente');
+            return sendSuccess(res, resultado, 'Asignación actualizada correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al actualizar asignarServicio', 500);
+        return sendError(res, 'Error al actualizar asignación', 500);
     }
 };
 
 /** delete /asignarServicio/:id
- * eliminar asignarServicio
+ * eliminar asignacion
  */
-const eliminarAsignarServicio = async (req, res) => {
+const eliminarAsignacion = async (req, res) => {
     try {
-        const { id_asignarServicio } = req.params;
-        // llamar al servicio eliminarasignarServicio(id_asignarServicio)
-        const eliminado = await AsignarServicioService.eliminarAsignarServicio(id_asignarServicio);
+        const { id_asignacion } = req.params;
+        const eliminado = await asignarServicioService.eliminarAsignacion(id_asignacion);
 
-        // si no se elimino retornar error 404
         if (!eliminado) {
-            return sendError(res, 'asignarServicio no encontrado', 404);
+            return sendError(res, 'Asignación no encontrada', 404);
         } else {
-            return sendSuccess(res, null, 'asignarServicio eliminado correctamente');
+            return sendSuccess(res, null, 'Asignación eliminada correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al eliminar asignarServicio', 500);
+        return sendError(res, 'Error al eliminar asignación', 500);
     }
 };
 
 module.exports = {
-    createAsignarServicio,
-    obtenerTodosLosasignarServicio,
-    obtenerAsignarServicioPorId,
-    actualizarAsignarServicio,
-    eliminarAsignarServicio
+    crearAsignacion,
+    obtenerAsignacionPorId,
+    obtenerTodasLasAsignaciones,
+    actualizarAsignacion,
+    eliminarAsignacion
 };

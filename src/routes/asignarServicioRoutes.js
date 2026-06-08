@@ -9,22 +9,22 @@ const asignarServicioController = require('../controllers/asignarServicioControl
 
 // POST /asignarServicio - Crear un nuevo asignarServicio
 
-router.post('/', asignarServicioController.createAsignarServicio);
+router.post('/', asignarServicioController.crearAsignacion);
 
 // GET /asignarServicio - Obtener todos los asignarServicios
 
-router.get('/', asignarServicioController.obtenerTodosLosasignarServicio);
+router.get('/', asignarServicioController.obtenerTodasLasAsignaciones);
 
 //GET /asignarServicio/:id - Obtener un asignarServicio específico
 
-router.get('/:id_asignarServicio', asignarServicioController.obtenerAsignarServicioPorId);
+router.get('/:id_asignacion', asignarServicioController.obtenerAsignacionPorId);
 
 // PATCH /asignarServicio/:id - Actualizar un asignarServicio
 
-router.patch('/:id_asignarServicio', asignarServicioController.actualizarAsignarServicio);
+router.patch('/:id_asignacion', asignarServicioController.actualizarAsignacion);
 
 // DELETE /asignarServicio/:id - Eliminar un asignarServicio
 
-router.delete('/:id_asignarServicio', asignarServicioController.eliminarAsignarServicio);
+router.delete('/:id_asignacion', asignarServicioController.eliminarAsignacion);
 
 module.exports = router;

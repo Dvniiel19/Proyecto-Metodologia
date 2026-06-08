@@ -12,7 +12,7 @@ router.post('/', agendaController.crearAgenda);
 
 // GET /agenda - Obtener todos los eventos en la agenda
 // TODO: Descomenta la siguiente línea cuando implementes la función en el controlador
-router.get('/', agendaController.obtenerTodosLosAgenda);
+router.get('/', agendaController.obtenerTodasLasAgenda);
 
 //GET /agenda/:id - Obtener un evento específico
 // TODO: Descomenta la siguiente línea cuando implementes la función en el controlador
