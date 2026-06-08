@@ -31,9 +31,9 @@ const createAsistenciaSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del trabajador debe ser un número.',
-            'number.integer': 'El ID del trabajador debe ser un número entero.',
-            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'number.base': 'El ID del trabajador debe ser un numero.',
+            'number.integer': 'El ID del trabajador debe ser un numero entero.',
+            'number.positive': 'El ID del trabajador debe ser un numero positivo.',
             'any.required': 'El ID del trabajador es un campo obligatorio.'
         }),
 
@@ -42,9 +42,9 @@ const createAsistenciaSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del servicio debe ser un número.',
-            'number.integer': 'El ID del servicio debe ser un número entero.',
-            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
             'any.required': 'El ID del servicio es un campo obligatorio.'
         })
 
@@ -75,9 +75,9 @@ const updateAsistenciaSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del trabajador debe ser un número.',
-            'number.integer': 'El ID del trabajador debe ser un número entero.',
-            'number.positive': 'El ID del trabajador debe ser un número positivo.',
+            'number.base': 'El ID del trabajador debe ser un numero.',
+            'number.integer': 'El ID del trabajador debe ser un numero entero.',
+            'number.positive': 'El ID del trabajador debe ser un numero positivo.',
             'any.required': 'El ID del trabajador es un campo obligatorio.'
         }),
 
@@ -86,9 +86,9 @@ const updateAsistenciaSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del servicio debe ser un número.',
-            'number.integer': 'El ID del servicio debe ser un número entero.',
-            'number.positive': 'El ID del servicio debe ser un número positivo.',
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
             'any.required': 'El ID del servicio es un campo obligatorio.'
         })
 
