@@ -17,14 +17,14 @@ router.get('/', insumosController.obtenerTodosLosInsumos);
 
 //GET /insumos/:id - Obtener un insumos específico
 
-router.get('/:id_insumos', insumosController.obtenerInsumosPorId);
+router.get('/:id_insumo', insumosController.obtenerInsumosPorId);
 
 // PATCH /insumos/:id - Actualizar un insumos
 
-router.patch('/:id_insumos', insumosController.actualizarInsumos);
+router.patch('/:id_insumo', insumosController.actualizarInsumos);
 
 // DELETE /insumos/:id - Eliminar un insumos
 
-router.delete('/:id_insumos', insumosController.eliminarInsumos);
+router.delete('/:id_insumo', insumosController.eliminarInsumos);
 
 module.exports = router;

@@ -6,7 +6,7 @@ const Joi = require('joi');
  * Validación para crear un Consumo de Insumo (req.body)
  * POST /consumo_insumo
  */
-const createConsumo_insumoSchema = Joi.object({
+const createConsumoInsumoSchema = Joi.object({
     cantidad_utilizada: Joi.number()
         .integer()
         .positive() // Exige que el consumo sea mayor a 0
@@ -38,6 +38,27 @@ const createConsumo_insumoSchema = Joi.object({
             'number.integer': 'El ID del servicio debe ser un número entero.',
             'number.positive': 'El ID del servicio debe ser un número positivo.',
             'any.required': 'El ID del servicio es obligatorio para registrar el consumo.'
+        }),
+        id_insumo: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del insumo debe ser un numero.',
+            'number.integer': 'El ID del insumo debe ser un numero entero.',
+            'number.positive': 'El ID del insumo debe ser un numero positivo.',
+            'any.required': 'El ID del insumo es obligatorio para registrar el consumo.'
+        }),
+
+    id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
+            'any.required': 'El ID del servicio es obligatorio para registrar el consumo.'
         })
 });
 
@@ -45,7 +66,7 @@ const createConsumo_insumoSchema = Joi.object({
  * Validación para actualizar un Consumo de Insumo (req.body)
  * PATCH /consumo_insumo/:id
  */
-const updateConsumo_insumoSchema = Joi.object({
+const updateConsumoInsumoSchema = Joi.object({
     cantidad_utilizada: Joi.number()
         .integer()
         .positive()
@@ -71,10 +92,31 @@ const updateConsumo_insumoSchema = Joi.object({
             'number.base': 'El ID del servicio debe ser un número.',
             'number.integer': 'El ID del servicio debe ser un número entero.',
             'number.positive': 'El ID del servicio debe ser un número positivo.'
+        }),
+        id_insumo: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del insumo debe ser un numero.',
+            'number.integer': 'El ID del insumo debe ser un numero entero.',
+            'number.positive': 'El ID del insumo debe ser un numero positivo.',
+            'any.required': 'El ID del insumo es obligatorio para registrar el consumo.'
+        }),
+
+    id_servicio: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del servicio debe ser un numero.',
+            'number.integer': 'El ID del servicio debe ser un numero entero.',
+            'number.positive': 'El ID del servicio debe ser un numero positivo.',
+            'any.required': 'El ID del servicio es obligatorio para registrar el consumo.'
         })
 }).min(1); // Exige que al menos se envíe un campo para actualizar (cantidad, id_insumo o id_servicio)
 
 module.exports = {
-    createConsumo_insumoSchema,
-    updateConsumo_insumoSchema
+    createConsumoInsumoSchema,
+    updateConsumoInsumoSchema
 };

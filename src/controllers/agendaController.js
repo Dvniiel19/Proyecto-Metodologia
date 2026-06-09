@@ -35,9 +35,9 @@ const crearAgenda = async (req, res) => {
 /** get /agenda
  * obtiene todos los eventos en la agenda
  */
-const obtenerTodosLosAgenda = async (req, res) => {
+const obtenerTodasLasAgenda = async (req, res) => {
     try {
-        const agenda = await agendaService.obtenerTodosLosAgendas();
+        const agenda = await agendaService.obtenerTodasLasAgenda();
         return sendSuccess(res, agenda, 'agenda obtenidos exitosamente');
     } catch (error) {
         return sendError(res, 'Error al obtener agenda', 500);
@@ -116,7 +116,7 @@ const eliminarAgenda = async (req, res) => {
 
 module.exports = {
     crearAgenda,
-    obtenerTodosLosAgenda,
+    obtenerTodasLasAgenda,
     obtenerAgendaPorId,
     actualizarAgenda,
     eliminarAgenda

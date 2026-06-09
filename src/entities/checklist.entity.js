@@ -6,7 +6,7 @@ module.exports = new EntitySchema({
     name: 'Checklist',
     tableName: 'checklist',
     columns: {
-        id_check: {
+        id_checklist: {
             primary: true,
             type: 'int',
             generated: true,

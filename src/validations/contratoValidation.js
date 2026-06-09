@@ -36,7 +36,18 @@ const createContratoSchema = Joi.object({
       'number.positive': 'El precio debe ser mayor a 0',
       'number.precision': 'El precio no puede tener más de 5 decimales',
       'any.required': 'El precio es un campo obligatorio'
-    })
+    }), 
+    id_cliente: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del cliente debe ser un numero.',
+            'number.integer': 'El ID del cliente debe ser un numero entero.',
+            'number.positive': 'El ID del cliente debe ser un numero positivo.',
+            'any.required': 'El ID del cliente es un campo obligatorio.'
+        })
+
 });
 
 // Esquema para actualizar un contrato (PATCH)
@@ -67,7 +78,18 @@ const updateContratoSchema = Joi.object({
       'number.base': 'El precio debe ser un numero',
       'number.positive': 'El precio debe ser mayor a 0',
       'number.precision': 'El precio no puede tener mas de 5 decimales'
-    })
+    }),
+    id_cliente: Joi.number()
+        .integer()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'El ID del cliente debe ser un numero.',
+            'number.integer': 'El ID del cliente debe ser un numero entero.',
+            'number.positive': 'El ID del cliente debe ser un numero positivo.',
+            'any.required': 'El ID del cliente es un campo obligatorio.'
+        })
+
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 });
