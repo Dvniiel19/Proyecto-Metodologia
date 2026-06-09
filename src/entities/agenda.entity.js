@@ -16,10 +16,19 @@ module.exports = new EntitySchema({
             type: 'date',
             nullable: false,
         },
-        estado: { 
-            type: 'boolean',
-            nullable: false,
-            default: false,  
+        hora_inicio: {
+        type: 'time',
+        nullable: true,
+        },
+        hora_fin: {
+        type: 'time',
+        nullable: true,
+        },
+        estado: {
+        type: 'varchar',
+        length: 50,
+        nullable: false,
+        default: 'Pendiente',
         },
     },
     relations: {

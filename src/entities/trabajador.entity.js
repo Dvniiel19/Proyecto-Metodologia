@@ -44,5 +44,10 @@ module.exports = new EntitySchema({
             type: 'one-to-many',
             inverseSide: 'trabajador',
         },
+        notificaciones: {
+        target: 'Notificacion',
+        type: 'one-to-many',
+        inverseSide: 'trabajador',
+        },
     },
 });

@@ -32,6 +32,39 @@ const crearTarea = async (req, res) => {
     }
 };
 
+/** put /tarea/:id_tarea/finalizar
+ * finalizar una tarea con evidencia obligatoria
+ */
+const finalizarTarea = async (req, res) => {
+    try {
+        const { id_tarea } = req.params;
+        const idTareaNumerico = Number(id_tarea);
+
+        if (!id_tarea || Number.isNaN(idTareaNumerico) || idTareaNumerico <= 0) {
+            return sendError(res, 'El id_tarea debe ser un número válido', 400);
+        }
+
+        if (!req.file) {
+            return sendError(res, 'La foto de evidencia es obligatoria para finalizar la tarea', 400);
+        }
+
+        const resultado = await tareaService.finalizarTareaConEvidencia(idTareaNumerico, req.file);
+        if (!resultado) {
+            return sendError(res, 'tarea no encontrada', 404);
+        }
+
+        return sendSuccess(
+            res,
+            resultado,
+            'Tarea finalizada correctamente y enviada a validación',
+            200
+        );
+    } catch (error) {
+        console.error(error);
+        return sendError(res, 'Error al finalizar la tarea', 500, [error.message]);
+    }
+};
+
 /** get /tarea
  * obtiene todos los tareas
  */
@@ -119,5 +152,6 @@ module.exports = {
     obtenerTodasLasTarea,
     obtenerTareaPorId,
     actualizarTarea,
-    eliminarTarea
+    eliminarTarea,
+    finalizarTarea
 };
