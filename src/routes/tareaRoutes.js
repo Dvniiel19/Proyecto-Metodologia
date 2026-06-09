@@ -6,6 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const tareaController = require('../controllers/tareaController');
+const { subirFotoEvidencia } = require('../middlewares/evidenciaUploadMiddleware');
 
 // POST /tarea - Crear una nueva tarea
 
