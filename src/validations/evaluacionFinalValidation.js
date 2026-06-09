@@ -69,17 +69,7 @@ const updateEvaluacionFinalSchema = Joi.object({
             'string.min': 'Los comentarios deben tener al menos 1 caracter.',
             'string.max': 'Los comentarios no pueden exceder los 255 caracteres.',
         }),
-    id_servicio: Joi.number()
-        .integer()
-        .positive()
-        .required()
-        .messages({
-            'number.base': 'El ID del servicio debe ser un numero.',
-            'number.integer': 'El ID del servicio debe ser un numero entero.',
-            'number.positive': 'El ID del servicio debe ser un numero positivo.',
-            'any.required': 'El ID del servicio es un campo obligatorio.'
-        })
-}).min(1); // Exige que al menos se envíe un campo (nota o comentarios) para actualizar
+}).min(1);
 
 module.exports = {
     createEvaluacionFinalSchema,

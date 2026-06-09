@@ -20,12 +20,22 @@ module.exports = new EntitySchema({
             length: 255,
             nullable: true,
         },
+        id_servicio: {
+            type: 'int',
+            nullable: false,
+        },
     },
+    uniques: [ // para asegurar que cada servicio tenga solo una evaluacion final
+        {
+            name: 'UQ_EVALUACION_SERVICIO',
+            columns: ['id_servicio'],
+        },
+    ],
     relations: {
         agenda: {
             target: 'Agenda',
             type: 'one-to-one',
-            joinColumn: { name: 'id_servicio'}, 
+            joinColumn: { name: 'id_servicio' },
         }
     },
 });

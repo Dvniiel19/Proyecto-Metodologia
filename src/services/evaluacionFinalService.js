@@ -1,19 +1,26 @@
 
 
 const db = require('../config/db');
-const EvaluacionFinal = require('../entities/evaluacionFinal.entity');
 
-const evaluacionRepository = db.getRepository(EvaluacionFinal);
+let evaluacionRepository;
+
+const getRepository = () => {
+    if (!evaluacionRepository) {
+        const EvaluacionFinal = require('../entities/evaluacionFinal.entity');
+        evaluacionRepository = db.getRepository(EvaluacionFinal);
+    }
+    return evaluacionRepository;
+};
 
 /**
  * crear una nueva evaluacion
  * @param {Object} datosEvaluacion
  * @return {Object} 
 */
-
 const crearEvaluacionFinal = async (datosEvaluacion) => {
-    const nuevaEvaluacion = evaluacionRepository.create(datosEvaluacion);
-    return await evaluacionRepository.save(nuevaEvaluacion);
+    const repo = getRepository();
+    const nuevaEvaluacion = repo.create(datosEvaluacion);
+    return await repo.save(nuevaEvaluacion);
 };
 
 /**
@@ -22,7 +29,8 @@ const crearEvaluacionFinal = async (datosEvaluacion) => {
  */
 
 const obtenerTodasLasEvaluacionFinal = async () => {
-    return await evaluacionRepository.find();
+    const repo = getRepository();
+    return await repo.find();
 };
 
 /**
@@ -33,7 +41,8 @@ const obtenerTodasLasEvaluacionFinal = async () => {
  */
 
 const obtenerEvaluacionFinalPorId = async (id_evaluacion) => {
-    return await evaluacionRepository.findOneBy({id_evaluacion});
+    const repo = getRepository();
+    return await repo.findOneBy({id_evaluacion});
 };
 
 /**
@@ -44,7 +53,8 @@ const obtenerEvaluacionFinalPorId = async (id_evaluacion) => {
  */
 
 const actualizarEvaluacionFinal = async (id_evaluacion, datosActualizados) => {
-    await evaluacionRepository.update(id_evaluacion,datosActualizados);
+    const repo = getRepository();
+    await repo.update(id_evaluacion, datosActualizados);
     return await obtenerEvaluacionFinalPorId(id_evaluacion);
 }
 
@@ -55,8 +65,9 @@ const actualizarEvaluacionFinal = async (id_evaluacion, datosActualizados) => {
  */
 
 const eliminarEvaluacionFinal = async (id_evaluacion) => {
-    const result = await evaluacionRepository.delete(id_evaluacion);
-    if(result.affected ===0) {
+    const repo = getRepository();
+    const result = await repo.delete(id_evaluacion);
+    if (result.affected === 0) {
         return false;
     }
     return true;

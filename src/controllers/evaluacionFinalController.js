@@ -1,13 +1,13 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const evaluacionFinalService = require('../services/evaluacionFinalService');
 const { createEvaluacionFinalSchema, updateEvaluacionFinalSchema } = require('../validations/evaluacionFinalValidation');
+const db = require('../config/db');
 
 /** post /evaluacion_final
  * crear un nuevo evaluacion_final
  */
 const crearEvaluacionFinal = async (req, res) => {
     try {
-        // validamos los datos de entrada con joi
         const { error, value } = createEvaluacionFinalSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -17,9 +17,41 @@ const crearEvaluacionFinal = async (req, res) => {
                 error.details.map(err => err.message)
             );
         }
-        // llamamos al servicio para crear el evaluacion_final
+
+        const usuarioId = req.usuario?.id_usuario;
+        if (!usuarioId) {
+            return sendError(res, 'Usuario no autenticado', 401);
+        }
+
+        const { id_servicio } = value;
+
+        const agendaRepository = db.getRepository('Agenda');
+        const agenda = await agendaRepository.findOne({
+            where: { id_servicio: id_servicio },
+            relations: ['contrato', 'contrato.cliente', 'contrato.cliente.usuario']
+        });
+
+        if (!agenda) {
+            return sendError(res, 'El id_servicio no existe', 404);
+        }
+        if (agenda.estado !== true) {
+            return sendError(res, 'El servicio debe estar finalizado para poder calificarlo', 400);
+        }
+        if (agenda.contrato.cliente.usuario.id_usuario !== usuarioId) {
+            return sendError(res, 'No tienes permisos para calificar este servicio', 403);
+        }
+
+        const evaluacionRepository = db.getRepository('EvaluacionFinal');
+        const existeEvaluacion = await evaluacionRepository.findOne({
+            where: { agenda: { id_servicio: id_servicio } },
+            relations: ['agenda']
+        });
+        if (existeEvaluacion) {
+            return sendError(res, 'Ya hay una evaluacion para ese servicio', 409);
+        }
+
         const evaluacionFinalCreado = await evaluacionFinalService.crearEvaluacionFinal(value);
-        // respondemos con exito
+
         return sendSuccess(
             res,
             evaluacionFinalCreado,

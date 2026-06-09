@@ -55,6 +55,11 @@ module.exports = new EntitySchema({
             type: 'one-to-many',
             inverseSide: 'agenda',
         },
+        evaluacion_final: {
+            target: 'EvaluacionFinal',
+            type: 'one-to-one',
+            inverseSide: 'agenda',
+        },
     },
 });
 
