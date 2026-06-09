@@ -1,7 +1,5 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-// Si tienes un DataSource de TypeORM configurado en src/config/db, impórtalo.
-// Por ejemplo: const { AppDataSource } = require('../config/db');
+
 const db = require('../config/db'); 
 
 const login = async (req, res) => {
