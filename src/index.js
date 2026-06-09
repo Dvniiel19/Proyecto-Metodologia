@@ -44,9 +44,9 @@ const consumoInsumoRoutes = require('./routes/consumoInsumoRoutes');
 const evaluacionFinalRoutes = require('./routes/evaluacionFinalRoutes');
 const validacionSupervisorRoutes = require('./routes/validacionSupervisorRoutes');
 const trabajadorRoutes = require('./routes/trabajadorRoutes');
+const transaccionesRoutes = require('./routes/transaccionesRoutes');
 
-
-
+app.use('/transacciones', transaccionesRoutes);
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);

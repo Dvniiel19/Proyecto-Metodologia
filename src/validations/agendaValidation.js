@@ -15,11 +15,26 @@ const createAgendaSchema = Joi.object({
       'date.format': 'La fecha programada debe tener un formato YYYY-MM-DD',
       'any.required': 'La fecha programada es un campo obligatorio'
     }),
+    hora_inicio: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .required()
+    .messages({
+    'string.pattern.base': 'La hora de inicio debe tener formato HH:MM',
+    'any.required': 'La hora de inicio es obligatoria'
+    }),
 
-  estado: Joi.boolean() 
+    hora_fin: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .required()
+    .messages({
+    'string.pattern.base': 'La hora de fin debe tener formato HH:MM',
+    'any.required': 'La hora de fin es obligatoria'
+    }),
+
+  estado: Joi.string()
     .optional()
     .messages({
-      'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
+        'string.base': 'El estado debe ser texto'
     }),
     id_establecimiento: Joi.number()
         .integer()
@@ -51,11 +66,24 @@ const updateAgendaSchema = Joi.object({
       'date.base': 'La fecha programada debe ser una fecha valida',
       'date.format': 'La fecha programada debe tener un formato YYYY-MM-DD'
     }),
-
-  estado: Joi.boolean() // Cambiado a booleano
+    hora_inicio: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
     .optional()
     .messages({
-      'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
+    'string.pattern.base': 'La hora de inicio debe tener formato HH:MM'
+    }),
+
+hora_fin: Joi.string()
+    .pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .optional()
+    .messages({
+    'string.pattern.base': 'La hora de fin debe tener formato HH:MM'
+    }),
+
+  estado: Joi.string()
+    .optional()
+    .messages({
+        'string.base': 'El estado debe ser texto'
     }),
     id_establecimiento: Joi.number()
         .integer()

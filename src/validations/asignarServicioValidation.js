@@ -14,11 +14,6 @@ const createAsignarServicioSchema = Joi.object({
       'any.required': 'La fecha programada es un campo obligatorio'
     }),
 
-  estado: Joi.boolean() 
-    .optional()
-    .messages({
-      'boolean.base': 'El estado debe ser un valor verdadero o falso (true/false)'
-    }),
     id_servicio: Joi.number()
         .integer()
         .positive()
