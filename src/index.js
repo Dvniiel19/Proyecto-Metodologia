@@ -1,3 +1,6 @@
+require('dotenv').config(); // <-- ESTO VA AQUÍ, EN LA LÍNEA 1 DEL INDEX.JS
+
+
 require('reflect-metadata');
 
 /**
@@ -43,11 +46,13 @@ const evaluacionFinalRoutes = require('./routes/evaluacionFinalRoutes');
 const validacionSupervisorRoutes = require('./routes/validacionSupervisorRoutes');
 const trabajadorRoutes = require('./routes/trabajadorRoutes');
 const transaccionesRoutes = require('./routes/transaccionesRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 app.use('/transacciones', transaccionesRoutes);
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
+app.use('/auth', authRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/agenda', agendaRoutes);
 app.use('/cliente', clienteRoutes);
