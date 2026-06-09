@@ -21,12 +21,7 @@ module.exports = new EntitySchema({
             nullable: false,
             default: 0,
         },
-        //limite seguridad para q salga alerta
-        limite_seguridad: {
-            type: 'int',
-            nullable: false,
-            default: 10, //o puede ser menos nose depende 
-        },
+    
         // Estado del insumo (normal o critico)
         estado_insumo:{
             type:'varchar',

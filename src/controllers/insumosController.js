@@ -2,8 +2,9 @@
 
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const insumosService = require('../services/insumosService');
-const { createInsumosSchema, updateInsumosSchema } = require('../validations/insumosValidation');
+const { createInsumosSchema, updateInsumosSchema,movimientoInsumoSchema } = require('../validations/insumosValidation');
 const { getRepository } = require('typeorm');
+
 
 /** post /insumos
  * crear un nuevo insumo
@@ -114,26 +115,23 @@ const eliminarInsumos = async (req, res) => {
  */
 const registrarMovimientoInsumo = async(req, res)=> {
     try {
-
-        const { id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones } = req.body;
-
-        if (!id_insumo || !cantidad || !tipo_movimiento || !id_servicio) {
-            return sendError(res, 'Parámetros incompletos. Se requieren: id_insumo, cantidad, tipo_movimiento, id_servicio', 400);
+        const { error, value } = movimientoInsumoSchema.validate(req.body);
+        if (error) {
+            return sendError(
+                res,
+                'Error de validación de datos',
+                400,
+                error.details.map(err => err.message)
+            );
         }
+//
+        const { id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones } = value;
 
-        if (!['ingreso', 'salida'].includes(tipo_movimiento.toLowerCase())) {
-            return sendError(res, 'tipo_movimiento debe ser "ingreso" o "salida"', 400);
-        }
-
-        const cantidadInt = parseInt(cantidad);
-        if (cantidadInt <= 0) {
-            return sendError(res, 'La cantidad debe ser mayor a 0', 400);
-        }
-
-        const insumoRepository = getRepository('Insumo');
+       const insumoRepository = getRepository('Insumo');
         const consumoInsumoRepository = getRepository('ConsumoInsumo');
 
-        const insumo = await insumoRepository.findOne({ where: { id_insumo: parseInt(id_insumo) } });
+        // 3. Buscar insumo
+        const insumo = await insumoRepository.findOne({ where: { id_insumo: id_insumo } });
         if (!insumo) {
             return sendError(res, `Insumo con ID ${id_insumo} no encontrado`, 404);
         }
@@ -141,45 +139,49 @@ const registrarMovimientoInsumo = async(req, res)=> {
         let nuevoStock;
         const tipoMovimientoLower = tipo_movimiento.toLowerCase();
 
+        // 4. Calcular stock según el tipo y restringir negativos
         if (tipoMovimientoLower === 'salida') {
-            if (cantidadInt > insumo.stock) {
-                return sendError(res, `Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidadInt}`, 400);
+            if (cantidad > insumo.stock) {
+                return sendError(res, `Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidad}`, 400);
             }
-            nuevoStock = insumo.stock - cantidadInt;
+            nuevoStock = insumo.stock - cantidad;
         } else {
-            nuevoStock = insumo.stock + cantidadInt;
+            nuevoStock = insumo.stock + cantidad;
         }
 
         const hayStockCritico = nuevoStock < insumo.limite_seguridad;
         const estadoAnterior = insumo.estado_insumo;
 
+        // 5. Actualizar la entidad Insumo
         insumo.stock = nuevoStock;
         insumo.estado_insumo = hayStockCritico ? 'Stock Crítico' : 'Normal';
         insumo.fecha_actualizacion = new Date();
 
         const insumoActualizado = await insumoRepository.save(insumo);
 
+        // 6. Guardar el movimiento en el histórico
         const movimiento = {
-            cantidad_utilizada: cantidadInt,
+            cantidad_utilizada: cantidad,
             tipo_movimiento: tipoMovimientoLower,
             observaciones: observaciones || null,
-            insumo: { id_insumo: parseInt(id_insumo) },
-            agenda: { id_servicio: parseInt(id_servicio) },
+            insumo: { id_insumo: id_insumo },
+            agenda: { id_servicio: id_servicio },
         };
 
         const movimientoRegistrado = await consumoInsumoRepository.save(movimiento);
 
+        // 7. Respuesta estructurada con alertas funcionales
         const respuesta = {
             movimiento: {
                 id_consumo: movimientoRegistrado.id_consumo,
                 tipo: tipoMovimientoLower,
-                cantidad: cantidadInt,
+                cantidad: cantidad,
                 fecha: movimientoRegistrado.fecha_emision || new Date(),
             },
             insumo: {
                 id_insumo: insumoActualizado.id_insumo,
                 nombre: insumoActualizado.nombre_insumo,
-                stock_anterior: insumo.stock + (tipoMovimientoLower === 'salida' ? cantidadInt : -cantidadInt),
+                stock_anterior: insumo.stock + (tipoMovimientoLower === 'salida' ? cantidad : -cantidad),
                 stock_nuevo: insumoActualizado.stock,
                 limite_seguridad: insumoActualizado.limite_seguridad,
                 estado: insumoActualizado.estado_insumo,
@@ -200,7 +202,6 @@ const registrarMovimientoInsumo = async(req, res)=> {
         console.error(error);
         return sendError(res, 'Error al registrar el movimiento de insumo', 500);
     }
-
 };
 
 /**
@@ -220,6 +221,7 @@ const obtenerInsumosEnAlerta = async (req, res) => {
         return sendError(res, 'Error al obtener insumos en alerta', 500);
     }
 };
+
 /**
  * GET /insumos/:id_insumo/historico
  * Obtiene el histórico de movimientos de un insumo específico
@@ -264,5 +266,4 @@ module.exports = {
     registrarMovimientoInsumo,
     obtenerInsumosEnAlerta,
     obtenerHistoricoMovimientos,
-
 };
