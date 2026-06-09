@@ -19,6 +19,30 @@ module.exports = new EntitySchema({
         stock: {
             type: 'int',
             nullable: false,
+            default: 0,
+        },
+        //limite seguridad para q salga alerta
+        limite_seguridad: {
+            type: 'int',
+            nullable: false,
+            default: 10, //o puede ser menos nose depende 
+        },
+        // Estado del insumo (normal o critico)
+        estado_insumo:{
+            type:'varchar',
+            length:50,
+            nullable:false,
+            default: 'Normal', //normal o stock critico
+        },
+        //fecha creacion y ultima actualizacion
+        fecha_creacion: {
+            type: 'timestamp',
+            default: () => 'CURRENT_TIMESTAMP',
+        },
+        fecha_actualizacion:{
+            type: 'timestamp',
+            default:() => 'CURRENT_TIMESTAMP',
+            onUpdate: 'CURRENT_TIMESTAMP',
         },
     },
     relations: {
