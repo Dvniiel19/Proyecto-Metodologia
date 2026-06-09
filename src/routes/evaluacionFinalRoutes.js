@@ -7,6 +7,11 @@ const express = require('express');
 const router = express.Router();
 const evaluacionFinalController = require('../controllers/evaluacionFinalController');
 
+router.use((req, res, next) => {
+    req.usuario = { id_usuario: 1 };
+    next();
+});
+
 // POST /evaluacion_final - Crear un nuevo evaluacion_final
 router.post('/', evaluacionFinalController.crearEvaluacionFinal);
 

@@ -34,8 +34,8 @@ const crearEvaluacionFinal = async (req, res) => {
         if (!agenda) {
             return sendError(res, 'El id_servicio no existe', 404);
         }
-        if (agenda.estado !== true) {
-            return sendError(res, 'El servicio debe estar finalizado para poder calificarlo', 400);
+        if (agenda.estado === 'Pendiente') {
+            return sendError(res, 'El servicio aun no ha sido realizado, no se puede calificar', 400);
         }
         if (agenda.contrato.cliente.usuario.id_usuario !== usuarioId) {
             return sendError(res, 'No tienes permisos para calificar este servicio', 403);

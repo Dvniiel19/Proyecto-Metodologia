@@ -26,6 +26,10 @@ module.exports = new EntitySchema({
             length: 20,
             nullable: false,
         },
+        id_usuario: {
+            type: 'int',
+            nullable: true,
+        },
     },
     relations: {
         usuario: {
@@ -43,6 +47,11 @@ module.exports = new EntitySchema({
             target: 'Asistencia',
             type: 'one-to-many',
             inverseSide: 'trabajador',
+        },
+        notificaciones: {
+        target: 'Notificacion',
+        type: 'one-to-many',
+        inverseSide: 'trabajador',
         },
     },
 });

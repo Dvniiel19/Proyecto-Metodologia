@@ -15,6 +15,14 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
+        id_insumo: {
+            type: 'int',
+            nullable: false,
+        },
+        id_servicio: {
+            type: 'int',
+            nullable: false,
+        },
     },
     relations: {
         insumo: {

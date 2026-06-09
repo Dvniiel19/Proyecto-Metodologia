@@ -21,6 +21,14 @@ module.exports = new EntitySchema({
             length: 255,
             nullable: true,
         },
+        id_servicio: {
+            type: 'int',
+            nullable: false,
+        },
+        id_usuario: {
+            type: 'int',
+            nullable: false,
+        },
     },  
     relations: {
         agenda: {

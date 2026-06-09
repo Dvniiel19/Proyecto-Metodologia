@@ -25,6 +25,10 @@ module.exports = new EntitySchema({
             scale: 2, 
             nullable: false,
         },
+        id_cliente: {
+            type: 'int',
+            nullable: false,
+        },
     },
     relations: {
         cliente: {

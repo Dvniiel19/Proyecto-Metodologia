@@ -19,6 +19,7 @@ const EvaluacionFinal = require('../entities/evaluacionFinal.entity');
 const ConsumoInsumo = require('../entities/consumoInsumo.entity');
 const Insumo = require('../entities/insumos.entity');
 const Transaccion = require('../entities/transacciones.entity')
+const Notificacion = require('../entities/notificacion.entity');
 
 const AppDataSource = new DataSource({
   type: 'postgres',
@@ -26,11 +27,11 @@ const AppDataSource = new DataSource({
   ssl: { 
     rejectUnauthorized: false // REQUERIDO para conectarse a Supabase desde fuera de su red
   },
-  synchronize: true, // Crea automáticamente las tablas en base a las entidades
+  synchronize: false, // Crea automáticamente las tablas en base a las entidades
   logging: false,
   entities: [ 
     Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
-    Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente
+    Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente, Notificacion, ValidacionSupervisor
   ],
 });
 

@@ -22,6 +22,10 @@ module.exports = new EntitySchema({
             length: 255,
             nullable: false, //para que no se puedan dejar vacíos   
         },
+        id_rol: {
+            type: 'int',
+            nullable: false,
+        },
     },
     relations: {
         rol: {
@@ -29,7 +33,6 @@ module.exports = new EntitySchema({
             type: 'many-to-one',
             joinColumn: { name: 'id_rol'}, 
             inverseSide: 'usuario',
-            nullable: false,
         },
         trabajador: {
             target: 'Trabajador',

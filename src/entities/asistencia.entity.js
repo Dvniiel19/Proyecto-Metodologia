@@ -19,6 +19,14 @@ module.exports = new EntitySchema({
             type: 'time',
             nullable: false, //no puede ser null porque se necesita para calcular horas trabajadas
         },
+        id_trabajador: {
+            type: 'int',
+            nullable: false,
+        },
+        id_servicio: {
+            type: 'int',
+            nullable: false,
+        },
     },
     relations: {
         trabajador: {

@@ -27,6 +27,9 @@ const crearAsignacion = async (req, res) => {
         );
     } catch (error) {
         console.error(error);
+        if (error.statusCode) {
+            return sendError(res, error.message, error.statusCode);
+        }
         return sendError(res, 'Error al crear la asignación de servicio', 500);
     }
 };

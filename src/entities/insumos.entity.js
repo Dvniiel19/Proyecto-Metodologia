@@ -20,6 +20,10 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
+        limite_seguridad: { //para saber cuando es necesario reabastecer
+            type: 'int',
+            nullable: true,
+        },
     },
     relations: {
         consumos: {
