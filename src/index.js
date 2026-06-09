@@ -6,6 +6,7 @@ require('reflect-metadata');
  */
 
 const express = require('express');
+const path = require('path');
 const config = require('./config/config');
 const db = require('./config/db');
 
@@ -14,6 +15,7 @@ const app = express();
 //middlewaares
 
 app.use(express.json()); //entiende los datos k llegan a formato json
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 //RUTAS 'falta terminar too lo otro'
 
