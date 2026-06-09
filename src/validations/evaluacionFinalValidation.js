@@ -69,17 +69,10 @@ const updateEvaluacionFinalSchema = Joi.object({
             'string.min': 'Los comentarios deben tener al menos 1 caracter.',
             'string.max': 'Los comentarios no pueden exceder los 255 caracteres.',
         }),
-    id_servicio: Joi.number()
-        .integer()
-        .positive()
-        .required()
-        .messages({
-            'number.base': 'El ID del servicio debe ser un numero.',
-            'number.integer': 'El ID del servicio debe ser un numero entero.',
-            'number.positive': 'El ID del servicio debe ser un numero positivo.',
-            'any.required': 'El ID del servicio es un campo obligatorio.'
-        })
-}).min(1); // Exige que al menos se envíe un campo (nota o comentarios) para actualizar
+        //no ponemos el id_servicio porque no se puede cambiar el servicio al que esta asociada 
+        //la evaluacion final. si se quisiera cambiar eso se tendria que eliminar la evaluacion
+        //final y crear una nueva para el nuevo servicio
+}).min(1);
 
 module.exports = {
     createEvaluacionFinalSchema,

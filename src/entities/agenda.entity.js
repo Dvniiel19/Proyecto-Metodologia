@@ -30,6 +30,14 @@ module.exports = new EntitySchema({
         nullable: false,
         default: 'Pendiente',
         },
+        id_establecimiento: {
+            type: 'int',
+            nullable: true,
+        },
+        id_contrato: {
+            type: 'int',
+            nullable: true,
+        },
     },
     relations: {
         establecimiento: {
@@ -62,6 +70,11 @@ module.exports = new EntitySchema({
         consumo_insumo: {
             target: 'ConsumoInsumo',
             type: 'one-to-many',
+            inverseSide: 'agenda',
+        },
+        evaluacion_final: {
+            target: 'EvaluacionFinal',
+            type: 'one-to-one',
             inverseSide: 'agenda',
         },
     },

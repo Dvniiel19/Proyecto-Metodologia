@@ -24,7 +24,11 @@ module.exports = new EntitySchema({
         fecha_creacion: {
             type: 'timestamp',
             nullable: false,
-            default: () => 'CURRENT_TIMESTAMP',
+            default: () => 'CURRENT_TIMESTAMP', // para que se asigne la fecha actual al crear la notificacion
+        },
+        id_trabajador: {
+            type: 'int',
+            nullable: false,
         },
     },
     relations: {

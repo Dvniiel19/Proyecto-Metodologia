@@ -44,6 +44,10 @@ module.exports = new EntitySchema({
             default:() => 'CURRENT_TIMESTAMP',
             onUpdate: 'CURRENT_TIMESTAMP',
         },
+        limite_seguridad: { //para saber cuando es necesario reabastecer
+            type: 'int',
+            nullable: true,
+        },
     },
     relations: {
         consumos: {

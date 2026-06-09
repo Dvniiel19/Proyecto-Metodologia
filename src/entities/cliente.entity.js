@@ -30,6 +30,10 @@ module.exports = new EntitySchema({
             type: 'text',
             nullable: true,
         },
+        id_usuario: {
+            type: 'int',
+            nullable: true,
+        },
     },
     relations: {
         usuario: {

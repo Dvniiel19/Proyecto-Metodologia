@@ -8,7 +8,7 @@ const Joi = require('joi');
  */
 const createValidacionSupervisorSchema = Joi.object({
     estado_aprobacion: Joi.string()
-        .valid('completo', 'incompleto') // 👈 Aquí restringimos las opciones
+        .valid('completo', 'incompleto') 
         .required()
         .messages({
             'string.base': 'El estado de aprobación debe ser un texto.',

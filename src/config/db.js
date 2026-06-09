@@ -31,7 +31,7 @@ const AppDataSource = new DataSource({
   logging: false,
   entities: [ 
     Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
-    Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente, Notificacion
+    Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente, Notificacion, ValidacionSupervisor
   ],
 });
 
