@@ -27,7 +27,7 @@ const AppDataSource = new DataSource({
   ssl: { 
     rejectUnauthorized: false // REQUERIDO para conectarse a Supabase desde fuera de su red
   },
-  synchronize: false, // Crea automáticamente las tablas en base a las entidades
+  synchronize: true, // Crea automáticamente las tablas en base a las entidades
   logging: false,
   entities: [ 
     Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
