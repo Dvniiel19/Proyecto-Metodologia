@@ -20,14 +20,14 @@ module.exports = new EntitySchema({
             length: 255,
             nullable: true,
         },
-        id_servicio: {
+        id_servicio: { // para relacionar la evaluacion con el servicio que se esta evaluando
             type: 'int',
             nullable: false,
         },
     },
     uniques: [ // para asegurar que cada servicio tenga solo una evaluacion final
         {
-            name: 'UQ_EVALUACION_SERVICIO',
+            name: 'UQ_EVALUACION_SERVICIO', // nombre de la restriccion de unicidad
             columns: ['id_servicio'],
         },
     ],

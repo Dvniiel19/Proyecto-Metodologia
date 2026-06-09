@@ -69,6 +69,9 @@ const updateEvaluacionFinalSchema = Joi.object({
             'string.min': 'Los comentarios deben tener al menos 1 caracter.',
             'string.max': 'Los comentarios no pueden exceder los 255 caracteres.',
         }),
+        //no ponemos el id_servicio porque no se puede cambiar el servicio al que esta asociada 
+        //la evaluacion final. si se quisiera cambiar eso se tendria que eliminar la evaluacion
+        //final y crear una nueva para el nuevo servicio
 }).min(1);
 
 module.exports = {

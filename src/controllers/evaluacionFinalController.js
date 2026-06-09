@@ -28,13 +28,13 @@ const crearEvaluacionFinal = async (req, res) => {
         const agendaRepository = db.getRepository('Agenda');
         const agenda = await agendaRepository.findOne({
             where: { id_servicio: id_servicio },
-            relations: ['contrato', 'contrato.cliente', 'contrato.cliente.usuario']
+            relations: ['contrato', 'contrato.cliente', 'contrato.cliente.usuario'] // para verificar que el servicio corresponde al cliente que esta haciendo la evaluacion
         });
 
         if (!agenda) {
             return sendError(res, 'El id_servicio no existe', 404);
         }
-        if (agenda.estado === 'Pendiente') {
+        if (agenda.estado === 'Pendiente') { // solo se pueden evaluar servicios que ya han sido realizados
             return sendError(res, 'El servicio aun no ha sido realizado, no se puede calificar', 400);
         }
         if (agenda.contrato.cliente.usuario.id_usuario !== usuarioId) {
@@ -43,7 +43,7 @@ const crearEvaluacionFinal = async (req, res) => {
 
         const evaluacionRepository = db.getRepository('EvaluacionFinal');
         const existeEvaluacion = await evaluacionRepository.findOne({
-            where: { agenda: { id_servicio: id_servicio } },
+            where: { agenda: { id_servicio: id_servicio } }, // para verificar si ya existe una evaluacion para ese servicio
             relations: ['agenda']
         });
         if (existeEvaluacion) {
