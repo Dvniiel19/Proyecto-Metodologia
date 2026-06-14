@@ -23,7 +23,7 @@ const crearValidacionSupervisor = async (req, res) => {
         return sendSuccess(
             res,
             validacionSupervisorCreado,
-            'Validacion de supervisor creada con exito',
+            'Validacion de Supervisor creada con exito',
             201
         );
     } catch (error) {
@@ -38,29 +38,29 @@ const crearValidacionSupervisor = async (req, res) => {
 const obtenerTodasLasValidacioneSupervisor = async (req, res) => {
     try {
         const validacionSupervisor = await validacionSupervisorService.obtenerTodasLasValidacioneSupervisor();
-        return sendSuccess(res, validacionSupervisor, 'Validaciones de supervisor obtenidas exitosamente');
+        return sendSuccess(res, validacionSupervisor, 'Validaciones de Supervisor obtenidas exitosamente');
     } catch (error) {
-        return sendError(res, 'Error al obtener validaciones de supervisor', 500);
+        return sendError(res, 'Error al obtener validaciones de Supervisor', 500);
     }
 };
 
 /** get /validacion_supervisor/:id
- * obtiene una validacion de supervisor especifica por id
+ * obtiene una validacion de Supervisor especifica por id
  */
 const obtenerValidacionSupervisorPorId = async (req, res) => {
     try {
         const { id_validacion } = req.params;
-        // llamar al servicio obtenerValidacion_supervisorPorId(id_validacion_supervisor)
+        // llamar al servicio obtenerValidacion_SupervisorPorId(id_validacion_Supervisor)
         const validacionSupervisor = await validacionSupervisorService.obtenerValidacionSupervisorPorId(id_validacion); 
         
         // si no existe retrona el error 404
         if (!validacionSupervisor) {
-            return sendError(res, 'Validacion de supervisor no encontrada', 404);
+            return sendError(res, 'Validacion de Supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, validacionSupervisor, 'Validacion de supervisor obtenida correctamente');
+            return sendSuccess(res, validacionSupervisor, 'Validacion de Supervisor obtenida correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al obtener la validacion de supervisor', 500);
+        return sendError(res, 'Error al obtener la validacion de Supervisor', 500);
     }
 };
 
@@ -85,12 +85,12 @@ const actualizarValidacionSupervisor = async (req, res) => {
         const resultado = await validacionSupervisorService.actualizarValidacionSupervisor(obtenerid, validacion.value);
     
         if (!resultado) {
-            return sendError(res, 'Validacion de supervisor no encontrada', 404);
+            return sendError(res, 'Validacion de Supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, resultado, 'Validacion de supervisor actualizada correctamente');
+            return sendSuccess(res, resultado, 'Validacion de Supervisor actualizada correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al actualizar validacion de supervisor', 500);
+        return sendError(res, 'Error al actualizar validacion de Supervisor', 500);
     }
 };
 
@@ -105,12 +105,12 @@ const eliminarValidacionSupervisor = async (req, res) => {
         
         // si no se elimino retornar error 404
         if (!eliminado) {
-            return sendError(res, 'Validacion de supervisor no encontrada', 404);
+            return sendError(res, 'Validacion de Supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, null, 'Validacion de supervisor eliminada correctamente');
+            return sendSuccess(res, null, 'Validacion de Supervisor eliminada correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al eliminar validacion de supervisor', 500);
+        return sendError(res, 'Error al eliminar validacion de Supervisor', 500);
     }
 };
 

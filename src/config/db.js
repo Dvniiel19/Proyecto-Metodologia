@@ -7,7 +7,6 @@ const Rol = require('../entities/rol.entity');
 const Usuario = require('../entities/usuario.entity');
 const Trabajador = require('../entities/trabajador.entity');
 const Cliente = require('../entities/cliente.entity');
-const Establecimiento = require('../entities/establecimiento.entity');
 const Contrato = require('../entities/contrato.entity');
 const Agenda = require('../entities/agenda.entity');
 const AsignarServicio = require('../entities/asignarServicio.entity');
@@ -18,7 +17,6 @@ const ValidacionSupervisor = require('../entities/validacionSupervisor.entity');
 const EvaluacionFinal = require('../entities/evaluacionFinal.entity');
 const ConsumoInsumo = require('../entities/consumoInsumo.entity');
 const Insumo = require('../entities/insumos.entity');
-const Transaccion = require('../entities/transacciones.entity')
 const Notificacion = require('../entities/notificacion.entity');
 
 const AppDataSource = new DataSource({
@@ -30,8 +28,8 @@ const AppDataSource = new DataSource({
   synchronize: true, // Crea automáticamente las tablas en base a las entidades
   logging: false,
   entities: [ 
-    Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, Establecimiento, EvaluacionFinal,
-    Insumo, Rol, Tarea, Trabajador, Transaccion, Usuario, Checklist, Cliente, Notificacion, ValidacionSupervisor
+    Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, EvaluacionFinal,
+    Insumo, Rol, Tarea, Trabajador, Usuario, Checklist, Cliente, Notificacion, ValidacionSupervisor
   ],
 });
 

@@ -41,10 +41,10 @@ const createAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del usuario coordinador debe ser un numero.',
-            'number.integer': 'El ID del usuario coordinador debe ser un numero entero.',
-            'number.positive': 'El ID del usuario coordinador debe ser un numero positivo.',
-            'any.required': 'El ID del usuario coordinador es un campo obligatorio.'
+            'number.base': 'El ID del usuario Coordinador debe ser un numero.',
+            'number.integer': 'El ID del usuario Coordinador debe ser un numero entero.',
+            'number.positive': 'El ID del usuario Coordinador debe ser un numero positivo.',
+            'any.required': 'El ID del usuario Coordinador es un campo obligatorio.'
         })
 });
 
@@ -90,10 +90,10 @@ const updateAsignarServicioSchema = Joi.object({
         .positive()
         .required()
         .messages({
-            'number.base': 'El ID del usuario coordinador debe ser un numero.',
-            'number.integer': 'El ID del usuario coordinador debe ser un numero entero.',
-            'number.positive': 'El ID del usuario coordinador debe ser un numero positivo.',
-            'any.required': 'El ID del usuario coordinador es un campo obligatorio.'
+            'number.base': 'El ID del usuario Coordinador debe ser un numero.',
+            'number.integer': 'El ID del usuario Coordinador debe ser un numero entero.',
+            'number.positive': 'El ID del usuario Coordinador debe ser un numero positivo.',
+            'any.required': 'El ID del usuario Coordinador es un campo obligatorio.'
         })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'

@@ -41,16 +41,16 @@ const createValidacionSupervisorSchema = Joi.object({
                 .positive()
                 .required()
                 .messages({
-                'number.base': 'El ID del usuario supervisor debe ser un numero.',
-                'number.integer': 'El ID del usuario supervisor debe ser un numero entero.',
-                'number.positive': 'El ID del usuario supervisor debe ser un numero positivo.',
-                'any.required': 'El ID del usuario supervisor es un campo obligatorio.'
+                'number.base': 'El ID del usuario Supervisor debe ser un numero.',
+                'number.integer': 'El ID del usuario Supervisor debe ser un numero entero.',
+                'number.positive': 'El ID del usuario Supervisor debe ser un numero positivo.',
+                'any.required': 'El ID del usuario Supervisor es un campo obligatorio.'
                 })
                 });
 
 /**
- * Validación para actualizar la validacion de supervisor (req.body)
- * PATCH /validacion_supervisor/:id
+ * Validación para actualizar la validacion de Supervisor (req.body)
+ * PATCH /validacion_Supervisor/:id
  */
 const updateValidacionSupervisorSchema = Joi.object({ 
     estado_aprobacion: Joi.string()
@@ -86,10 +86,10 @@ const updateValidacionSupervisorSchema = Joi.object({
                 .positive()
                 .required()
                 .messages({
-                'number.base': 'El ID del usuario supervisor debe ser un numero.',
-                'number.integer': 'El ID del usuario supervisor debe ser un numero entero.',
-                'number.positive': 'El ID del usuario supervisor debe ser un numero positivo.',
-                'any.required': 'El ID del usuario supervisor es un campo obligatorio.'
+                'number.base': 'El ID del usuario Supervisor debe ser un numero.',
+                'number.integer': 'El ID del usuario Supervisor debe ser un numero entero.',
+                'number.positive': 'El ID del usuario Supervisor debe ser un numero positivo.',
+                'any.required': 'El ID del usuario Supervisor es un campo obligatorio.'
                 })
             
 }).min(1); // Exige que al menos se envíe un campo para actualizar (cantidad, id_insumo o id_servicio)

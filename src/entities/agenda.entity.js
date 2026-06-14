@@ -30,22 +30,12 @@ module.exports = new EntitySchema({
         nullable: false,
         default: 'Pendiente',
         },
-        id_establecimiento: {
-            type: 'int',
-            nullable: true,
-        },
         id_contrato: {
             type: 'int',
             nullable: true,
         },
     },
     relations: {
-        establecimiento: {
-            target: 'Establecimiento',
-            type: 'many-to-one',
-            joinColumn: {name: 'id_establecimiento'},
-            inverseSide: 'agenda',
-        },
         contrato: {
             target: 'Contrato',
             type: 'many-to-one',

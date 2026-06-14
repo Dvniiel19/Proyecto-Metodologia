@@ -30,6 +30,11 @@ module.exports = new EntitySchema({
             type: 'text',
             nullable: true,
         },
+        direccion: {
+            type: 'varchar',
+            length: 255,
+            nullable: false,
+        },
         id_usuario: {
             type: 'int',
             nullable: true,
@@ -44,11 +49,6 @@ module.exports = new EntitySchema({
         },
         contrato: {
             target: 'Contrato',
-            type: 'one-to-many',
-            inverseSide: 'cliente',
-        },
-        establecimientos: {
-            target: 'Establecimiento',
             type: 'one-to-many',
             inverseSide: 'cliente',
         },

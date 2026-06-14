@@ -44,7 +44,7 @@ module.exports = new EntitySchema({
         usuario: {
             target: 'Usuario',
             type: 'many-to-one',
-            joinColumn: { name: 'id_usuario'}, // Guardará el ID del coordinador
+            joinColumn: { name: 'id_usuario'}, // Guardará el ID del Coordinador
             inverseSide: 'asignaciones_servicio',
         },
             tareas: {

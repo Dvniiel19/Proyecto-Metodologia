@@ -1,25 +1,33 @@
 /**
  * Rutas de contrato
  * Aquí definimos los endpoints relacionados con contratos
+ * Protegidas con autenticación JWT y autorización basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
 const contratoController = require('../controllers/contratoController');
+const { autenticacion } = require('../middlewares/authentication.middleware');
+const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 // POST /contrato - Crear un nuevo contrato
-router.post('/', contratoController.crearContrato);
+// Requiere: Administrador o Coordinador
+router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.crearContrato);
 
 // GET /contrato - Obtener todos los contratos
-router.get('/', contratoController.obtenerTodosLosContrato);
+// Requiere: Autenticación (clientes pueden ver sus contratos)
+router.get('/', autenticacion, contratoController.obtenerTodosLosContrato);
 
 //GET /contrato/:id - Obtener un contrato específico
-router.get('/:id_contrato', contratoController.obtenerContratoPorId);
+// Requiere: Autenticación (clientes pueden ver sus contratos)
+router.get('/:id_contrato', autenticacion, contratoController.obtenerContratoPorId);
 
 // PATCH /contrato/:id - Actualizar un contrato
-router.patch('/:id_contrato', contratoController.actualizarContrato);
+// Requiere: Administrador o Coordinador
+router.patch('/:id_contrato', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.actualizarContrato);
 
 // DELETE /contrato/:id - Eliminar un contrato
-router.delete('/:id_contrato', contratoController.eliminarContrato);
+// Requiere: Administrador o Coordinador
+router.delete('/:id_contrato', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.eliminarContrato);
 
 module.exports = router;
