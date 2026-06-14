@@ -1,25 +1,28 @@
 /**
  * Rutas de insumos
  * Aquí definimos los endpoints relacionados con insumoss
+ * Protegidas con autenticación JWT y autorización basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
 const insumosController = require('../controllers/insumosController');
+const { autenticacion } = require('../middlewares/authentication.middleware');
+const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
-// POST /insumos  crear un nuevo insumos 
+// POST /insumos - crear un nuevo insumos
+// Requiere: Administrador o GestorInventario
+router.post('/', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.crearInsumos);
 
-router.post('/', insumosController.crearInsumos);
-
-// GET /insumos  obtener todos los insumoss
-
-router.get('/', insumosController.obtenerTodosLosInsumos);
+// GET /insumos - obtener todos los insumoss
+// Requiere: Autenticación (acceso menos restrictivo)
+router.get('/', autenticacion, insumosController.obtenerTodosLosInsumos);
 
 //RUTAS MOVIMIENTO Y CONTROL STOCK CRITICO
 
-//POST / insumos /movimiento 
+//POST /insumos/movimiento 
 /* Registra ingreso o salida de stock y evalúa alertas críticas
- * 
+ * Requiere: Administrador o GestorInventario
  * Body esperado:
  * {
  *   "id_insumo": 1,
@@ -29,33 +32,35 @@ router.get('/', insumosController.obtenerTodosLosInsumos);
  *   "observaciones": "Compra a distribuidor"
  * }
  */
+router.post('/movimiento', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.registrarMovimientoInsumo);
 
-router.post('/movimiento',insumosController.registrarMovimientoInsumo);
 /**
-  //GET /insumos/alertas
+ * GET /insumos/alertas
  * Obtiene todos los insumos en estado "Stock Crítico"
- * Ideal para panel del supervisor
+ * Ideal para panel del Supervisor
+ * Requiere: Autenticación (acceso menos restrictivo)
  */
-router.get('/alertas',insumosController.obtenerInsumosEnAlerta);
+router.get('/alertas', autenticacion, insumosController.obtenerInsumosEnAlerta);
 
 /**
  * GET /insumos/:id_insumo/historico
  * Obtiene el histórico de movimientos de un insumo específico
  * Útil para auditoría y trazabilidad
+ * Requiere: Autenticación (acceso menos restrictivo)
  */
-router.get('/:id_insumo/historico', insumosController.obtenerHistoricoMovimientos);
+router.get('/:id_insumo/historico', autenticacion, insumosController.obtenerHistoricoMovimientos);
 
 //GET /insumos/:id obtener un insumos específico
-
-router.get('/:id_insumo', insumosController.obtenerInsumosPorId);
+// Requiere: Autenticación (acceso menos restrictivo)
+router.get('/:id_insumo', autenticacion, insumosController.obtenerInsumosPorId);
 
 // PATCH /insumos/:id actualizar un insumos
-
-router.patch('/:id_insumo', insumosController.actualizarInsumos);
+// Requiere: Administrador o GestorInventario
+router.patch('/:id_insumo', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.actualizarInsumos);
 
 // DELETE /insumos/:id eliminar un insumos
-
-router.delete('/:id_insumo', insumosController.eliminarInsumos);
+// Requiere: Administrador o GestorInventario
+router.delete('/:id_insumo', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.eliminarInsumos);
 
 
 module.exports = router;

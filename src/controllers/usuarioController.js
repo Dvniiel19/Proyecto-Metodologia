@@ -2,7 +2,64 @@ const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const usuarioService = require('../services/usuarioService');
 const { createUsuarioSchema, updateUsuarioSchema } = require('../validations/usuarioValidation');
 //funcion para encriptar contraseña
-const {encrypt} = require('../utils/bcryptUtils');
+const {encrypt, compare} = require('../utils/bcryptUtils');
+const { generarToken } = require('../auth/jwt.strategy');
+//const rolService = require('../services/rolService');
+/** post /auth/login
+ * autenticar usuario y generar token JWT
+ */
+const login = async (req, res) => {
+    try {
+        // obtener correo y contraseña desde el body
+        const { correo, contrasena } = req.body;
+
+        // validar que los campos esten presentes
+        if (!correo || !contrasena) {
+            return sendError(res, 'Correo y contrasena son requeridos', 400);
+        }
+
+        // buscar al usuario por correo en la base de datos
+        const usuario = await usuarioService.obtenerUsuarioPorCorreo(correo);
+
+        // verificar que el usuario exista
+        if (!usuario) {
+            return sendError(res, 'Correo o contraseña incorrectos', 401);
+        }
+
+        // comparar la contrasena proporcionada con la almacenada (hasheada)
+        const contrasenaValida = await compare(contrasena, usuario.contrasena);
+
+        if (!contrasenaValida) {
+            return sendError(res, 'Correo o contraseña incorrectos', 401);
+        }
+
+        // obtener el nombre del rol para incluirlo en el token
+        const rol = await rolService.obtenerRolPorId(usuario.id_rol);
+        const nombreRol = rol ? rol.nombre_rol : null; // Si no encuentra nada devuelve null
+
+        // generar token JWT con id_usuario, id_rol y nombre_rol
+        const token = generarToken(usuario.id_usuario, usuario.id_rol, nombreRol);
+
+        // retornar el token y datos basicos del usuario
+        return sendSuccess(
+            res,
+            {
+                token,
+                usuario: {
+                    id_usuario: usuario.id_usuario,
+                    correo: usuario.correo,
+                    id_rol: usuario.id_rol
+                }
+            },
+            'Sesion iniciada exitosamente',
+            200
+        );
+    } catch (error) {
+        console.error('Error en login:', error);
+        return sendError(res, 'Error al iniciar sesion', 500);
+    }
+};
+
 /** post /usuario
  * crear un nuevo usuario
  */
@@ -39,7 +96,6 @@ const crearUsuario = async (req, res) => {
         }
 
         //encriptamos la contraseña usando la funcion
-        console.log("Contraseña original: ", value.contrasena);
         value.contrasena = await encrypt(value.contrasena);
         console.log("Contraseña encriptada: ", value.contrasena);
         const usuarioCreado = await usuarioService.crearUsuario(value);
@@ -159,6 +215,7 @@ const eliminarUsuario = async (req, res) => {
 };
 
 module.exports = {
+    login,
     crearUsuario,
     obtenerTodosLosUsuarios,
     obtenerUsuarioPorId,

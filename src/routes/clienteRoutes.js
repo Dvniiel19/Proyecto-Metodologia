@@ -6,25 +6,22 @@
 const express = require('express');
 const router = express.Router();
 const clienteController = require('../controllers/clienteController');
+const { autenticacion } = require('../middlewares/authentication.middleware');
+const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
-// POST /cliente - Crear un nuevo cliente 
+// POST /cliente - Crear un nuevo cliente (PROTEGIDA - Administrador o Coordinador)
+router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), clienteController.crearCliente);
 
-router.post('/', clienteController.crearCliente);
+// GET /cliente - Obtener todos los clientes (PROTEGIDA - Autenticado)
+router.get('/', autenticacion, clienteController.obtenerTodosLosCliente);
 
-// GET /cliente - Obtener todos los clientes
+//GET /cliente/:id - Obtener un cliente específico (PROTEGIDA - Autenticado)
+router.get('/:id_cliente', autenticacion, clienteController.obtenerClientePorId);
 
-router.get('/', clienteController.obtenerTodosLosCliente);
+// PATCH /cliente/:id - Actualizar un cliente (PROTEGIDA - Administrador, Coordinador o el cliente mismo)
+router.patch('/:id_cliente', autenticacion, clienteController.actualizarCliente);
 
-//GET /cliente/:id - Obtener un cliente específico
-
-router.get('/:id_cliente', clienteController.obtenerClientePorId);
-
-// PATCH /cliente/:id - Actualizar un cliente
-
-router.patch('/:id_cliente', clienteController.actualizarCliente);
-
-// DELETE /cliente/:id - Eliminar un cliente
-
-router.delete('/:id_cliente', clienteController.eliminarCliente);
+// DELETE /cliente/:id - Eliminar un cliente (PROTEGIDA - Solo Administrador)
+router.delete('/:id_cliente', autenticacion, autorizacion(['Administrador']), clienteController.eliminarCliente);
 
 module.exports = router;

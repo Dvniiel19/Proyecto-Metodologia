@@ -18,7 +18,8 @@ const crearEvaluacionFinal = async (req, res) => {
             );
         }
 
-        const usuarioId = req.usuario?.id_usuario;
+        //Extraer id_usuario del token JWT validado en el middleware de autenticacion
+        const usuarioId = req.user?.id_usuario;
         if (!usuarioId) {
             return sendError(res, 'Usuario no autenticado', 401);
         }
@@ -28,7 +29,8 @@ const crearEvaluacionFinal = async (req, res) => {
         const agendaRepository = db.getRepository('Agenda');
         const agenda = await agendaRepository.findOne({
             where: { id_servicio: id_servicio },
-            relations: ['contrato', 'contrato.cliente', 'contrato.cliente.usuario'] // para verificar que el servicio corresponde al cliente que esta haciendo la evaluacion
+            // para verificar que el servicio corresponde al cliente que esta haciendo la evaluacion
+            relations: ['contrato', 'contrato.cliente', 'contrato.cliente.usuario'] 
         });
 
         if (!agenda) {
