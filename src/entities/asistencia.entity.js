@@ -1,0 +1,45 @@
+"use strict";
+
+const { EntitySchema } = require ('typeorm');
+
+module.exports = new EntitySchema({
+    name: 'Asistencia',
+    tableName: 'asistencia',
+    columns: {
+        id_asistencia: {
+            primary: true,
+            type: 'int',
+            generated: true,
+        },
+        hora_entrada: {
+            type: 'time',
+            nullable: false,
+        },
+        hora_salida: {
+            type: 'time',
+            nullable: true, 
+        },
+        id_trabajador: {
+            type: 'int',
+            nullable: false,
+        },
+        id_servicio: {
+            type: 'int',
+            nullable: false,
+        },
+    },
+    relations: {
+        trabajador: {
+            target: 'Trabajador',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_trabajador'},
+            inverseSide: 'asistencia',
+        },
+        agenda: {
+            target: 'Agenda',
+            type: 'many-to-one',
+            joinColumn: {name: 'id_servicio'},
+            inverseSide: 'asistencia',
+        },
+    },
+});
