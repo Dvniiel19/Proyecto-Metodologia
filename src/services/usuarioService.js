@@ -26,6 +26,7 @@ const obtenerTodosLosUsuarios = async () => {
 };
 
 /**
+<<<<<<< HEAD
  * obtener usuario por correo
  * @param {String} correo 
  * @returns {Object | null}
@@ -36,6 +37,8 @@ const obtenerUsuarioPorCorreo = async (correo) => {
 };
 
 /**
+=======
+>>>>>>> 0d3a6669dec6c66990b721e524a2cb1bff672f32
  * obtener usuario por id
  * @param {Number} id_usuario 
  * @param {Object} datosActualizados 
