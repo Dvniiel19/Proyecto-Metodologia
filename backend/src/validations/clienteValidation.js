@@ -47,6 +47,18 @@ const createClienteSchema = Joi.object({
       'string.pattern.base': 'El formato del telefono es invalido. Solo se aceptan numeros, espacios y el signo +',
       'any.required': 'El telefono es un campo obligatorio'
     }),
+  direccion: Joi.string()
+    .trim()
+    .min(5)
+    .max(255)
+    .required()
+    .messages({
+      'string.base': 'La direccion debe ser un texto',
+      'string.empty': 'La direccion no puede estar vacia',
+      'string.min': 'La direccion debe tener al menos 5 caracteres',
+      'string.max': 'La direccion no puede exceder los 255 caracteres',
+      'any.required': 'La direccion es un campo obligatorio'
+    }),
   historial_servicios: Joi.string()
     .trim()
     .min(10)
@@ -109,11 +121,22 @@ const updateClienteSchema = Joi.object({
       'string.max': 'El telefono no puede exceder los 20 caracteres',
       'string.pattern.base': 'El formato del telefono es invalido. Solo se aceptan numeros, espacios y el signo +'
     }),
+  direccion: Joi.string()
+    .trim()
+    .min(5)
+    .max(255)
+    .optional()
+    .messages({
+      'string.base': 'La direccion debe ser un texto',
+      'string.empty': 'La direccion no puede estar vacia',
+      'string.min': 'La direccion debe tener al menos 5 caracteres',
+      'string.max': 'La direccion no puede exceder los 255 caracteres'
+    }),
   historial_servicios: Joi.string()
     .trim()
     .min(10)
     .max(300) 
-    .required()
+    .optional()
     .messages({
       'string.base': 'Debe de ser un texto',
       'string.empty': 'El texto no puede estar vacio',

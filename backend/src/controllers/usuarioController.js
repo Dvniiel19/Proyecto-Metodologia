@@ -4,7 +4,7 @@ const { createUsuarioSchema, updateUsuarioSchema } = require('../validations/usu
 //funcion para encriptar contraseña
 const {encrypt, compare} = require('../utils/bcryptUtils');
 const { generarToken } = require('../auth/jwt.strategy');
-//const rolService = require('../services/rolService');
+const rolService = require('../services/rolService');
 /** post /auth/login
  * autenticar usuario y generar token JWT
  */

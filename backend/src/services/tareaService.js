@@ -36,7 +36,6 @@ const obtenerTodasLasTarea = async ()=> {
             asignacion_servicio: true,
         },
     });
-    return [];
 };
 
 /**
@@ -52,7 +51,6 @@ const obtenerTareaPorId = async (id_tarea) =>{
             asignacion_servicio: true,
         },
     });
-    return null;
 };
 
 /**
@@ -112,17 +110,25 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
         tarea.foto_evidencia = `uploads/evidencias/${archivoEvidencia.filename}`.replace(/\\/g, '/');
 
         await repositorioTransaccional.save(tarea);
-        await notificarClienteTareaPendienteValidacion({
-            correoCliente,
-            idTarea: tarea.id_tarea,
-            descripcionTarea: tarea.descripcion,
-        });
+
+        let emailEnviado = false;
+        try {
+            await notificarClienteTareaPendienteValidacion({
+                correoCliente,
+                idTarea: tarea.id_tarea,
+                descripcionTarea: tarea.descripcion,
+            });
+            emailEnviado = true;
+        } catch (emailError) {
+            console.warn('Email no enviado (SMTP no configurado?):', emailError.message);
+        }
 
         return {
             id_tarea: tarea.id_tarea,
             estado: tarea.estado,
             foto_evidencia: tarea.foto_evidencia,
             correo_notificado: correoCliente,
+            email_enviado: emailEnviado,
         };
     });
 };
