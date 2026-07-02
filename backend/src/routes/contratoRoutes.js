@@ -1,11 +1,13 @@
 /**
  * Rutas de contrato
- * Aquí definimos los endpoints relacionados con contratos
- * Protegidas con autenticación JWT y autorización basada en roles
+ * Aqui definimos los endpoints relacionados con contratos
+ * Protegidas con autenticacion JWT y autorizacion basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
+const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
+aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const contratoController = require('../controllers/contratoController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
@@ -15,11 +17,11 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.crearContrato);
 
 // GET /contrato - Obtener todos los contratos
-// Requiere: Autenticación (clientes pueden ver sus contratos)
+// Requiere: Autenticacion (clientes pueden ver sus contratos)
 router.get('/', autenticacion, contratoController.obtenerTodosLosContrato);
 
-//GET /contrato/:id - Obtener un contrato específico
-// Requiere: Autenticación (clientes pueden ver sus contratos)
+//GET /contrato/:id - Obtener un contrato especifico
+// Requiere: Autenticacion (clientes pueden ver sus contratos)
 router.get('/:id_contrato', autenticacion, contratoController.obtenerContratoPorId);
 
 // PATCH /contrato/:id - Actualizar un contrato

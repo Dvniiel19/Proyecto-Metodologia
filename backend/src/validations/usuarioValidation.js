@@ -1,6 +1,6 @@
 /**
  * Validaciones para Roles
- * Aquí definimos las reglas que deben cumplir los datos
+ * Aqui definimos las reglas que deben cumplir los datos
  */
 
 const Joi = require('joi');

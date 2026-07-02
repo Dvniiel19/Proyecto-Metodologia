@@ -1,5 +1,5 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
-
+const rolService = require('../services/rolService');
 const { createRolSchema, updateRolSchema } = require('../validations/rolValidation');
 
 /** post /rol

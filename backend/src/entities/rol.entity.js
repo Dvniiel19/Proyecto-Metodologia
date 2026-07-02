@@ -1,4 +1,9 @@
 "use strict";
+/**
+ * Entidad Rol: roles del sistema (Administrador, Supervisor, Coordinador,
+ * Trabajador, Cliente, GestorInventario). El nombre del rol viaja dentro del JWT
+ * y las rutas lo usan para autorizar el acceso.
+ */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -17,6 +22,8 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
+    // cuando un service pide datos con "relations"
     relations: {
         usuario: {
             target: 'Usuario', 

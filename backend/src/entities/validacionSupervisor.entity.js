@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * Entidad ValidacionSupervisor: registro de la revision que hace el supervisor
+ * sobre el trabajo realizado antes de darlo por cerrado.
+ */
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
@@ -30,6 +34,8 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },  
+    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
+    // cuando un service pide datos con "relations"
     relations: {
         agenda: {
             target: 'Agenda',

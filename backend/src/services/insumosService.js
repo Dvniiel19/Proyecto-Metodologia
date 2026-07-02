@@ -89,9 +89,13 @@ const eliminarInsumo = async (id_insumo) => {
  * @returns {Object}
  */
 
+// Registra un ingreso o salida de stock. Los errores de negocio se lanzan con
+// mensajes reconocibles ('no encontrado', 'Stock insuficiente') que el controller
+// traduce a 404 y 400 respectivamente.
 const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones) => {
     const consumoInsumoRepository = db.getRepository('ConsumoInsumo');
-    
+
+    // 1. Buscar el insumo (parseInt porque el id puede llegar como string)
     const insumo = await insumosRepository.findOneBy({ id_insumo: parseInt(id_insumo) });
     if (!insumo) {
         throw new Error(`Insumo con ID ${id_insumo} no encontrado`);
@@ -100,6 +104,8 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
     let nuevoStock;
     const tipoMovimientoLower = tipo_movimiento.toLowerCase();
 
+    // 2. Calcular el stock nuevo segun el tipo de movimiento.
+    // Regla de negocio: una salida nunca puede dejar el stock en negativo
     if (tipoMovimientoLower === 'salida') {
         if (cantidad > insumo.stock) {
             throw new Error(`Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidad}`);
@@ -109,15 +115,19 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
         nuevoStock = insumo.stock + cantidad;
     }
 
-    const hayStockCritico = nuevoStock < insumo.limite_seguridad;
+    // mismo criterio y escritura que actualizarInsumo: al llegar al limite (<=) pasa a 'Stock Critico' (sin tilde,
+    // igual que en la validacion Joi); si no coinciden, los insumos criticos no aparecen en /insumos/alertas
+    const hayStockCritico = nuevoStock <= insumo.limite_seguridad;
     const estadoAnterior = insumo.estado_insumo;
 
     insumo.stock = nuevoStock;
-    insumo.estado_insumo = hayStockCritico ? 'Stock Crítico' : 'Normal';
+    insumo.estado_insumo = hayStockCritico ? 'Stock Critico' : 'Normal';
     insumo.fecha_actualizacion = new Date();
 
     const insumoActualizado = await insumosRepository.save(insumo);
 
+    // 3. Dejar el movimiento registrado en el historico (tabla consumo_insumo),
+    // enlazado al insumo y a la jornada (agenda) donde se uso
     const movimiento = {
         cantidad_utilizada: cantidad,
         tipo_movimiento: tipoMovimientoLower,
@@ -128,6 +138,8 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
 
     const movimientoRegistrado = await consumoInsumoRepository.save(movimiento);
 
+    // 4. Respuesta estructurada: incluye el detalle del movimiento, el estado del
+    // insumo y una alerta lista para que el frontend la muestre si el stock quedo critico
     return {
         movimiento: {
             id_consumo: movimientoRegistrado.id_consumo,
@@ -162,13 +174,13 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
 
 const obtenerInsumosEnAlerta = async () => {
     return await insumosRepository.find({
-        where: { estado_insumo: 'Stock Crítico' },
+        where: { estado_insumo: 'Stock Critico' },
         order: { fecha_actualizacion: 'DESC' },
     });
 };
 
 /**
- * obtener histórico de movimientos de un insumo
+ * obtener historico de movimientos de un insumo
  * @param {Number} id_insumo
  * @returns {Object}
  */

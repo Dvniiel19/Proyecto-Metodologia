@@ -1,4 +1,4 @@
-require('dotenv').config(); // <-- ESTO VA AQUÍ, EN LA LÍNEA 1 DEL INDEX.JS
+require('dotenv').config(); // <-- ESTO VA AQUI, EN LA LINEA 1 DEL INDEX.JS
 
 
 require('reflect-metadata');
@@ -10,14 +10,20 @@ require('reflect-metadata');
 
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 const config = require('./config/config');
 const db = require('./config/db');
 
 const app = express();
 
-//middlewaares
-
-app.use(express.json()); //entiende los datos k llegan a formato json
+// [AGREGADO] CORS para permitir peticiones desde el frontend en desarrollo (puertos 5173 y 5174).
+// En produccion se debe cambiar origin por el dominio real del frontend.
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true,
+}));
+app.use(express.json()); // parsea el body JSON de las peticiones y lo deja en req.body
+// Sirve las fotos de evidencia como archivos estaticos: /uploads/evidencias/<archivo>
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 //RUTAS 'falta terminar too lo otro'
@@ -63,6 +69,8 @@ app.use('/consumoInsumo', consumoInsumoRoutes);
 app.use('/evaluacionFinal', evaluacionFinalRoutes);
 app.use('/validacionSupervisor', validacionSupervisorRoutes);
 app.use('/trabajador', trabajadorRoutes);
+// Middleware final "atrapa-todo": si ninguna ruta anterior respondio,
+// la peticion cae aqui y se responde 404. Debe ir despues de todas las rutas
 app.use((req,res)=> {
     res.status(404).json({
         success: false,
@@ -71,7 +79,8 @@ app.use((req,res)=> {
     });
 });
 
-// Iniciar servidor ayudantia
+// Arranque en orden: primero se conecta la base de datos y SOLO si la conexion
+// funciona se levanta el servidor HTTP. Asi no se aceptan peticiones sin DB
 db.initialize()
   .then(() => {
     console.log('✅ Base de datos conectada con TypeORM');

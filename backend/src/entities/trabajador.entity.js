@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * Entidad Trabajador: datos personales del trabajador. Se enlaza 1 a 1 con
+ * un Usuario (credenciales) y recibe asignaciones, asistencias y notificaciones.
+ */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -31,6 +35,8 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
+    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
+    // cuando un service pide datos con "relations"
     relations: {
         usuario: {
             target: 'Usuario',

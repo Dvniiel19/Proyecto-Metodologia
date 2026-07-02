@@ -27,6 +27,9 @@ const crearAsignacion = async (req, res) => {
         );
     } catch (error) {
         console.error(error);
+        // El service lanza errores de negocio con statusCode (404 jornada no existe,
+        // 400 jornada ya iniciada, 409 cruce de horario); aqui se respeta ese codigo.
+        // Cualquier otro error inesperado cae al 500 generico
         if (error.statusCode) {
             return sendError(res, error.message, error.statusCode);
         }

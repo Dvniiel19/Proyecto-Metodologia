@@ -1,11 +1,13 @@
 /**
  * Rutas de agenda
- * Aquí definimos los endpoints relacionados con la agenda
- * Protegidas con autenticación JWT y autorización basada en roles
+ * Aqui definimos los endpoints relacionados con la agenda
+ * Protegidas con autenticacion JWT y autorizacion basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
+const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
+aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const agendaController = require('../controllers/agendaController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
@@ -15,11 +17,11 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), agendaController.crearAgenda);
 
 // GET /agenda - Obtener todos los eventos en la agenda
-// Requiere: Autenticación (acceso menos restrictivo)
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/', autenticacion, agendaController.obtenerTodasLasAgenda);
 
-//GET /agenda/:id - Obtener un evento específico
-// Requiere: Autenticación (acceso menos restrictivo)
+//GET /agenda/:id - Obtener un evento especifico
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/:id_agenda', autenticacion, agendaController.obtenerAgendaPorId);
 
 // PATCH /agenda/:id - Actualizar un evento

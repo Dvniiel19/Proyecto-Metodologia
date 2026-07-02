@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * Entidad Cliente: datos de contacto del cliente. Se enlaza 1 a 1 con un Usuario
+ * (que guarda sus credenciales de acceso) y puede tener varios contratos.
+ */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -40,6 +44,8 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
+    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
+    // cuando un service pide datos con "relations"
     relations: {
         usuario: {
             target: 'Usuario',

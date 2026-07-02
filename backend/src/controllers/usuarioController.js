@@ -1,10 +1,21 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const usuarioService = require('../services/usuarioService');
+const rolService = require('../services/rolService');
 const { createUsuarioSchema, updateUsuarioSchema } = require('../validations/usuarioValidation');
-//funcion para encriptar contraseña
 const {encrypt, compare} = require('../utils/bcryptUtils');
 const { generarToken } = require('../auth/jwt.strategy');
-//const rolService = require('../services/rolService');
+
+// [MODIFICADO] Funcion extraida para evitar duplicar la validacion entre crearUsuario y actualizarUsuario.
+// Retorna un string con el mensaje de error si no cumple los requisitos, o null si es valida.
+const validarContrasena = (contrasena) => {
+    if (!contrasena || contrasena.length < 8) return 'La contraseña debe tener minimo 8 caracteres';
+    if (!/[A-Z]/.test(contrasena)) return 'La contraseña debe tener minimo una letra mayuscula';
+    if (!/[a-z]/.test(contrasena)) return 'La contraseña debe tener minimo una letra minuscula';
+    if (!/\d/.test(contrasena)) return 'La contraseña debe tener minimo un numero';
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) return 'La contraseña debe tener minimo un caracter especial';
+    return null;
+};
+
 /** post /auth/login
  * autenticar usuario y generar token JWT
  */
@@ -76,28 +87,13 @@ const crearUsuario = async (req, res) => {
             );
         }
 
-        // validamos la contrasena del usuario
-        const contrasena = req.body.contrasena;
-        
-        if (!contrasena || contrasena.length < 8) {
-            return sendError(res, 'La contraseña debe tener minimo 8 caracteres', 400);
-        }
-        if (!/[A-Z]/.test(contrasena)) {
-            return sendError(res, 'La contraseña debe tener minimo una letra mayuscula', 400);
-        }
-        if (!/[a-z]/.test(contrasena)){
-            return sendError(res, 'La contraseña debe tener minimo una letra minuscula', 400);
-        }
-        if (!/\d/.test(contrasena)) {
-            return sendError(res, 'La contraseña debe tener minimo un numero', 400);
-        }
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) {
-            return sendError(res, 'La contraseña debe tener minimo un caracter especial', 400);
+        // [MODIFICADO] Usa validarContrasena() en lugar de repetir las mismas condiciones aqui
+        const errorContrasena = validarContrasena(req.body.contrasena);
+        if (errorContrasena) {
+            return sendError(res, errorContrasena, 400);
         }
 
-        //encriptamos la contraseña usando la funcion
         value.contrasena = await encrypt(value.contrasena);
-        console.log("Contraseña encriptada: ", value.contrasena);
         const usuarioCreado = await usuarioService.crearUsuario(value);
         return sendSuccess(
             res,
@@ -158,26 +154,12 @@ const actualizarUsuario = async (req, res) => {
             );
         }
 
-        // validamos la contrasena 
-        const contrasena = req.body.contrasena;
-        
-        if (contrasena) {
-            if (contrasena.length < 8) {
-                return sendError(res, 'La contraseña debe tener minimo 8 caracteres', 400);
+        // [MODIFICADO] Solo valida y encripta la contraseña si el campo viene en el body (PATCH puede omitirla)
+        if (req.body.contrasena) {
+            const errorContrasena = validarContrasena(req.body.contrasena);
+            if (errorContrasena) {
+                return sendError(res, errorContrasena, 400);
             }
-            if (!/[A-Z]/.test(contrasena)) {
-                return sendError(res, 'La contraseña debe tener minimo una letra mayuscula', 400);
-            }
-            if (!/[a-z]/.test(contrasena)){
-                return sendError(res, 'La contraseña debe tener minimo una letra minuscula', 400);
-            }
-            if (!/\d/.test(contrasena)) {
-                return sendError(res, 'La contraseña debe tener minimo un numero', 400);
-            }
-            if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) {
-                return sendError(res, 'La contraseña debe tener minimo un caracter especial', 400);
-            }
-            //encriptamos al actualizar
             validacion.value.contrasena = await encrypt(validacion.value.contrasena);
         }
 

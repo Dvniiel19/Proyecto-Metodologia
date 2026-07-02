@@ -1,5 +1,9 @@
 "use strict";
 
+/**
+ * Entidad AsignarServicio: tabla intermedia que conecta a un trabajador
+ * con una jornada de la agenda. Cada fila = "este trabajador atiende esta jornada".
+ */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -28,6 +32,8 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
+    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
+    // cuando un service pide datos con "relations"
     relations: {
         agenda: {
             target: 'Agenda',
@@ -44,7 +50,7 @@ module.exports = new EntitySchema({
         usuario: {
             target: 'Usuario',
             type: 'many-to-one',
-            joinColumn: { name: 'id_usuario'}, // Guardará el ID del Coordinador
+            joinColumn: { name: 'id_usuario'}, // Guardara el ID del Coordinador
             inverseSide: 'asignaciones_servicio',
         },
             tareas: {

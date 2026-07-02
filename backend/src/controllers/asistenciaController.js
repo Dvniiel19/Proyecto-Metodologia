@@ -114,10 +114,73 @@ const eliminarAsistencia = async (req, res) => {
     }
 };
 
+// [AGREGADO] Reloj control: entrada. No valida con Joi porque fecha y hora las genera el servicio.
+/** post /asistencia/entrada
+ * el trabajador ficha su entrada — genera fecha y hora automaticamente
+ */
+const registrarEntrada = async (req, res) => {
+    try {
+        const { id_trabajador, id_servicio } = req.body;
+
+        if (!id_trabajador || !id_servicio) {
+            return sendError(res, 'id_trabajador e id_servicio son requeridos', 400);
+        }
+
+        const asistencia = await asistenciaService.registrarEntrada(id_trabajador, id_servicio);
+        if (asistencia.error === 'entrada_abierta') {
+            return sendError(res, 'El trabajador ya tiene una entrada registrada sin salida', 409);
+        }
+        return sendSuccess(res, asistencia, 'Entrada registrada exitosamente', 201);
+    } catch (error) {
+        console.error(error);
+        return sendError(res, 'Error al registrar la entrada', 500);
+    }
+};
+
+// [AGREGADO] Reloj control: salida. Retorna 409 si la salida ya fue registrada (doble fichaje).
+/** patch /asistencia/:id/salida
+ * el trabajador ficha su salida — completa el registro existente
+ */
+const registrarSalida = async (req, res) => {
+    try {
+        const { id_asistencia } = req.params;
+        const resultado = await asistenciaService.registrarSalida(id_asistencia);
+
+        if (!resultado) {
+            return sendError(res, 'Registro de asistencia no encontrado', 404);
+        }
+        if (resultado.error === 'ya_registrada') {
+            return sendError(res, 'La salida ya fue registrada para esta asistencia', 409);
+        }
+
+        return sendSuccess(res, resultado, 'Salida registrada exitosamente');
+    } catch (error) {
+        console.error(error);
+        return sendError(res, 'Error al registrar la salida', 500);
+    }
+};
+
+// [AGREGADO] Historial de asistencias filtrado por trabajador (para la vista del trabajador en el front).
+/** get /asistencia/trabajador/:id_trabajador
+ * obtiene todos los registros de asistencia de un trabajador
+ */
+const obtenerAsistenciasPorTrabajador = async (req, res) => {
+    try {
+        const { id_trabajador } = req.params;
+        const asistencias = await asistenciaService.obtenerAsistenciasPorTrabajador(id_trabajador);
+        return sendSuccess(res, asistencias, 'Asistencias del trabajador obtenidas correctamente');
+    } catch (error) {
+        return sendError(res, 'Error al obtener asistencias del trabajador', 500);
+    }
+};
+
 module.exports = {
     crearAsistencia,
     obtenerTodasLasAsistencia,
     obtenerAsistenciaPorId,
     actualizarAsistencia,
-    eliminarAsistencia
+    eliminarAsistencia,
+    registrarEntrada,
+    registrarSalida,
+    obtenerAsistenciasPorTrabajador,
 };
