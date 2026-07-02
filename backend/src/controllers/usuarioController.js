@@ -5,16 +5,7 @@ const { createUsuarioSchema, updateUsuarioSchema } = require('../validations/usu
 const {encrypt, compare} = require('../utils/bcryptUtils');
 const { generarToken } = require('../auth/jwt.strategy');
 
-// [MODIFICADO] Funcion extraida para evitar duplicar la validacion entre crearUsuario y actualizarUsuario.
-// Retorna un string con el mensaje de error si no cumple los requisitos, o null si es valida.
-const validarContrasena = (contrasena) => {
-    if (!contrasena || contrasena.length < 8) return 'La contraseña debe tener minimo 8 caracteres';
-    if (!/[A-Z]/.test(contrasena)) return 'La contraseña debe tener minimo una letra mayuscula';
-    if (!/[a-z]/.test(contrasena)) return 'La contraseña debe tener minimo una letra minuscula';
-    if (!/\d/.test(contrasena)) return 'La contraseña debe tener minimo un numero';
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) return 'La contraseña debe tener minimo un caracter especial';
-    return null;
-};
+
 /** post /auth/login
  * autenticar usuario y generar token JWT
  */
@@ -86,12 +77,6 @@ const crearUsuario = async (req, res) => {
             );
         }
 
-        // [MODIFICADO] Usa validarContrasena() en lugar de repetir las mismas condiciones aqui
-        const errorContrasena = validarContrasena(req.body.contrasena);
-        if (errorContrasena) {
-            return sendError(res, errorContrasena, 400);
-        }
-
         value.contrasena = await encrypt(value.contrasena);
         const usuarioCreado = await usuarioService.crearUsuario(value);
         return sendSuccess(
@@ -152,13 +137,8 @@ const actualizarUsuario = async (req, res) => {
                 validacion.error.details.map(err => err.message)
             );
         }
-
-        // [MODIFICADO] Solo valida y encripta la contraseña si el campo viene en el body (PATCH puede omitirla)
+        //se se actualiza la contrasena se encripta antes de guardarla
         if (req.body.contrasena) {
-            const errorContrasena = validarContrasena(req.body.contrasena);
-            if (errorContrasena) {
-                return sendError(res, errorContrasena, 400);
-            }
             validacion.value.contrasena = await encrypt(validacion.value.contrasena);
         }
 

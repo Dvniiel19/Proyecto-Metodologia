@@ -3,7 +3,7 @@ require('reflect-metadata');
 const bcrypt = require('bcryptjs');
 const AppDataSource = require('./db');
 const Rol = require('../entities/rol.entity');
-const Usuario = require('../entities/usuario.entity');
+const Usuario = require('../entitfies/usuario.entity');
 
 const ROLES = [
   { nombre_rol: 'Administrador' },
