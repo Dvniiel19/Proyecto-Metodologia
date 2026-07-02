@@ -1,11 +1,13 @@
 /**
  * Rutas de checklist
- * Aquí definimos los endpoints relacionados con checklist
- * Protegidas con autenticación JWT y autorización basada en roles
+ * Aqui definimos los endpoints relacionados con checklist
+ * Protegidas con autenticacion JWT y autorizacion basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
+const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
+aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const checklistController = require('../controllers/checklistController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
@@ -15,11 +17,11 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador', 'Supervisor']), checklistController.crearChecklist);
 
 // GET /checklist - Obtener todos los checklists
-// Requiere: Autenticación (acceso menos restrictivo)
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/', autenticacion, checklistController.obtenerTodosLosChecklist);
 
-//GET /checklist/:id - Obtener un checklist específico
-// Requiere: Autenticación (acceso menos restrictivo)
+//GET /checklist/:id - Obtener un checklist especifico
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/:id_checklist', autenticacion, checklistController.obtenerChecklistPorId);
 
 // PATCH /checklist/:id - Actualizar un checklist

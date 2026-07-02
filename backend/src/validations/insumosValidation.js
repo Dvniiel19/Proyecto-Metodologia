@@ -3,7 +3,7 @@
 const Joi = require('joi');
 
 /**
- * Validación para crear un Consumo de Insumo (req.body)
+ * Validacion para crear un Consumo de Insumo (req.body)
  * POST /insumos
  */
 const createInsumosSchema = Joi.object({
@@ -52,7 +52,7 @@ const createInsumosSchema = Joi.object({
 });
 
 /**
- * Validación para actualizar un Consumo de Insumo (req.body)
+ * Validacion para actualizar un Consumo de Insumo (req.body)
  * PATCH /insumos/:id
  */
 const updateInsumosSchema = Joi.object({

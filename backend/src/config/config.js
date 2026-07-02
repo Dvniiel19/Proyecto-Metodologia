@@ -1,4 +1,4 @@
-// Configuración de variables de entorno
+// Configuracion de variables de entorno
 require('dotenv').config();
 
 const config = {

@@ -3,7 +3,7 @@
 const Joi = require('joi');
 
 /**
- * Validación para crear un Consumo de Insumo (req.body)
+ * Validacion para crear un Consumo de Insumo (req.body)
  * POST /consumo_insumo
  */
 const createValidacionSupervisorSchema = Joi.object({
@@ -49,7 +49,7 @@ const createValidacionSupervisorSchema = Joi.object({
                 });
 
 /**
- * Validación para actualizar la validacion de Supervisor (req.body)
+ * Validacion para actualizar la validacion de Supervisor (req.body)
  * PATCH /validacion_Supervisor/:id
  */
 const updateValidacionSupervisorSchema = Joi.object({ 
@@ -92,7 +92,7 @@ const updateValidacionSupervisorSchema = Joi.object({
                 'any.required': 'El ID del usuario Supervisor es un campo obligatorio.'
                 })
             
-}).min(1); // Exige que al menos se envíe un campo para actualizar (cantidad, id_insumo o id_servicio)
+}).min(1); // Exige que al menos se envie un campo para actualizar (cantidad, id_insumo o id_servicio)
 
 module.exports = {
     createValidacionSupervisorSchema,

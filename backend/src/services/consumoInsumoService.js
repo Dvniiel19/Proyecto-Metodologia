@@ -45,7 +45,7 @@ const obtenerConsumoInsumoPorId = async (id_consumo) => {
 
 const actualizarConsumoInsumo = async (id_consumo, datosActualizados) => {
     await consumoRepository.update(id_consumo,datosActualizados);
-    return await obtenerConsumoPorId(id_consumo);
+    return await obtenerConsumoInsumoPorId(id_consumo);
 }
 
 /**

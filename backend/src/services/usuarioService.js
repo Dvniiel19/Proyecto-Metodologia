@@ -13,7 +13,10 @@ const usuarioRepository = db.getRepository(Usuario);
 
 const crearUsuario = async (datosUsuario) => {
     const nuevoUsuario = usuarioRepository.create(datosUsuario);
-    return await usuarioRepository.save(nuevoUsuario);
+    const usuarioGuardado = await usuarioRepository.save(nuevoUsuario);
+    // save() devuelve el objeto en memoria con el hash incluido; se elimina antes de responder
+    delete usuarioGuardado.contrasena;
+    return usuarioGuardado;
 };
 
 /**
@@ -26,19 +29,19 @@ const obtenerTodosLosUsuarios = async () => {
 };
 
 /**
-<<<<<<< HEAD
- * obtener usuario por correo
- * @param {String} correo 
+ * obtener usuario por correo(usado para el login)
+ * @param {String} correo
  * @returns {Object | null}
  */
-
 const obtenerUsuarioPorCorreo = async (correo) => {
-    return await usuarioRepository.findOneBy({ correo });
+    // incluye contrasena explicitamente (tiene select: false) porque el login la compara
+    return await usuarioRepository.findOne({
+        where: { correo },
+        select: ['id_usuario', 'correo', 'contrasena', 'id_rol'],
+    });
 };
 
 /**
-=======
->>>>>>> 0d3a6669dec6c66990b721e524a2cb1bff672f32
  * obtener usuario por id
  * @param {Number} id_usuario 
  * @param {Object} datosActualizados 
@@ -57,7 +60,10 @@ const obtenerUsuarioPorId = async (id_usuario) => {
  */
 
 const actualizarUsuario = async (id_usuario, datosActualizados) => {
-    await usuarioRepository.update(id_usuario,datosActualizados);
+    const result = await usuarioRepository.update(id_usuario, datosActualizados);
+    // [MODIFICADO] Verifica affected antes de hacer la segunda consulta.
+    // Sin este chequeo se haria un SELECT innecesario aunque el usuario no exista.
+    if (result.affected === 0) return null;
     return await obtenerUsuarioPorId(id_usuario);
 }
 

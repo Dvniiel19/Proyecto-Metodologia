@@ -16,6 +16,10 @@ const notificacionRepository = db.getRepository(Notificacion);
  * @return {Object} 
 */
 
+// Asignar un trabajador a una jornada aplica 3 validaciones de negocio en orden
+// y luego encadena 3 efectos: crear la asignacion, actualizar la jornada y notificar.
+// Los errores llevan statusCode para que el controller responda el codigo HTTP correcto
+// (404 no existe / 400 ya inicio / 409 conflicto de horario) en vez de un 500 generico.
 const crearAsignacion = async (datosAsignarServicio) => {
     const { id_servicio, id_trabajador } = datosAsignarServicio;
 
@@ -27,7 +31,9 @@ const crearAsignacion = async (datosAsignarServicio) => {
         throw error;
     }
 
-    // 2. Verificar que la jornada no haya iniciado aún
+    // 2. Verificar que la jornada no haya iniciado aun.
+    // Se arma la fecha/hora de inicio combinando fecha_programada (YYYY-MM-DD)
+    // con hora_inicio (HH:MM:SS) y se compara contra el momento actual
     const ahora = new Date();
     const fechaHoraInicio = new Date(`${jornada.fecha_programada}T${jornada.hora_inicio}`);
     if (ahora >= fechaHoraInicio) {
@@ -36,7 +42,8 @@ const crearAsignacion = async (datosAsignarServicio) => {
         throw error;
     }
 
-    // 3. Verificar cruces de horario del trabajador
+    // 3. Verificar cruces de horario del trabajador: se traen todas sus asignaciones
+    // (con su agenda relacionada) y se revisa si alguna se solapa con la jornada nueva
     const asignacionesExistentes = await asignarServicioRepository.find({
         where: { trabajador: { id_trabajador } },
         relations: ['agenda'],
@@ -45,6 +52,7 @@ const crearAsignacion = async (datosAsignarServicio) => {
     const hayCruce = asignacionesExistentes.some(asig => {
         const otraJornada = asig.agenda;
         if (!otraJornada) return false;
+        // Si son dias distintos no pueden cruzarse; se descarta al tiro
         if (otraJornada.fecha_programada !== jornada.fecha_programada) return false;
 
         const inicioNueva = new Date(`${jornada.fecha_programada}T${jornada.hora_inicio}`);
@@ -52,23 +60,26 @@ const crearAsignacion = async (datosAsignarServicio) => {
         const inicioOtra = new Date(`${otraJornada.fecha_programada}T${otraJornada.hora_inicio}`);
         const finOtra    = new Date(`${otraJornada.fecha_programada}T${otraJornada.hora_fin}`);
 
+        // Formula de solapamiento de intervalos: dos rangos se cruzan si y solo si
+        // cada uno empieza antes de que termine el otro. Cubre todos los casos
+        // (cruce parcial, una jornada contenida dentro de otra, etc.) en una sola linea
         return inicioNueva < finOtra && finNueva > inicioOtra;
     });
 
     if (hayCruce) {
     const error = new Error('El operario ya tiene una jornada en ese rango de horas');
-    error.statusCode = 409;
+    error.statusCode = 409; // 409 Conflict: el recurso choca con el estado actual del sistema
     throw error;
     }
 
-    // 4. Crear la asignación
+    // 4. Crear la asignacion
     const nuevaAsignacion = asignarServicioRepository.create(datosAsignarServicio);
     await asignarServicioRepository.save(nuevaAsignacion);
 
     // 5. Cambiar estado de la jornada a "Personal Asignado"
     await agendaRepository.update(id_servicio, { estado: 'Personal Asignado' });
 
-    // 6. Generar notificación al operario
+    // 6. Generar notificacion al operario para que sepa que tiene una jornada nueva
     const notificacion = notificacionRepository.create({
     mensaje: `Has sido asignado a una jornada de limpieza el ${jornada.fecha_programada} de ${jornada.hora_inicio} a ${jornada.hora_fin}`,
     leida: false,

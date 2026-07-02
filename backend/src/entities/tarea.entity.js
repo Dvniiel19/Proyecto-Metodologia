@@ -1,5 +1,10 @@
 "use strict";
 
+/**
+ * Entidad Tarea: labor concreta dentro de una asignacion de servicio.
+ * Su estado avanza hasta "Pendiente de Validacion" cuando el trabajador la
+ * finaliza subiendo su foto de evidencia.
+ */
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
@@ -28,6 +33,8 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
+    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
+    // cuando un service pide datos con "relations"
     relations: {
         checklists: {
             target: 'Checklist',

@@ -3,7 +3,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const insumosService = require('../services/insumosService');
 const { createInsumosSchema, updateInsumosSchema,movimientoInsumoSchema } = require('../validations/insumosValidation');
-const { getRepository } = require('typeorm');
 
 
 /** post /insumos
@@ -42,7 +41,7 @@ const obtenerTodosLosInsumos = async (req, res) => {
 };
 
 /** get /insumos/:id
- * obtiene un insumo específico por su ID
+ * obtiene un insumo especifico por su ID
  */
 const obtenerInsumosPorId = async (req, res) => {
     try {
@@ -127,78 +126,24 @@ const registrarMovimientoInsumo = async(req, res)=> {
 //
         const { id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones } = value;
 
-       const insumoRepository = getRepository('Insumo');
-        const consumoInsumoRepository = getRepository('ConsumoInsumo');
+        // Delegamos en el servicio, que usa db.getRepository (la API vieja getRepository de
+        // typeorm no funciona con DataSource y lanzaba ConnectionNotFoundError en este endpoint)
+        const respuesta = await insumosService.registrarMovimientoInsumo(
+            id_insumo,
+            cantidad,
+            tipo_movimiento,
+            id_servicio,
+            observaciones
+        );
 
-        // 3. Buscar insumo
-        const insumo = await insumoRepository.findOne({ where: { id_insumo: id_insumo } });
-        if (!insumo) {
-            return sendError(res, `Insumo con ID ${id_insumo} no encontrado`, 404);
-        }
-
-        let nuevoStock;
-        const tipoMovimientoLower = tipo_movimiento.toLowerCase();
-
-        // 4. Calcular stock según el tipo y restringir negativos
-        if (tipoMovimientoLower === 'salida') {
-            if (cantidad > insumo.stock) {
-                return sendError(res, `Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidad}`, 400);
-            }
-            nuevoStock = insumo.stock - cantidad;
-        } else {
-            nuevoStock = insumo.stock + cantidad;
-        }
-
-        const hayStockCritico = nuevoStock < insumo.limite_seguridad;
-        const estadoAnterior = insumo.estado_insumo;
-
-        // 5. Actualizar la entidad Insumo
-        insumo.stock = nuevoStock;
-        insumo.estado_insumo = hayStockCritico ? 'Stock Crítico' : 'Normal';
-        insumo.fecha_actualizacion = new Date();
-
-        const insumoActualizado = await insumoRepository.save(insumo);
-
-        // 6. Guardar el movimiento en el histórico
-        const movimiento = {
-            cantidad_utilizada: cantidad,
-            tipo_movimiento: tipoMovimientoLower,
-            observaciones: observaciones || null,
-            insumo: { id_insumo: id_insumo },
-            agenda: { id_servicio: id_servicio },
-        };
-
-        const movimientoRegistrado = await consumoInsumoRepository.save(movimiento);
-
-        // 7. Respuesta estructurada con alertas funcionales
-        const respuesta = {
-            movimiento: {
-                id_consumo: movimientoRegistrado.id_consumo,
-                tipo: tipoMovimientoLower,
-                cantidad: cantidad,
-                fecha: movimientoRegistrado.fecha_emision || new Date(),
-            },
-            insumo: {
-                id_insumo: insumoActualizado.id_insumo,
-                nombre: insumoActualizado.nombre_insumo,
-                stock_anterior: insumo.stock + (tipoMovimientoLower === 'salida' ? cantidad : -cantidad),
-                stock_nuevo: insumoActualizado.stock,
-                limite_seguridad: insumoActualizado.limite_seguridad,
-                estado: insumoActualizado.estado_insumo,
-            },
-            alertaVisual: hayStockCritico,
-            cambio_estado: estadoAnterior !== insumoActualizado.estado_insumo,
-            detalle_alerta: hayStockCritico ? {
-                tipo: 'STOCK_CRITICO',
-                titulo: 'Alerta de Stock Crítico',
-                descripcion: `El insumo "${insumoActualizado.nombre_insumo}" ha alcanzado el nivel crítico. Stock actual: ${nuevoStock}`,
-                icono: 'warning',
-                prioridad: 'alta',
-            } : null,
-        };
-
-        return sendSuccess(res, respuesta, `Movimiento de ${tipoMovimientoLower} registrado exitosamente`, 201);
+        return sendSuccess(res, respuesta, `Movimiento de ${tipo_movimiento.toLowerCase()} registrado exitosamente`, 201);
     } catch (error) {
+        if (error.message.includes('no encontrado')) {
+            return sendError(res, error.message, 404);
+        }
+        if (error.message.includes('Stock insuficiente')) {
+            return sendError(res, error.message, 400);
+        }
         console.error(error);
         return sendError(res, 'Error al registrar el movimiento de insumo', 500);
     }
@@ -206,15 +151,11 @@ const registrarMovimientoInsumo = async(req, res)=> {
 
 /**
  * get /insumos/alertas
- * Obtiene todos los insumos en estado Crítico
+ * Obtiene todos los insumos en estado Critico
  */
 const obtenerInsumosEnAlerta = async (req, res) => {
     try {
-        const insumoRepository = getRepository('Insumo');
-        const insumosEnAlerta = await insumoRepository.find({
-            where: { estado_insumo: 'Stock Crítico' },
-            order: { fecha_actualizacion: 'DESC' },
-        });
+        const insumosEnAlerta = await insumosService.obtenerInsumosEnAlerta();
         return sendSuccess(res, insumosEnAlerta, "Insumos en alerta obtenidos correctamente");
     } catch (error) {
         console.error(error);
@@ -224,7 +165,7 @@ const obtenerInsumosEnAlerta = async (req, res) => {
 
 /**
  * GET /insumos/:id_insumo/historico
- * Obtiene el histórico de movimientos de un insumo específico
+ * Obtiene el historico de movimientos de un insumo especifico
  */
 const obtenerHistoricoMovimientos = async (req, res) => {
     try {
@@ -234,23 +175,8 @@ const obtenerHistoricoMovimientos = async (req, res) => {
             return sendError(res, 'ID de insumo requerido', 400);
         }
 
-        const consumoInsumoRepository = getRepository('ConsumoInsumo');
-
-        const movimientos = await consumoInsumoRepository.find({
-            where: { insumo: { id_insumo: parseInt(id_insumo) } },
-            relations: ['insumo', 'agenda'],
-            order: { fecha_emision: 'DESC' },
-        });
-
-        return sendSuccess(
-            res, 
-            {
-                id_insumo: parseInt(id_insumo),
-                cantidad_movimientos: movimientos.length,
-                movimientos: movimientos,
-            },
-            'Histórico de movimientos obtenido correctamente'
-        );
+        const historico = await insumosService.obtenerHistoricoMovimientos(id_insumo);
+        return sendSuccess(res, historico, 'Histórico de movimientos obtenido correctamente');
     } catch (error) {
         console.error('Error en obtenerHistoricoMovimientos:', error);
         return sendError(res, 'Error al obtener histórico de movimientos', 500);

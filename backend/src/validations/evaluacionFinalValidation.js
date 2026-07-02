@@ -3,14 +3,14 @@
 const Joi = require('joi');
 
 /**
- * Validación para crear un Evaluacion_Final (req.body)
+ * Validacion para crear un Evaluacion_Final (req.body)
  * POST /evaluacion_final
  */
 const createEvaluacionFinalSchema = Joi.object({
     nota: Joi.number()
         .integer()
         .min(1)
-        .max(5) // Límite exacto de tu TypeORM
+        .max(5) // Limite exacto de tu TypeORM
         .required() // Equivale a nullable: false
         .messages({
             'number.base': 'La nota debe ser un número.',
@@ -43,7 +43,7 @@ const createEvaluacionFinalSchema = Joi.object({
 });
 
 /**
- * Validación para actualizar un Evaluacion_Final (req.body)
+ * Validacion para actualizar un Evaluacion_Final (req.body)
  * PATCH /evaluacion_final/:id
  */
 const updateEvaluacionFinalSchema = Joi.object({

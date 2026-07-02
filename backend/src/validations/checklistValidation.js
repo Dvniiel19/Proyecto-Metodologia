@@ -1,6 +1,6 @@
 /**
  * Validaciones para Checklist
- * Aquí definimos las reglas que deben cumplir los datos al crear o actualizar un Checklist
+ * Aqui definimos las reglas que deben cumplir los datos al crear o actualizar un Checklist
  */
 
 const Joi = require('joi');

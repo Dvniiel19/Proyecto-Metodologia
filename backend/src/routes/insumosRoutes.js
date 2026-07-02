@@ -1,11 +1,13 @@
 /**
  * Rutas de insumos
- * Aquí definimos los endpoints relacionados con insumoss
- * Protegidas con autenticación JWT y autorización basada en roles
+ * Aqui definimos los endpoints relacionados con insumoss
+ * Protegidas con autenticacion JWT y autorizacion basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
+const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
+aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const insumosController = require('../controllers/insumosController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
@@ -15,13 +17,13 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 router.post('/', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.crearInsumos);
 
 // GET /insumos - obtener todos los insumoss
-// Requiere: Autenticación (acceso menos restrictivo)
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/', autenticacion, insumosController.obtenerTodosLosInsumos);
 
 //RUTAS MOVIMIENTO Y CONTROL STOCK CRITICO
 
 //POST /insumos/movimiento 
-/* Registra ingreso o salida de stock y evalúa alertas críticas
+/* Registra ingreso o salida de stock y evalua alertas criticas
  * Requiere: Administrador o GestorInventario
  * Body esperado:
  * {
@@ -36,22 +38,22 @@ router.post('/movimiento', autenticacion, autorizacion(['Administrador', 'Gestor
 
 /**
  * GET /insumos/alertas
- * Obtiene todos los insumos en estado "Stock Crítico"
+ * Obtiene todos los insumos en estado "Stock Critico"
  * Ideal para panel del Supervisor
- * Requiere: Autenticación (acceso menos restrictivo)
+ * Requiere: Autenticacion (acceso menos restrictivo)
  */
 router.get('/alertas', autenticacion, insumosController.obtenerInsumosEnAlerta);
 
 /**
  * GET /insumos/:id_insumo/historico
- * Obtiene el histórico de movimientos de un insumo específico
- * Útil para auditoría y trazabilidad
- * Requiere: Autenticación (acceso menos restrictivo)
+ * Obtiene el historico de movimientos de un insumo especifico
+ * Util para auditoria y trazabilidad
+ * Requiere: Autenticacion (acceso menos restrictivo)
  */
 router.get('/:id_insumo/historico', autenticacion, insumosController.obtenerHistoricoMovimientos);
 
-//GET /insumos/:id obtener un insumos específico
-// Requiere: Autenticación (acceso menos restrictivo)
+//GET /insumos/:id obtener un insumos especifico
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/:id_insumo', autenticacion, insumosController.obtenerInsumosPorId);
 
 // PATCH /insumos/:id actualizar un insumos

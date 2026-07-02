@@ -1,10 +1,12 @@
 /**
  * Rutas de cliente
- * Aquí definimos los endpoints relacionados con clientes
+ * Aqui definimos los endpoints relacionados con clientes
  */
 
 const express = require('express');
 const router = express.Router();
+const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
+aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const clienteController = require('../controllers/clienteController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
@@ -15,7 +17,7 @@ router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), 
 // GET /cliente - Obtener todos los clientes (PROTEGIDA - Autenticado)
 router.get('/', autenticacion, clienteController.obtenerTodosLosCliente);
 
-//GET /cliente/:id - Obtener un cliente específico (PROTEGIDA - Autenticado)
+//GET /cliente/:id - Obtener un cliente especifico (PROTEGIDA - Autenticado)
 router.get('/:id_cliente', autenticacion, clienteController.obtenerClientePorId);
 
 // PATCH /cliente/:id - Actualizar un cliente (PROTEGIDA - Administrador, Coordinador o el cliente mismo)

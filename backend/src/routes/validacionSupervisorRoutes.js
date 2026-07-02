@@ -1,11 +1,13 @@
 /**
- * Rutas de validación del Supervisor
- * Aquí definimos los endpoints relacionados con validaciones del Supervisor
- * Protegidas con autenticación JWT y autorización basada en roles
+ * Rutas de validacion del Supervisor
+ * Aqui definimos los endpoints relacionados con validaciones del Supervisor
+ * Protegidas con autenticacion JWT y autorizacion basada en roles
  */
 
 const express = require('express');
 const router = express.Router();
+const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
+aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const validacionSupervisorController = require('../controllers/validacionSupervisorController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
@@ -15,11 +17,11 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 router.post('/', autenticacion, autorizacion(['Administrador', 'Supervisor']), validacionSupervisorController.crearValidacionSupervisor);
 
 // GET /validacion_Supervisor - Obtener todas las validaciones de Supervisor
-// Requiere: Autenticación (acceso menos restrictivo)
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/', autenticacion, validacionSupervisorController.obtenerTodasLasValidacioneSupervisor);
 
-//GET /validacion_Supervisor/:id - Obtener una validacion de Supervisor específica
-// Requiere: Autenticación (acceso menos restrictivo)
+//GET /validacion_Supervisor/:id - Obtener una validacion de Supervisor especifica
+// Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/:id_validacion', autenticacion, validacionSupervisorController.obtenerValidacionSupervisorPorId);
 
 // PATCH /validacion_Supervisor/:id - Actualizar una validacion de Supervisor

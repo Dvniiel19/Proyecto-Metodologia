@@ -45,7 +45,7 @@ const obtenerValidacionSupervisorPorId= async (id_validacion) => {
 
 const actualizarValidacionSupervisor = async (id_validacion, datosActualizados) => {
     await validacionRepository.update(id_validacion,datosActualizados);
-    return await obtenerValidacionPorId(id_validacion);
+    return await obtenerValidacionSupervisorPorId(id_validacion);
 }
 
 /**
