@@ -15,7 +15,6 @@ const validarContrasena = (contrasena) => {
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(contrasena)) return 'La contraseña debe tener minimo un caracter especial';
     return null;
 };
-
 /** post /auth/login
  * autenticar usuario y generar token JWT
  */

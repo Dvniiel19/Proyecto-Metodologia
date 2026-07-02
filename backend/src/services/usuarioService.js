@@ -30,8 +30,8 @@ const obtenerTodosLosUsuarios = async () => {
 
 /**
  * obtener usuario por correo(usado para el login)
- * @param {String} correo 
- * @returns {Object | null} 
+ * @param {String} correo
+ * @returns {Object | null}
  */
 const obtenerUsuarioPorCorreo = async (correo) => {
     // incluye contrasena explicitamente (tiene select: false) porque el login la compara
@@ -84,8 +84,8 @@ const eliminarUsuario = async (id_usuario) => {
 module.exports = {
     crearUsuario,
     obtenerTodosLosUsuarios,
+    obtenerUsuarioPorCorreo,
     obtenerUsuarioPorId,
     actualizarUsuario,
     eliminarUsuario,
-    obtenerUsuarioPorCorreo,
 };

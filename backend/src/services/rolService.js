@@ -1,5 +1,3 @@
-
-
 const db = require('../config/db');
 const Rol = require('../entities/rol.entity');
 
@@ -7,18 +5,18 @@ const rolRepository = db.getRepository(Rol);
 
 /**
  * crear un nuevo rol
- * @param {Object} datosRol 
- * @return {Object} 
+ * @param {Object} datosRol
+ * @return {Object}
 */
 
 const crearRol = async (datosRol) => {
     const nuevoRol = rolRepository.create(datosRol);
     return await rolRepository.save(nuevoRol);
-}; 
+};
 
 /**
  * obtener todos los roles
- * @return {Array} 
+ * @return {Array}
  */
 
 const obtenerTodosLosRoles = async () => {
@@ -27,20 +25,20 @@ const obtenerTodosLosRoles = async () => {
 
 /**
  * obtener rol por id
- * @param {Number} id_rol 
- * @param {Object} datosActualizados 
- * @returns {Object | null} 
+ * @param {Number} id_rol
+ * @param {Object} datosActualizados
+ * @returns {Object | null}
  */
 
 const obtenerRolPorId = async (id_rol) => {
-    return await rolRepository.findOneBy({id_rol});
+    return await rolRepository.findOneBy({ id_rol: Number(id_rol) });
 };
 
 /**
  * actualizar un rol existente
  * @param {Number} id_rol
- * @param {Object} datosActualizados 
- * @returns {Object | null} 
+ * @param {Object} datosActualizados
+ * @returns {Object | null}
  */
 
 
@@ -51,8 +49,8 @@ const actualizarRol = async (id_rol, datosActualizados) => {
 
 /**
  * eliminar un rol
- * @param {Number} id_rol 
- * @return {Boolean} 
+ * @param {Number} id_rol
+ * @return {Boolean}
  */
 
 const eliminarRol = async (id_rol) => {

@@ -37,4 +37,8 @@ router.patch('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordi
 // Requiere: Administrador o Coordinador
 router.delete('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordinador']), tareaController.eliminarTarea);
 
+// PUT /tarea/:id_tarea/finalizar - Finalizar tarea con evidencia (foto obligatoria)
+// Requiere: Trabajador de Aseo (autenticado)
+router.put('/:id_tarea/finalizar', autenticacion, autorizacion(['Trabajador de Aseo']), subirFotoEvidencia, tareaController.finalizarTarea);
+
 module.exports = router;
