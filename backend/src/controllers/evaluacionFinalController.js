@@ -1,3 +1,4 @@
+const { Not, IsNull } = require('typeorm');
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const evaluacionFinalService = require('../services/evaluacionFinalService');
 const { createEvaluacionFinalSchema, updateEvaluacionFinalSchema } = require('../validations/evaluacionFinalValidation');
@@ -36,10 +37,18 @@ const crearEvaluacionFinal = async (req, res) => {
         if (!agenda) {
             return sendError(res, 'El id_servicio no existe', 404);
         }
-        if (agenda.estado === 'Pendiente') { // solo se pueden evaluar servicios que ya han sido realizados
-            return sendError(res, 'El servicio aun no ha sido realizado, no se puede calificar', 400);
+        // solo se pueden evaluar servicios que ya fueron completados
+        const ESTADOS_EVALUABLES = ['Finalizado', 'Completado'];
+        if (!ESTADOS_EVALUABLES.includes(agenda.estado)) {
+            return sendError(res, 'El servicio aun no ha sido finalizado, no se puede calificar', 400);
         }
-        if (agenda.contrato.cliente.usuario.id_usuario !== usuarioId) {
+        // Optional chaining: id_contrato es nullable en Agenda, asi que cualquier
+        // eslabon (contrato, cliente, usuario) puede venir null sin botar el servidor
+        const idUsuarioTitular = agenda.contrato?.cliente?.usuario?.id_usuario;
+        if (!idUsuarioTitular) {
+            return sendError(res, 'El servicio no tiene un contrato con cliente valido asociado, no se puede evaluar', 400);
+        }
+        if (idUsuarioTitular !== usuarioId) {
             return sendError(res, 'No tienes permisos para calificar este servicio', 403);
         }
 
@@ -52,7 +61,20 @@ const crearEvaluacionFinal = async (req, res) => {
             return sendError(res, 'Ya hay una evaluacion para ese servicio', 409);
         }
 
-        const evaluacionFinalCreado = await evaluacionFinalService.crearEvaluacionFinal(value);
+        // El trabajador responsable es quien ficho la salida que dejo el servicio en 'Finalizado'
+        const asistenciaRepository = db.getRepository('Asistencia');
+        const asistenciaDelServicio = await asistenciaRepository.findOne({
+            where: { id_servicio, hora_salida: Not(IsNull()) },
+            order: { id_asistencia: 'DESC' },
+        });
+        if (!asistenciaDelServicio) {
+            return sendError(res, 'No se encontro un trabajador responsable para este servicio', 400);
+        }
+
+        const evaluacionFinalCreado = await evaluacionFinalService.crearEvaluacionFinal({
+            ...value,
+            id_trabajador: asistenciaDelServicio.id_trabajador,
+        });
 
         return sendSuccess(
             res,

@@ -9,9 +9,10 @@ const { aplicarValidacionDeIds } = require('../middlewares/validarIdParam');
 aplicarValidacionDeIds(router); // responde 400 si un id de la URL no es numerico
 const evaluacionFinalController = require('../controllers/evaluacionFinalController');
 const { autenticacion } = require('../middlewares/authentication.middleware');
+const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
-// POST /evaluacion_final - Crear un nuevo evaluacion_final (PROTEGIDA CON AUTENTICACION)
-router.post('/', autenticacion, evaluacionFinalController.crearEvaluacionFinal);
+// POST /evaluacion_final - Crear un nuevo evaluacion_final (PROTEGIDA - Solo Cliente, dueño del contrato)
+router.post('/', autenticacion, autorizacion(['Cliente']), evaluacionFinalController.crearEvaluacionFinal);
 
 // GET /evaluacion_final - Obtener todos los evaluacion_final (PROTEGIDA CON AUTENTICACION)
 router.get('/', autenticacion, evaluacionFinalController.obtenerTodasLasEvaluacionFinal);

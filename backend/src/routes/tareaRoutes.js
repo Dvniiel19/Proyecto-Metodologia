@@ -26,8 +26,9 @@ router.get('/', autenticacion, tareaController.obtenerTodasLasTarea);
 router.get('/:id_tarea', autenticacion, tareaController.obtenerTareaPorId);
 
 // PUT /tarea/:id/finalizar - Finalizar tarea con foto de evidencia obligatoria (notifica al cliente por correo)
-// Requiere: Trabajador, Supervisor o Coordinador
-router.put('/:id_tarea/finalizar', autenticacion, autorizacion(['Trabajador', 'Supervisor', 'Coordinador']), subirFotoEvidencia, tareaController.finalizarTarea);
+// Requiere: Trabajador, Supervisor, Coordinador o Administrador
+// (se elimino 'Trabajador de Aseo': ese rol no existe en la tabla roles y nunca podia coincidir)
+router.put('/:id_tarea/finalizar', autenticacion, autorizacion(['Trabajador', 'Supervisor', 'Coordinador', 'Administrador']), subirFotoEvidencia, tareaController.finalizarTarea);
 
 // PATCH /tarea/:id - Actualizar una tarea
 // Requiere: Administrador o Coordinador
@@ -36,9 +37,5 @@ router.patch('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordi
 // DELETE /tarea/:id - Eliminar una tarea
 // Requiere: Administrador o Coordinador
 router.delete('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordinador']), tareaController.eliminarTarea);
-
-// PUT /tarea/:id_tarea/finalizar - Finalizar tarea con evidencia (foto obligatoria)
-// Requiere: Trabajador de Aseo (autenticado)
-router.put('/:id_tarea/finalizar', autenticacion, autorizacion(['Trabajador de Aseo']), subirFotoEvidencia, tareaController.finalizarTarea);
 
 module.exports = router;

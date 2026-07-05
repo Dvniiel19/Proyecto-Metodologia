@@ -1,6 +1,6 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const asistenciaService = require('../services/asistenciaService');
-const { createAsistenciaSchema, updateAsistenciaSchema } = require('../validations/asistenciaValidation');
+const { createAsistenciaSchema, updateAsistenciaSchema, registrarEntradaSchema, registrarInasistenciaSchema } = require('../validations/asistenciaValidation');
 
 /** post /asistencia
  * crear un nuevo registro de asistencia
@@ -114,17 +114,22 @@ const eliminarAsistencia = async (req, res) => {
     }
 };
 
-// [AGREGADO] Reloj control: entrada. No valida con Joi porque fecha y hora las genera el servicio.
+// [AGREGADO] Reloj control: entrada. Valida los ids con Joi (fecha y hora las genera el servicio).
 /** post /asistencia/entrada
  * el trabajador ficha su entrada — genera fecha y hora automaticamente
  */
 const registrarEntrada = async (req, res) => {
     try {
-        const { id_trabajador, id_servicio } = req.body;
-
-        if (!id_trabajador || !id_servicio) {
-            return sendError(res, 'id_trabajador e id_servicio son requeridos', 400);
+        const { error, value } = registrarEntradaSchema.validate(req.body);
+        if (error) {
+            return sendError(
+                res,
+                'Error de validacion de datos',
+                400,
+                error.details.map(err => err.message)
+            );
         }
+        const { id_trabajador, id_servicio } = value;
 
         const asistencia = await asistenciaService.registrarEntrada(id_trabajador, id_servicio);
         if (asistencia.error === 'entrada_abierta') {
@@ -134,6 +139,34 @@ const registrarEntrada = async (req, res) => {
     } catch (error) {
         console.error(error);
         return sendError(res, 'Error al registrar la entrada', 500);
+    }
+};
+
+// [AGREGADO] Registro manual de inasistencia (lo asienta un supervisor o coordinador).
+/** post /asistencia/inasistencia
+ * asienta la ausencia de un trabajador en un servicio y fecha determinados
+ */
+const registrarInasistencia = async (req, res) => {
+    try {
+        const { error, value } = registrarInasistenciaSchema.validate(req.body);
+        if (error) {
+            return sendError(
+                res,
+                'Error de validacion de datos',
+                400,
+                error.details.map(err => err.message)
+            );
+        }
+        const { id_trabajador, id_servicio, fecha } = value;
+
+        const inasistencia = await asistenciaService.registrarInasistencia(id_trabajador, id_servicio, fecha);
+        if (inasistencia.error === 'ya_registrada') {
+            return sendError(res, 'Ya existe un registro de asistencia para ese trabajador, servicio y fecha', 409);
+        }
+        return sendSuccess(res, inasistencia, 'Inasistencia registrada exitosamente', 201);
+    } catch (error) {
+        console.error(error);
+        return sendError(res, 'Error al registrar la inasistencia', 500);
     }
 };
 
@@ -182,5 +215,6 @@ module.exports = {
     eliminarAsistencia,
     registrarEntrada,
     registrarSalida,
+    registrarInasistencia,
     obtenerAsistenciasPorTrabajador,
 };

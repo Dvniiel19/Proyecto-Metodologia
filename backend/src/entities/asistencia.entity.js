@@ -17,13 +17,24 @@ module.exports = new EntitySchema({
             generated: true,
         },
         // [AGREGADO] Columna de fecha del dia laboral. Se genera automaticamente en registrarEntrada().
+        // El default CURRENT_DATE permite que synchronize agregue la columna NOT NULL
+        // sobre una tabla que ya tiene filas sin que Postgres rechace el ALTER TABLE.
         fecha: {
             type: 'date',
             nullable: false,
+            default: () => 'CURRENT_DATE',
         },
+        // Nullable porque una inasistencia (estado 'Ausente') no tiene hora de entrada
         hora_entrada: {
             type: 'time',
+            nullable: true,
+        },
+        // [AGREGADO] Distingue asistencias reales de ausencias registradas manualmente
+        estado_asistencia: {
+            type: 'varchar',
+            length: 20,
             nullable: false,
+            default: 'Presente',
         },
         hora_salida: {
             type: 'time',

@@ -28,6 +28,14 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
+        // [AGREGADO] trabajador responsable del servicio evaluado, para poder
+        // calcular su promedio de satisfaccion. Nullable porque la tabla ya
+        // puede tener filas de antes de este campo (synchronize no permite
+        // agregar una NOT NULL sin default sobre una tabla con datos).
+        id_trabajador: {
+            type: 'int',
+            nullable: true,
+        },
     },
     uniques: [ // para asegurar que cada servicio tenga solo una evaluacion final
         {
@@ -42,6 +50,12 @@ module.exports = new EntitySchema({
             target: 'Agenda',
             type: 'one-to-one',
             joinColumn: { name: 'id_servicio' },
-        }
+        },
+        trabajador: {
+            target: 'Trabajador',
+            type: 'many-to-one',
+            joinColumn: { name: 'id_trabajador' },
+            inverseSide: 'evaluaciones',
+        },
     },
 });

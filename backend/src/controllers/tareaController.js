@@ -37,18 +37,14 @@ const crearTarea = async (req, res) => {
  */
 const finalizarTarea = async (req, res) => {
     try {
+        // El middleware validarIdParam del router ya garantiza que id_tarea sea un entero positivo
         const { id_tarea } = req.params;
-        const idTareaNumerico = Number(id_tarea);
-
-        if (!id_tarea || Number.isNaN(idTareaNumerico) || idTareaNumerico <= 0) {
-            return sendError(res, 'El id_tarea debe ser un número válido', 400);
-        }
 
         if (!req.file) {
             return sendError(res, 'La foto de evidencia es obligatoria para finalizar la tarea', 400);
         }
 
-        const resultado = await tareaService.finalizarTareaConEvidencia(idTareaNumerico, req.file);
+        const resultado = await tareaService.finalizarTareaConEvidencia(Number(id_tarea), req.file);
         if (!resultado) {
             return sendError(res, 'tarea no encontrada', 404);
         }
@@ -60,6 +56,11 @@ const finalizarTarea = async (req, res) => {
             200
         );
     } catch (error) {
+        // Errores de negocio del servicio traen statusCode (ej: 502 si fallo el correo
+        // y la transaccion hizo rollback); el resto son errores inesperados (500)
+        if (error.statusCode) {
+            return sendError(res, error.message, error.statusCode);
+        }
         console.error(error);
         return sendError(res, 'Error al finalizar la tarea', 500, [error.message]);
     }

@@ -126,16 +126,20 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
 
         await repositorioTransaccional.save(tarea);
 
-        let emailEnviado = false;
+        // Si el correo falla se relanza el error: al salir la excepcion de db.transaction,
+        // TypeORM hace ROLLBACK y la tarea NO queda finalizada a medias (garantia todo-o-nada).
+        // El statusCode 502 le indica al controller que fallo un servicio externo (SMTP).
         try {
             await notificarClienteTareaPendienteValidacion({
                 correoCliente,
                 idTarea: tarea.id_tarea,
                 descripcionTarea: tarea.descripcion,
             });
-            emailEnviado = true;
         } catch (emailError) {
-            console.warn('Email no enviado (SMTP no configurado?):', emailError.message);
+            console.error('Fallo el envio de correo, se revierte la finalizacion:', emailError.message);
+            const error = new Error('No se pudo notificar al cliente por correo; la tarea no fue finalizada. Intente nuevamente.');
+            error.statusCode = 502;
+            throw error;
         }
 
         // Se retorna un resumen con solo lo que el frontend necesita mostrar
@@ -144,7 +148,8 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
             estado: tarea.estado,
             foto_evidencia: tarea.foto_evidencia,
             correo_notificado: correoCliente,
-            email_enviado: emailEnviado,
+            // si llegamos aqui el correo se envio si o si (de lo contrario hubo rollback)
+            email_enviado: true,
         };
     });
 };

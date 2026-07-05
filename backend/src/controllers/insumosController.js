@@ -138,11 +138,10 @@ const registrarMovimientoInsumo = async(req, res)=> {
 
         return sendSuccess(res, respuesta, `Movimiento de ${tipo_movimiento.toLowerCase()} registrado exitosamente`, 201);
     } catch (error) {
-        if (error.message.includes('no encontrado')) {
-            return sendError(res, error.message, 404);
-        }
-        if (error.message.includes('Stock insuficiente')) {
-            return sendError(res, error.message, 400);
+        // Los errores de negocio del servicio traen statusCode (404 / 400);
+        // cualquier otro error es inesperado y se responde 500
+        if (error.statusCode) {
+            return sendError(res, error.message, error.statusCode);
         }
         console.error(error);
         return sendError(res, 'Error al registrar el movimiento de insumo', 500);

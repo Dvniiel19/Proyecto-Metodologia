@@ -1,8 +1,14 @@
 const db = require('../config/db');
-const insumosEntity = require('../entities/insumos.entity');
 const Insumos = require('../entities/insumos.entity');
+const { notificarStockCritico } = require('./emailService');
 
 const insumosRepository = db.getRepository(Insumos);
+
+// Unica fuente de verdad de la regla de negocio "stock critico": al llegar al limite (<=)
+// el insumo pasa a 'Stock Critico' (sin tilde, igual que en la validacion Joi y en el
+// filtro de /insumos/alertas). La usan actualizarInsumo y registrarMovimientoInsumo.
+const calcularEstadoInsumo = (stock, limite_seguridad) =>
+    stock <= limite_seguridad ? 'Stock Critico' : 'Normal';
 
 /**
  * crear un nuevo insumo
@@ -49,10 +55,7 @@ const actualizarInsumo = async (id_insumo, datosActualizados) => {
     // 2. Si la peticion actualiza el stock, recalculamos el estado automaticamente
     if (datosActualizados.stock !== undefined) {
         const nuevoStock = parseInt(datosActualizados.stock);
-        const limite = insumo.limite_seguridad;
-
-        // Si el stock actual es menor o igual al limite, pasa a Stock Critico
-        datosActualizados.estado_insumo = nuevoStock <= limite ? 'Stock Critico' : 'Normal';
+        datosActualizados.estado_insumo = calcularEstadoInsumo(nuevoStock, insumo.limite_seguridad);
     }
 
     // 3. Agregamos la fecha de actualizacion de manera manual
@@ -89,16 +92,18 @@ const eliminarInsumo = async (id_insumo) => {
  * @returns {Object}
  */
 
-// Registra un ingreso o salida de stock. Los errores de negocio se lanzan con
-// mensajes reconocibles ('no encontrado', 'Stock insuficiente') que el controller
-// traduce a 404 y 400 respectivamente.
+// Registra un ingreso o salida de stock. Los errores de negocio llevan statusCode
+// (404 no existe / 400 stock insuficiente) para que el controller responda el
+// codigo HTTP correcto sin depender del texto del mensaje.
 const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones) => {
     const consumoInsumoRepository = db.getRepository('ConsumoInsumo');
 
     // 1. Buscar el insumo (parseInt porque el id puede llegar como string)
     const insumo = await insumosRepository.findOneBy({ id_insumo: parseInt(id_insumo) });
     if (!insumo) {
-        throw new Error(`Insumo con ID ${id_insumo} no encontrado`);
+        const error = new Error(`Insumo con ID ${id_insumo} no encontrado`);
+        error.statusCode = 404;
+        throw error;
     }
 
     let nuevoStock;
@@ -108,23 +113,35 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
     // Regla de negocio: una salida nunca puede dejar el stock en negativo
     if (tipoMovimientoLower === 'salida') {
         if (cantidad > insumo.stock) {
-            throw new Error(`Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidad}`);
+            const error = new Error(`Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidad}`);
+            error.statusCode = 400;
+            throw error;
         }
         nuevoStock = insumo.stock - cantidad;
     } else {
         nuevoStock = insumo.stock + cantidad;
     }
 
-    // mismo criterio y escritura que actualizarInsumo: al llegar al limite (<=) pasa a 'Stock Critico' (sin tilde,
-    // igual que en la validacion Joi); si no coinciden, los insumos criticos no aparecen en /insumos/alertas
-    const hayStockCritico = nuevoStock <= insumo.limite_seguridad;
     const estadoAnterior = insumo.estado_insumo;
+    const nuevoEstado = calcularEstadoInsumo(nuevoStock, insumo.limite_seguridad);
+    const hayStockCritico = nuevoEstado === 'Stock Critico';
 
     insumo.stock = nuevoStock;
-    insumo.estado_insumo = hayStockCritico ? 'Stock Critico' : 'Normal';
+    insumo.estado_insumo = nuevoEstado;
     insumo.fecha_actualizacion = new Date();
 
     const insumoActualizado = await insumosRepository.save(insumo);
+
+    // Alerta proactiva: ademas de dejar el estado en BD, se dispara una notificacion
+    // activa. Si el canal de alerta falla no se revierte el movimiento de stock
+    // (el registro contable manda), solo se deja constancia en el log.
+    if (hayStockCritico) {
+        try {
+            await notificarStockCritico(insumoActualizado);
+        } catch (alertaError) {
+            console.warn('No se pudo enviar la alerta de stock critico:', alertaError.message);
+        }
+    }
 
     // 3. Dejar el movimiento registrado en el historico (tabla consumo_insumo),
     // enlazado al insumo y a la jornada (agenda) donde se uso

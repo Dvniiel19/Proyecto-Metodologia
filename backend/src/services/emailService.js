@@ -50,6 +50,24 @@ const notificarClienteTareaPendienteValidacion = async ({ correoCliente, idTarea
     });
 };
 
+// Alerta activa de stock critico: avisa al responsable de inventario cuando un
+// insumo cae al limite de seguridad. Se llama desde insumosService.registrarMovimientoInsumo.
+// El destinatario se configura con SMTP_ALERT_TO; si no esta definido se usa la cuenta SMTP.
+const notificarStockCritico = async (insumo) => {
+    const transporter = obtenerTransporter();
+    const remitente = process.env.SMTP_FROM || process.env.SMTP_USER;
+    const destinatario = process.env.SMTP_ALERT_TO || process.env.SMTP_USER;
+
+    await transporter.sendMail({
+        from: remitente,
+        to: destinatario,
+        subject: `⚠️ Stock crítico: ${insumo.nombre_insumo}`,
+        text: `El insumo "${insumo.nombre_insumo}" alcanzó el nivel crítico. Stock actual: ${insumo.stock} (límite de seguridad: ${insumo.limite_seguridad}). Se requiere reposición.`,
+        html: `<p>El insumo <strong>"${insumo.nombre_insumo}"</strong> alcanzó el nivel crítico.</p><p>Stock actual: <strong>${insumo.stock}</strong> (límite de seguridad: ${insumo.limite_seguridad}).</p><p>Se requiere reposición.</p>`,
+    });
+};
+
 module.exports = {
     notificarClienteTareaPendienteValidacion,
+    notificarStockCritico,
 };

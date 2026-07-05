@@ -17,6 +17,10 @@ router.post('/auth/login', usuarioController.login);
 // POST /usuario - Crear un nuevo usuario (PUBLICA - Registro)
 router.post('/', usuarioController.crearUsuario);
 
+// POST /usuario/personal - Crear cuenta + perfil de personal en una transaccion
+// (PROTEGIDA - Admin crea cualquier rol de personal; Coordinador solo Trabajadores)
+router.post('/personal', autenticacion, autorizacion(['Administrador', 'Coordinador']), usuarioController.crearPersonal);
+
 // GET /usuario - Obtener todos los usuarios (PROTEGIDA - Solo Administrador)
 router.get('/', autenticacion, autorizacion(['Administrador']), usuarioController.obtenerTodosLosUsuarios);
 
