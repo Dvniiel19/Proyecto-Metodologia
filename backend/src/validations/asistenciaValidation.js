@@ -111,7 +111,48 @@ const updateAsistenciaSchema = Joi.object({
   'object.min': 'Debes enviar al menos un campo para actualizar'
 });
 
+// [AGREGADO] Esquema para el reloj control (POST /asistencia/entrada).
+// Solo valida los ids: fecha y hora las genera el servicio automaticamente.
+const registrarEntradaSchema = Joi.object({
+  id_trabajador: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      'number.base': 'El ID del trabajador debe ser un numero.',
+      'number.integer': 'El ID del trabajador debe ser un numero entero.',
+      'number.positive': 'El ID del trabajador debe ser un numero positivo.',
+      'any.required': 'El ID del trabajador es un campo obligatorio.'
+    }),
+
+  id_servicio: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      'number.base': 'El ID del servicio debe ser un numero.',
+      'number.integer': 'El ID del servicio debe ser un numero entero.',
+      'number.positive': 'El ID del servicio debe ser un numero positivo.',
+      'any.required': 'El ID del servicio es un campo obligatorio.'
+    }),
+});
+
+// [AGREGADO] Esquema para registrar una inasistencia manual (POST /asistencia/inasistencia).
+// Igual que la entrada pero con la fecha del dia de la ausencia, que si viene en el body.
+const registrarInasistenciaSchema = registrarEntradaSchema.keys({
+  fecha: Joi.string()
+    .isoDate()
+    .required()
+    .messages({
+      'string.base': 'La fecha debe ser texto',
+      'string.isoDate': 'La fecha debe tener formato YYYY-MM-DD',
+      'any.required': 'La fecha es un campo obligatorio'
+    }),
+});
+
 module.exports = {
   createAsistenciaSchema,
-  updateAsistenciaSchema
+  updateAsistenciaSchema,
+  registrarEntradaSchema,
+  registrarInasistenciaSchema
 };

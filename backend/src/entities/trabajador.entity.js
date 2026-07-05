@@ -34,6 +34,15 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: true,
         },
+        // [AGREGADO] Promedio de las notas (1-5) que los clientes le dan al trabajador
+        // en sus evaluaciones finales. Se recalcula cada vez que se crea, actualiza o
+        // elimina una evaluacion asociada a este trabajador. Null mientras no tenga evaluaciones.
+        promedio_satisfaccion: {
+            type: 'decimal',
+            precision: 3,
+            scale: 2,
+            nullable: true,
+        },
     },
     // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
     // cuando un service pide datos con "relations"
@@ -58,6 +67,11 @@ module.exports = new EntitySchema({
         target: 'Notificacion',
         type: 'one-to-many',
         inverseSide: 'trabajador',
+        },
+        evaluaciones: {
+            target: 'EvaluacionFinal',
+            type: 'one-to-many',
+            inverseSide: 'trabajador',
         },
     },
 });

@@ -20,8 +20,61 @@ const crearUsuario = async (datosUsuario) => {
 };
 
 /**
+ * registro unificado: crea el Usuario y su perfil (Cliente o Trabajador)
+ * dentro de una unica transaccion de base de datos
+ * @param {Object} datos - correo, contrasena (ya hasheada), id_rol, nombre, apellido, telefono, direccion?
+ * @param {String} nombreRol - nombre del rol ya resuelto por el controller
+ * @return {Object} { usuario, perfil }
+ */
+// [AGREGADO] Si cualquier paso falla (ej: el perfil no pasa una constraint),
+// TypeORM hace ROLLBACK de todo: nunca queda un Usuario huerfano sin perfil.
+const registroUnificado = async (datos, nombreRol) => {
+    const { correo, contrasena, id_rol, nombre, apellido, telefono, direccion } = datos;
+
+    return await db.transaction(async (manager) => {
+        // 1. Crear las credenciales dentro de la transaccion
+        const usuarioRepo = manager.getRepository(Usuario);
+        const usuarioGuardado = await usuarioRepo.save(
+            usuarioRepo.create({ correo, contrasena, id_rol }),
+        );
+
+        // 2. Crear el perfil segun el rol, vinculado al usuario recien creado.
+        // Cliente recibe perfil Cliente; cualquier rol de personal (Trabajador,
+        // Supervisor, Coordinador, GestorInventario) recibe perfil Trabajador:
+        // ahi viven nombre/apellido/telefono y todos pueden fichar asistencia.
+        let perfil = null;
+        if (nombreRol === 'Cliente') {
+            const clienteRepo = manager.getRepository('Cliente');
+            perfil = await clienteRepo.save(
+                clienteRepo.create({
+                    nombre,
+                    apellido,
+                    telefono,
+                    direccion,
+                    id_usuario: usuarioGuardado.id_usuario,
+                }),
+            );
+        } else {
+            const trabajadorRepo = manager.getRepository('Trabajador');
+            perfil = await trabajadorRepo.save(
+                trabajadorRepo.create({
+                    nombre,
+                    apellido,
+                    telefono,
+                    id_usuario: usuarioGuardado.id_usuario,
+                }),
+            );
+        }
+
+        // el hash nunca se devuelve en la respuesta
+        delete usuarioGuardado.contrasena;
+        return { usuario: usuarioGuardado, perfil };
+    });
+};
+
+/**
  * obtener todos los usuarios
- * @return {Array} 
+ * @return {Array}
  */
 
 const obtenerTodosLosUsuarios = async () => {
@@ -83,6 +136,7 @@ const eliminarUsuario = async (id_usuario) => {
 
 module.exports = {
     crearUsuario,
+    registroUnificado,
     obtenerTodosLosUsuarios,
     obtenerUsuarioPorCorreo,
     obtenerUsuarioPorId,

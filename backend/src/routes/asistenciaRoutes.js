@@ -24,6 +24,10 @@ router.post('/entrada', autenticacion, autorizacion(['Trabajador', 'Supervisor',
 // Requiere: Trabajador, Supervisor, Coordinador
 router.patch('/:id_asistencia/salida', autenticacion, autorizacion(['Trabajador', 'Supervisor', 'Coordinador']), asistenciaController.registrarSalida);
 
+// POST /asistencia/inasistencia - Registrar manualmente la ausencia de un trabajador
+// Requiere: Administrador, Coordinador o Supervisor (el trabajador no asienta su propia ausencia)
+router.post('/inasistencia', autenticacion, autorizacion(['Administrador', 'Coordinador', 'Supervisor']), asistenciaController.registrarInasistencia);
+
 // GET /asistencia - Obtener todos los registros de asistencia
 // Requiere: Autenticacion
 router.get('/', autenticacion, asistenciaController.obtenerTodasLasAsistencia);

@@ -5,6 +5,7 @@ const db = require('../config/db');
 const Asistencia = require('../entities/asistencia.entity');
 
 const asistenciaRepository = db.getRepository(Asistencia);
+const agendaRepository = db.getRepository('Agenda');
 
 /**
  * crear una asistencia 
@@ -87,6 +88,8 @@ const registrarEntrada = async (id_trabajador, id_servicio) => {
  */
 // [AGREGADO] Reloj control — salida. Completa el registro existente con hora_salida.
 // Si la salida ya fue registrada, retorna { error: 'ya_registrada' } para que el controller devuelva 409.
+// Al fichar la salida, el servicio de la agenda pasa automaticamente a 'Finalizado'
+// para habilitar la evaluacion del cliente.
 const registrarSalida = async (id_asistencia) => {
     const asistencia = await obtenerAsistenciaPorId(id_asistencia);
     if (!asistencia) return null;
@@ -94,7 +97,36 @@ const registrarSalida = async (id_asistencia) => {
 
     const hora_salida = new Date().toTimeString().split(' ')[0];
     await asistenciaRepository.update(id_asistencia, { hora_salida });
+    await agendaRepository.update(asistencia.id_servicio, { estado: 'Finalizado' });
     return await obtenerAsistenciaPorId(id_asistencia);
+};
+
+/**
+ * registrar inasistencia — asienta manualmente la ausencia de un trabajador
+ * @param {Number} id_trabajador
+ * @param {Number} id_servicio
+ * @param {String} fecha formato YYYY-MM-DD
+ * @returns {Object}
+ */
+// [AGREGADO] Registro manual de ausencia (lo asienta un supervisor/coordinador).
+// Si ya existe un registro para ese trabajador/servicio/fecha retorna
+// { error: 'ya_registrada' } para que el controller devuelva 409.
+const registrarInasistencia = async (id_trabajador, id_servicio, fecha) => {
+    const yaRegistrada = await asistenciaRepository.findOneBy({
+        id_trabajador: Number(id_trabajador),
+        id_servicio: Number(id_servicio),
+        fecha,
+    });
+    if (yaRegistrada) return { error: 'ya_registrada' };
+
+    const nuevaInasistencia = asistenciaRepository.create({
+        id_trabajador: Number(id_trabajador),
+        id_servicio: Number(id_servicio),
+        fecha,
+        hora_entrada: null, // una ausencia no tiene hora de entrada
+        estado_asistencia: 'Ausente',
+    });
+    return await asistenciaRepository.save(nuevaInasistencia);
 };
 
 /**
@@ -130,5 +162,6 @@ module.exports = {
     eliminarAsistencia,
     registrarEntrada,
     registrarSalida,
+    registrarInasistencia,
     obtenerAsistenciasPorTrabajador,
 };

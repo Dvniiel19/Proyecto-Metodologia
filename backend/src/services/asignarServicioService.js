@@ -42,29 +42,19 @@ const crearAsignacion = async (datosAsignarServicio) => {
         throw error;
     }
 
-    // 3. Verificar cruces de horario del trabajador: se traen todas sus asignaciones
-    // (con su agenda relacionada) y se revisa si alguna se solapa con la jornada nueva
-    const asignacionesExistentes = await asignarServicioRepository.find({
-        where: { trabajador: { id_trabajador } },
-        relations: ['agenda'],
-    });
-
-    const hayCruce = asignacionesExistentes.some(asig => {
-        const otraJornada = asig.agenda;
-        if (!otraJornada) return false;
-        // Si son dias distintos no pueden cruzarse; se descarta al tiro
-        if (otraJornada.fecha_programada !== jornada.fecha_programada) return false;
-
-        const inicioNueva = new Date(`${jornada.fecha_programada}T${jornada.hora_inicio}`);
-        const finNueva   = new Date(`${jornada.fecha_programada}T${jornada.hora_fin}`);
-        const inicioOtra = new Date(`${otraJornada.fecha_programada}T${otraJornada.hora_inicio}`);
-        const finOtra    = new Date(`${otraJornada.fecha_programada}T${otraJornada.hora_fin}`);
-
-        // Formula de solapamiento de intervalos: dos rangos se cruzan si y solo si
-        // cada uno empieza antes de que termine el otro. Cubre todos los casos
-        // (cruce parcial, una jornada contenida dentro de otra, etc.) en una sola linea
-        return inicioNueva < finOtra && finNueva > inicioOtra;
-    });
+    // 3. Verificar cruces de horario del trabajador directamente en la base de datos.
+    // Formula de solapamiento de intervalos: dos rangos se cruzan si y solo si cada uno
+    // empieza antes de que termine el otro (inicioNueva < finOtra AND finNueva > inicioOtra).
+    // getExists() genera un SELECT EXISTS: no se trae el historial de turnos a memoria,
+    // Postgres responde solo true/false sin importar cuantas asignaciones tenga el trabajador
+    const hayCruce = await asignarServicioRepository
+        .createQueryBuilder('asignacion')
+        .innerJoin('asignacion.agenda', 'otraJornada')
+        .where('asignacion.id_trabajador = :id_trabajador', { id_trabajador })
+        .andWhere('otraJornada.fecha_programada = :fecha', { fecha: jornada.fecha_programada })
+        .andWhere('otraJornada.hora_inicio < :finNueva', { finNueva: jornada.hora_fin })
+        .andWhere('otraJornada.hora_fin > :inicioNueva', { inicioNueva: jornada.hora_inicio })
+        .getExists();
 
     if (hayCruce) {
     const error = new Error('El operario ya tiene una jornada en ese rango de horas');
