@@ -13,6 +13,7 @@ const path = require('path');
 const cors = require('cors');
 const config = require('./config/config');
 const db = require('./config/db');
+const { iniciarVerificacionRoles } = require('./utils/expiracionCron');
 
 const app = express();
 
@@ -20,9 +21,11 @@ app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
-app.use(express.json()); // parsea el body JSON de las peticiones y lo deja en req.body
-// Sirve las fotos de evidencia como archivos estaticos: /uploads/evidencias/<archivo>
+app.use(express.json()); 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+
+
 
 
 app.get('/', (req, res) => {
@@ -64,6 +67,7 @@ app.use('/consumoInsumo', consumoInsumoRoutes);
 app.use('/evaluacionFinal', evaluacionFinalRoutes);
 app.use('/validacionSupervisor', validacionSupervisorRoutes);
 app.use('/trabajador', trabajadorRoutes);
+
 app.use((req,res)=> {
     res.status(404).json({
         success: false,
@@ -72,14 +76,19 @@ app.use((req,res)=> {
     });
 });
 
+
 db.initialize()
-  .then(() => {
-    console.log('✅ Base de datos conectada con TypeORM');
-    app.listen(config.PORT, () => {
-      console.log(`✅ Servidor ejecutándose en puerto ${config.PORT}`);
-      console.log(`🔗 http://localhost:${config.PORT}`);
+    .then(() => {
+        console.log('✅ Base de datos conectada con TypeORM');
+
+       
+        iniciarVerificacionRoles();
+
+        app.listen(config.PORT, () => {
+            console.log(`✅ Servidor ejecutándose en puerto ${config.PORT}`);
+            console.log(`🔗 http://localhost:${config.PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('❌ Error al conectar la base de datos:', error);
     });
-  })
-  .catch((error) => {
-    console.error('❌ Error al conectar la base de datos:', error);
-  });
