@@ -17,7 +17,7 @@ const createTareaSchema = Joi.object({
             'string.min': 'La descripción debe tener al menos 3 caracteres.',
             'string.max': 'La descripción no puede exceder los 255 caracteres.',
             'any.required': 'La descripción es un campo obligatorio.'
-              }),
+            }),
     id_asignacion: Joi.number()
         .integer()
         .positive()
@@ -47,7 +47,7 @@ const updateTareaSchema = Joi.object({
             'string.min': 'La descripción debe tener al menos 3 caracteres.',
             'string.max': 'La descripción no puede exceder los 255 caracteres.',
             'any.required': 'La descripción es un campo obligatorio.'
-             }),
+            }),
     id_asignacion: Joi.number()
         .integer()
         .positive()

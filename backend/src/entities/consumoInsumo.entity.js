@@ -1,10 +1,4 @@
 "use strict"; 
-
-/**
- * Entidad ConsumoInsumo: historico de movimientos de inventario.
- * Cada fila registra cuanto de un insumo se uso (o ingreso) en una jornada,
- * con tipo de movimiento, observaciones y fecha automatica.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -20,12 +14,10 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
-        // Columnas que registra el flujo de movimientos (/insumos/movimiento).
-        // Sin ellas TypeORM las ignoraba al guardar y el historico fallaba al ordenar por fecha_emision.
         tipo_movimiento: {
             type: 'varchar',
             length: 20,
-            nullable: true, // 'ingreso' o 'salida'; null en consumos creados por el CRUD directo
+            nullable: true, 
         },
         observaciones: {
             type: 'varchar',
@@ -45,8 +37,7 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+    
     relations: {
         insumo: {
             target: 'Insumo',

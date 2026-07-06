@@ -65,9 +65,9 @@ const login = async (req, res) => {
     }
 };
 
-// [AGREGADO] Roles que pueden auto-registrarse desde el formulario publico.
+// Roles que pueden auto-registrarse desde el formulario 
 // Solo Cliente: las cuentas de trabajadores y roles administrativos las crea
-// un Administrador desde la gestion de usuarios, nunca por registro abierto.
+// un Administrador desde la gestion de usuarios
 const ROLES_REGISTRABLES = ['Cliente'];
 
 /** post /auth/register
@@ -122,7 +122,7 @@ const registro = async (req, res) => {
     }
 };
 
-// [AGREGADO] Roles de personal que se crean desde la administracion.
+// Roles de personal que se crean desde la administracion.
 // Reutiliza la misma transaccion del registro publico (usuario + perfil Trabajador).
 const ROLES_PERSONAL = ['Trabajador', 'Supervisor', 'Coordinador', 'GestorInventario'];
 
@@ -164,7 +164,7 @@ const crearPersonal = async (req, res) => {
             );
         }
 
-        // 4. Correo duplicado → conflicto
+        // 4. Correo duplicado = conflicto
         const existente = await usuarioService.obtenerUsuarioPorCorreo(value.correo);
         if (existente) {
             return sendError(res, 'Ya existe una cuenta con ese correo', 409);

@@ -112,8 +112,7 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
             return null; // el controller lo traduce a 404
         }
 
-        // Optional chaining (?.) recorre la cadena de relaciones sin explotar
-        // si algun eslabon viene null (ej: agenda sin contrato asociado)
+        // Se obtiene el correo del cliente desde la cadena de relaciones. Si no se encuentra, se lanza un error para que la transaccion haga rollback.
         const correoCliente = tarea?.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.correo;
         if (!correoCliente) {
             throw new Error('No se pudo obtener el correo del cliente asociado a la tarea.');

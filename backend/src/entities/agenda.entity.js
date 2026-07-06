@@ -1,11 +1,4 @@
 "use strict";
-
-/**
- * Entidad Agenda: representa una jornada de limpieza programada.
- * Guarda fecha, horario y estado (Pendiente -> Personal Asignado -> ...).
- * Es el eje del sistema: de ella cuelgan asignaciones, asistencias, checklists,
- * consumos de insumos y la evaluacion final.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -41,8 +34,7 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+    
     relations: {
         contrato: {
             target: 'Contrato',

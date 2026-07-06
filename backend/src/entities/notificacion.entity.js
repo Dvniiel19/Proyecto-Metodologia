@@ -1,9 +1,4 @@
 "use strict";
-
-/**
- * Entidad Notificacion: avisos internos para los trabajadores
- * (ej: "fuiste asignado a una jornada"). Se crean desde asignarServicioService.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -35,8 +30,6 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
     relations: {
         trabajador: {
             target: 'Trabajador',

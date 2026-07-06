@@ -106,7 +106,6 @@ const eliminarInsumos = async (req, res) => {
         return sendError(res, 'Error al eliminar insumo', 500);
     }
 };
-//// MOVIMIENTO Y CONTROL DE STOCK CRITICO ///
 
 /**
  * post /insumos/movimiento
@@ -123,11 +122,9 @@ const registrarMovimientoInsumo = async(req, res)=> {
                 error.details.map(err => err.message)
             );
         }
-//
         const { id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones } = value;
 
-        // Delegamos en el servicio, que usa db.getRepository (la API vieja getRepository de
-        // typeorm no funciona con DataSource y lanzaba ConnectionNotFoundError en este endpoint)
+// Llamamos al servicio para registrar el movimiento, que se encargara de actualizar el stock y evaluar alertas criticas
         const respuesta = await insumosService.registrarMovimientoInsumo(
             id_insumo,
             cantidad,
