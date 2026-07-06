@@ -12,7 +12,7 @@ const getRepository = () => {
     return evaluacionRepository;
 };
 
-// [AGREGADO] Recalcula el promedio de satisfaccion de un trabajador a partir
+// Recalcula el promedio de satisfaccion de un trabajador a partir
 // de todas sus evaluaciones y lo guarda en Trabajador.promedio_satisfaccion.
 // Se llama cada vez que una evaluacion asociada a ese trabajador cambia
 // (se crea, se actualiza o se elimina) para que el panel de administracion

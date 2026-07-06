@@ -27,7 +27,7 @@ const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false // REQUERIDO para conectarse a Supabase desde fuera de su red
   },
-  synchronize: true, // Crea automaticamente las tablas en base a las entidades (solo para desarrollo: en produccion puede alterar tablas con datos)
+  synchronize: true, // Crea automaticamente las tablas en base a las entidades
   logging: false, // en true muestra en consola cada SQL que ejecuta TypeORM (util para depurar)
   entities: [
     Agenda, AsignarServicio, Asistencia, ConsumoInsumo, Contrato, EvaluacionFinal,

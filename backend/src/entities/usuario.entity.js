@@ -1,10 +1,4 @@
 "use strict";
-
-/**
- * Entidad Usuario: credenciales de acceso al sistema (correo + contrasena hasheada).
- * La contrasena tiene select: false para que ninguna consulta la exponga por accidente.
- * Un usuario puede ser trabajador o cliente segun su rol.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -33,8 +27,6 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
     relations: {
         rol: {
             target: 'Rol',

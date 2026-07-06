@@ -1,10 +1,4 @@
 "use strict";
-
-/**
- * Entidad Insumo: inventario de productos de limpieza. Guarda el stock actual,
- * el limite de seguridad y el estado (Normal / Stock Critico) que se recalcula
- * automaticamente con cada movimiento.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -49,8 +43,6 @@ module.exports = new EntitySchema({
             nullable: true,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
     relations: {
         consumos: {
             target: 'ConsumoInsumo',
