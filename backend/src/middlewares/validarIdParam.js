@@ -20,8 +20,8 @@ const NOMBRES_ID = [
     'id_validacion',
 ];
 
-// Callback para router.param(): valida que el id sea un entero positivo.
-// Sin esto, un id como "abc" llega a la base de datos, lanza un error y responde 500.
+// Valida que un parametro de ruta sea un numero entero positivo. Si no lo es, envia un error 400. 
+// Si lo es, llama a next() para continuar con el flujo normal de la ruta.
 const validarIdParam = (req, res, next, valor, nombre) => {
     if (!/^\d+$/.test(valor)) {
         return sendError(res, `El parametro ${nombre} debe ser un numero entero positivo`, 400);

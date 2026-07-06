@@ -1,121 +1,111 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './styles/App.css'
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
+import { rutaInicioPorRol } from './services/authService'
+import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
+
+import Login from './pages/Login'
+import Registro from './pages/Registro'
+import Dashboard from './pages/DashboardAdministrativo'
+import MisTareas from './pages/MisTareas'
+import Usuarios from './pages/Usuarios'
+import Roles from './pages/Roles'
+import Clientes from './pages/Clientes'
+import Contratos from './pages/Contratos'
+import AgendaServicios from './pages/AgendaServicios'
+import Trabajadores from './pages/Trabajadores'
+import AsignarServicios from './pages/AsignarServicios'
+import Insumos from './pages/Insumos'
+import Reportes from './pages/Reportes'
+import HistorialEvaluaciones from './pages/HistorialEvaluaciones'
+import Asistencia from './pages/Asistencia'
+import Perfil from './pages/Perfil'
+
+// Manda a cada rol a su pagina de inicio.
+function InicioSegunRol() {
+  const { estaAutenticado, rol } = useAuth()
+  if (!estaAutenticado) return <Navigate to="/login" replace />
+  return <Navigate to={rutaInicioPorRol(rol)} replace />
+}
+
+function NoAutorizado() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white px-4">
+      <h1 className="text-2xl font-bold text-black">No tienes permiso para ver esta sección</h1>
+      <p className="text-sm text-gray-500">Tu rol no tiene acceso a esta sección.</p>
+      <Link
+        to="/"
+        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+      >
+        Ir al inicio
+      </Link>
+    </div>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Rutas Publicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Registro />} />
+          <Route path="/no-autorizado" element={<NoAutorizado />} />
 
-      <div className="ticks"></div>
+          {/* Rutas Privadas (requieren sesion; envueltas en el Layout del Sidebar) */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<Layout />}>
+              <Route path="/" element={<InicioSegunRol />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+              {/* Solo Admin y Coordinador */}
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Coordinador']} />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/clientes" element={<Clientes />} />
+                <Route path="/contratos" element={<Contratos />} />
+                <Route path="/trabajadores" element={<Trabajadores />} />
+                <Route path="/asignar-servicios" element={<AsignarServicios />} />
+                <Route path="/reportes" element={<Reportes />} />
+              </Route>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+              {/* Solo Admin */}
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador']} />}>
+                <Route path="/usuarios" element={<Usuarios />} />
+                <Route path="/rol" element={<Roles />} />
+              </Route>
+
+              {/* Admin, Coordinador y Supervisor */}
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Coordinador', 'Supervisor']} />}>
+                <Route path="/agenda" element={<AgendaServicios />} />
+              </Route>
+
+              {/* Cualquier usuario autenticado (principalmente Trabajador) */}
+              <Route path="/mis-tareas" element={<MisTareas />} />
+
+              {/* Perfil propio: cualquier usuario autenticado */}
+              <Route path="/perfil" element={<Perfil />} />
+
+              {/* Reloj control (Trabajador) y gestion de inasistencias (Supervisor+) */}
+              <Route element={<ProtectedRoute rolesPermitidos={['Trabajador', 'Supervisor', 'Coordinador', 'Administrador']} />}>
+                <Route path="/asistencia" element={<Asistencia />} />
+              </Route>
+
+              {/* Cliente: evaluacion de sus servicios (el backend solo permite crear al rol Cliente) */}
+              <Route element={<ProtectedRoute rolesPermitidos={['Cliente']} />}>
+                <Route path="/mis-servicios" element={<HistorialEvaluaciones />} />
+              </Route>
+
+              {/* Admin y Gestor de Inventario */}
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'GestorInventario']} />}>
+                <Route path="/insumos" element={<Insumos />} />
+              </Route>
+            </Route>
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

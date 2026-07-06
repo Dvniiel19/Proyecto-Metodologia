@@ -1,9 +1,4 @@
 "use strict";
-
-/**
- * Entidad Contrato: contrato de servicios entre un cliente y la empresa.
- * Las jornadas de la agenda nacen de un contrato.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -34,8 +29,7 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+    
     relations: {
         cliente: {
             target: 'Cliente',

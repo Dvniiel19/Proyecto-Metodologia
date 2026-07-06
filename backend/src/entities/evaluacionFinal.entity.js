@@ -1,9 +1,4 @@
 "use strict";
-
-/**
- * Entidad EvaluacionFinal: evaluacion que deja el cliente al terminar
- * una jornada (relacion 1 a 1 con la agenda).
- */
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
@@ -28,10 +23,6 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
-        // [AGREGADO] trabajador responsable del servicio evaluado, para poder
-        // calcular su promedio de satisfaccion. Nullable porque la tabla ya
-        // puede tener filas de antes de este campo (synchronize no permite
-        // agregar una NOT NULL sin default sobre una tabla con datos).
         id_trabajador: {
             type: 'int',
             nullable: true,
@@ -43,8 +34,7 @@ module.exports = new EntitySchema({
             columns: ['id_servicio'],
         },
     ],
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+    
     relations: {
         agenda: {
             target: 'Agenda',

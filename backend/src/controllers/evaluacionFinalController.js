@@ -42,8 +42,7 @@ const crearEvaluacionFinal = async (req, res) => {
         if (!ESTADOS_EVALUABLES.includes(agenda.estado)) {
             return sendError(res, 'El servicio aun no ha sido finalizado, no se puede calificar', 400);
         }
-        // Optional chaining: id_contrato es nullable en Agenda, asi que cualquier
-        // eslabon (contrato, cliente, usuario) puede venir null sin botar el servidor
+        // Verificamos que el usuario que hace la evaluacion sea el titular del contrato del servicio
         const idUsuarioTitular = agenda.contrato?.cliente?.usuario?.id_usuario;
         if (!idUsuarioTitular) {
             return sendError(res, 'El servicio no tiene un contrato con cliente valido asociado, no se puede evaluar', 400);

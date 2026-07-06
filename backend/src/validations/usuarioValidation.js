@@ -91,11 +91,11 @@ const updateUsuarioSchema = Joi.object({
   'object.min': 'Debes enviar al menos un campo (correo o contraseña) para actualizar'
 });
 
-// [AGREGADO] Esquema para el registro unificado (POST /auth/register).
+// Esquema para el registro unificado (POST /auth/register).
 // Valida credenciales + datos de perfil en un solo payload.
 // La direccion es condicional: se exige solo cuando el rol es Cliente. Como los
 // IDs de rol pueden variar entre bases de datos, el rol no se resuelve aqui:
-// el controller busca el nombre del rol y lo pasa por contexto Joi ($esCliente).
+// el controller busca el nombre del rol y lo pasa por contexto Joi (esCliente).
 const registerSchema = createUsuarioSchema.keys({
   nombre: Joi.string()
     .min(2)

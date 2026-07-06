@@ -16,7 +16,7 @@ const notificacionRepository = db.getRepository(Notificacion);
  * @return {Object} 
 */
 
-// Asignar un trabajador a una jornada aplica 3 validaciones de negocio en orden
+// Asignar un trabajador a una jornada aplica 3 validaciones
 // y luego encadena 3 efectos: crear la asignacion, actualizar la jornada y notificar.
 // Los errores llevan statusCode para que el controller responda el codigo HTTP correcto
 // (404 no existe / 400 ya inicio / 409 conflicto de horario) en vez de un 500 generico.
@@ -31,7 +31,7 @@ const crearAsignacion = async (datosAsignarServicio) => {
         throw error;
     }
 
-    // 2. Verificar que la jornada no haya iniciado aun.
+    // 2. Verificar que la jornada no haya iniciado aun
     // Se arma la fecha/hora de inicio combinando fecha_programada (YYYY-MM-DD)
     // con hora_inicio (HH:MM:SS) y se compara contra el momento actual
     const ahora = new Date();
