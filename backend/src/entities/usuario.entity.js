@@ -1,10 +1,5 @@
 "use strict";
 
-/**
- * Entidad Usuario: credenciales de acceso al sistema (correo + contrasena hasheada).
- * La contrasena tiene select: false para que ninguna consulta la exponga por accidente.
- * Un usuario puede ser trabajador o cliente segun su rol.
- */
 const { EntitySchema } = require('typeorm');
 
 module.exports = new EntitySchema({
@@ -19,22 +14,31 @@ module.exports = new EntitySchema({
         correo: {
             type: 'varchar',
             length: 255,
-            unique: true, //para evitar correos duplicados
-            nullable: false, //para que no se puedan dejar vacios
+            unique: true,
+            nullable: false,
         },
         contrasena: {
             type: 'varchar',
             length: 255,
-            nullable: false, //para que no se puedan dejar vacios
-            select: false, // el hash no se devuelve en las consultas; solo el login lo pide explicitamente
+            nullable: false,
+            select: false,
         },
         id_rol: {
             type: 'int',
             nullable: false,
         },
-    },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+       
+        fecha_expiracion: {
+            type: 'timestamp',
+            nullable: true,
+        },
+        estado_rol: {
+            type: 'varchar',
+            length: 255,
+            default: 'Activo',
+            nullable: false,
+        },
+    }, 
     relations: {
         rol: {
             target: 'Rol',

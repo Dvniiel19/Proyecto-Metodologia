@@ -49,7 +49,11 @@ const login = async (req, res) => {
                 usuario: {
                     id_usuario: usuario.id_usuario,
                     correo: usuario.correo,
-                    id_rol: usuario.id_rol
+                    id_rol: usuario.id_rol,
+                    estado_rol: usuario.estado_rol,
+                    fecha_expiracion: usuario.fecha_expiracion
+                    
+
                 }
             },
             'Sesion iniciada exitosamente',
@@ -313,6 +317,36 @@ const eliminarUsuario = async (req, res) => {
     }
 };
 
+
+async function asignarRol(req, res) {
+    try {
+        // El admin envía el id del usuario y el id del rol en el cuerpo de la petición
+        const { idUsuario, idRol } = req.body; 
+
+        // Validamos brevemente que vengan los datos requeridos por HTTP
+        if (!idUsuario || !idRol) {
+            return res.status(400).json({ message: "idUsuario e idRol son obligatorios" });
+        }
+
+        // Llamamos al servicio para que ejecute la lógica
+        const usuarioActualizado = await usuarioService.actualizarRolUsuario(idUsuario, idRol);
+
+        // Respondemos al cliente
+        return res.status(200).json({
+            message: "Rol asignado exitosamente con vigencia de 1 año.",
+            data: usuarioActualizado
+        });
+
+    } catch (error) {
+        // Si el servicio lanza el error "El usuario no existe" u otro, lo manejamos aquí
+        return res.status(500).json({ 
+            message: "Error al asignar el rol", 
+            error: error.message 
+        });
+    }
+}
+
+
 module.exports = {
     login,
     registro,
@@ -322,5 +356,6 @@ module.exports = {
     obtenerTodosLosUsuarios,
     obtenerUsuarioPorId,
     actualizarUsuario,
-    eliminarUsuario
+    eliminarUsuario,
+    asignarRol
 };
