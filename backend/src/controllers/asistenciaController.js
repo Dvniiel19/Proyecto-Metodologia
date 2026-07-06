@@ -114,7 +114,7 @@ const eliminarAsistencia = async (req, res) => {
     }
 };
 
-// [AGREGADO] Reloj control: entrada. Valida los ids con Joi (fecha y hora las genera el servicio).
+//  Reloj control: entrada. Valida los ids con Joi (fecha y hora las genera el servicio).
 /** post /asistencia/entrada
  * el trabajador ficha su entrada — genera fecha y hora automaticamente
  */
@@ -142,7 +142,7 @@ const registrarEntrada = async (req, res) => {
     }
 };
 
-// [AGREGADO] Registro manual de inasistencia (lo asienta un supervisor o coordinador).
+// Registro manual de inasistencia (lo hace un supervisor o coordinador).
 /** post /asistencia/inasistencia
  * asienta la ausencia de un trabajador en un servicio y fecha determinados
  */
@@ -170,7 +170,7 @@ const registrarInasistencia = async (req, res) => {
     }
 };
 
-// [AGREGADO] Reloj control: salida. Retorna 409 si la salida ya fue registrada (doble fichaje).
+// Reloj control: salida. Retorna 409 si la salida ya fue registrada (doble fichaje).
 /** patch /asistencia/:id/salida
  * el trabajador ficha su salida — completa el registro existente
  */
@@ -193,7 +193,7 @@ const registrarSalida = async (req, res) => {
     }
 };
 
-// [AGREGADO] Historial de asistencias filtrado por trabajador (para la vista del trabajador en el front).
+// Historial de asistencias filtrado por trabajador (para la vista del trabajador en el front).
 /** get /asistencia/trabajador/:id_trabajador
  * obtiene todos los registros de asistencia de un trabajador
  */

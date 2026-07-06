@@ -1,10 +1,4 @@
 "use strict";
-
-/**
- * Entidad Asistencia: registro del reloj control. Cada fila guarda la fecha,
- * hora de entrada y hora de salida (null mientras el trabajador no fiche salida)
- * de un trabajador en un servicio.
- */
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
@@ -16,9 +10,6 @@ module.exports = new EntitySchema({
             type: 'int',
             generated: true,
         },
-        // [AGREGADO] Columna de fecha del dia laboral. Se genera automaticamente en registrarEntrada().
-        // El default CURRENT_DATE permite que synchronize agregue la columna NOT NULL
-        // sobre una tabla que ya tiene filas sin que Postgres rechace el ALTER TABLE.
         fecha: {
             type: 'date',
             nullable: false,
@@ -29,7 +20,7 @@ module.exports = new EntitySchema({
             type: 'time',
             nullable: true,
         },
-        // [AGREGADO] Distingue asistencias reales de ausencias registradas manualmente
+        //Distingue asistencias reales de ausencias registradas manualmente
         estado_asistencia: {
             type: 'varchar',
             length: 20,
@@ -49,8 +40,7 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+    
     relations: {
         trabajador: {
             target: 'Trabajador',

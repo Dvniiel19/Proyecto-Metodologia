@@ -1,9 +1,4 @@
 "use strict";
-
-/**
- * Entidad Checklist: items de verificacion asociados a una jornada de la agenda,
- * para controlar que las labores se cumplan.
- */
 const { EntitySchema } = require ('typeorm');
 
 module.exports = new EntitySchema({
@@ -33,8 +28,7 @@ module.exports = new EntitySchema({
             nullable: false,
         },
     },
-    // Relaciones con otras tablas: TypeORM las usa para hacer los JOIN
-    // cuando un service pide datos con "relations"
+    
     relations: {
         agenda: {
             target: 'Agenda',

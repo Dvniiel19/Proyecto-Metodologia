@@ -26,7 +26,7 @@ const crearUsuario = async (datosUsuario) => {
  * @param {String} nombreRol - nombre del rol ya resuelto por el controller
  * @return {Object} { usuario, perfil }
  */
-// [AGREGADO] Si cualquier paso falla (ej: el perfil no pasa una constraint),
+// Si cualquier paso falla (ej: el perfil no pasa una constraint),
 // TypeORM hace ROLLBACK de todo: nunca queda un Usuario huerfano sin perfil.
 const registroUnificado = async (datos, nombreRol) => {
     const { correo, contrasena, id_rol, nombre, apellido, telefono, direccion } = datos;
@@ -114,8 +114,6 @@ const obtenerUsuarioPorId = async (id_usuario) => {
 
 const actualizarUsuario = async (id_usuario, datosActualizados) => {
     const result = await usuarioRepository.update(id_usuario, datosActualizados);
-    // [MODIFICADO] Verifica affected antes de hacer la segunda consulta.
-    // Sin este chequeo se haria un SELECT innecesario aunque el usuario no exista.
     if (result.affected === 0) return null;
     return await obtenerUsuarioPorId(id_usuario);
 }
