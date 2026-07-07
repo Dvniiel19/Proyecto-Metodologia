@@ -22,7 +22,11 @@ const crearContrato = async (datosContrato) => {
  */
 
 const obtenerTodosLosContratos = async () => {
-    return await contratoRepository.find();
+    const contratos = await contratoRepository.find({ relations: ['cliente'] });
+    return contratos.map(c => ({
+    ...c, // para incluir todos los campos del contrato
+    nombre_cliente: c.cliente ? `${c.cliente.nombre} ${c.cliente.apellido}` : '—',
+}));
 };
 
 /**
@@ -33,7 +37,17 @@ const obtenerTodosLosContratos = async () => {
  */
 
 const obtenerContratoPorId = async (id_contrato) => {
-    return await contratoRepository.findOneBy({id_contrato});
+    const contrato = await contratoRepository.findOne({
+    where: { id_contrato },
+    relations: ['cliente'],
+});
+if (!contrato) return null;
+return {
+    ...contrato, 
+    // Para mostrar en el front el nombre completo del cliente asociado al contrato 
+    nombre_cliente: contrato.cliente ? `${contrato.cliente.nombre} ${contrato.cliente.apellido}` : '—',
+    
+};
 };
 
 /**
