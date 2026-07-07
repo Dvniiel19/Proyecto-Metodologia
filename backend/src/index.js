@@ -21,7 +21,16 @@ app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
-app.use(express.json()); 
+app.use(express.json()); // parsea el body JSON de las peticiones y lo deja en req.body
+
+// Acepta fechas en formato chileno (DD/MM/YYYY) en cualquier body y las
+// normaliza a ISO, que es lo que esperan las validaciones y la base de datos
+const { normalizarFechasBody } = require('./utils/fechas');
+app.use((req, res, next) => {
+  if (req.body) normalizarFechasBody(req.body);
+  next();
+});
+// Sirve las fotos de evidencia como archivos estaticos: /uploads/evidencias/<archivo>
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 

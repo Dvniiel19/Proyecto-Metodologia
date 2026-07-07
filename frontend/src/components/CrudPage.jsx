@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Pencil, Trash2, Plus, X } from 'lucide-react'
 import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 
 
 export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, rolesEscritura, valoresFijos, ocultarCrear = false }) {
@@ -9,7 +10,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   const puedeEscribir = rolesEscritura == null || rolesEscritura.includes(rol)
 
   const [filas, setFilas] = useState([])
-  const [opciones, setOpciones] = useState({}) // key de campo -> lista de opciones
+  const [opciones, setOpciones] = useState({}) // key de campo = lista de opciones
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
 
@@ -63,7 +64,10 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     const iniciales = {}
     campos.forEach((c) => {
       if (c.type === 'password') return
-      if (fila[c.key] != null) iniciales[c.key] = String(fila[c.key])
+      if (fila[c.key] == null) return
+      // El backend envía fechas en DD/MM/YYYY, pero <input type="date"> exige ISO
+      iniciales[c.key] =
+        c.type === 'date' ? fechaChileAIso(String(fila[c.key])) : String(fila[c.key])
     })
     setValores(iniciales)
     setErroresForm(null)
@@ -251,7 +255,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
                 <tr key={fila[idKey]}>
                   {columnas.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-gray-700">
-                      {col.render ? col.render(fila) : String(fila[col.key] ?? '—')}
+                      {col.render ? col.render(fila) : String(formatearFecha(fila[col.key]) ?? '—')}
                     </td>
                   ))}
                   {puedeEscribir && (
