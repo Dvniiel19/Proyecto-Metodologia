@@ -2,6 +2,7 @@ import CrudPage from '../components/CrudPage'
 import { useAuth } from '../context/AuthContext'
 import { formatearFecha } from '../utils/fechas'
 
+
 export default function AsignarServicios() {
   const { usuario } = useAuth()
 
@@ -40,6 +41,7 @@ export default function AsignarServicios() {
           opcionesEndpoint: '/trabajador',
           opcionValor: 'id_trabajador',
           opcionEtiqueta: (t) => `${t.nombre} ${t.apellido}`,
+         
         },
       ]}
     />

@@ -43,8 +43,8 @@ const login = async (req, res) => {
         const rol = await rolService.obtenerRolPorId(usuario.id_rol);
         const nombreRol = rol ? rol.nombre_rol : null; // Si no encuentra nada devuelve null
 
-        // generar token JWT con id_usuario, id_rol y nombre_rol
-        const token = generarToken(usuario.id_usuario, usuario.id_rol, nombreRol);
+        // generar token JWT con id_usuario, id_rol, nombre_rol y estado_rol
+        const token = generarToken(usuario.id_usuario, usuario.id_rol, nombreRol, usuario.estado_rol);
 
         // retornar el token y datos basicos del usuario
         return sendSuccess(
