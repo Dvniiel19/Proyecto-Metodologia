@@ -32,8 +32,9 @@ function TareaPendiente({ tarea, onFinalizada }) {
   }
 
   return (
-    <div className="rounded-lg border border-gray-300 bg-white p-4">
-      <h4 className="text-sm font-semibold text-black">{tarea.descripcion}</h4>
+    // Oscurecemos el fondo de la tarea a gris-800 para que resalte dentro del grupo gris-900
+    <div className="rounded-lg border border-gray-300 bg-white p-4 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-800">
+      <h4 className="text-sm font-semibold text-black dark:text-white">{tarea.descripcion}</h4>
 
       <input
         ref={inputRef}
@@ -48,7 +49,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
         type="button"
         disabled={subiendo}
         onClick={() => inputRef.current?.click()}
-        className="mt-3 w-full rounded-lg bg-green-600 py-2.5 text-xs font-semibold text-white transition-colors active:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500"
+        className="mt-3 w-full rounded-lg bg-green-600 py-2.5 text-xs font-semibold text-white transition-colors active:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
       >
         {subiendo ? 'Subiendo evidencia...' : 'Subir Foto y Finalizar'}
       </button>
@@ -57,16 +58,16 @@ function TareaPendiente({ tarea, onFinalizada }) {
         type="button"
         disabled={subiendo}
         onClick={() => inputRef.current?.click()}
-        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-400 py-3 text-center disabled:opacity-50"
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-400 py-3 text-center transition-colors disabled:opacity-50 dark:border-gray-600 dark:hover:bg-gray-700/50"
       >
-        <Camera className="h-4 w-4 text-gray-600" />
-        <span className="text-xs font-medium text-gray-600">
+        <Camera className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
           Abrir cámara o galería
         </span>
       </button>
 
       {error && (
-        <p className="mt-2 rounded-md border border-red-300 px-3 py-1.5 text-xs text-red-600">
+        <p className="mt-2 rounded-md border border-red-300 px-3 py-1.5 text-xs text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
           {error}
         </p>
       )}
@@ -76,12 +77,13 @@ function TareaPendiente({ tarea, onFinalizada }) {
 
 function TareaFinalizada({ tarea }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+    // Las tareas finalizadas se ven un poco más translúcidas/apagadas en modo oscuro
+    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-800/50">
       <div className="flex items-start justify-between gap-2">
-        <h4 className="text-sm font-medium text-gray-500 line-through">
+        <h4 className="text-sm font-medium text-gray-500 line-through dark:text-gray-400">
           {tarea.descripcion}
         </h4>
-        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" />
       </div>
 
       {tarea.foto_evidencia && (
@@ -93,7 +95,7 @@ function TareaFinalizada({ tarea }) {
           }
           target="_blank"
           rel="noreferrer"
-          className="mt-2 inline-block text-xs text-gray-500 underline"
+          className="mt-2 inline-block text-xs text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
         >
           Ver evidencia
         </a>
@@ -107,9 +109,10 @@ function GrupoServicio({ grupo, onTareaFinalizada }) {
   const finalizadas = grupo.tareas.filter((t) => t.estado !== 'En Proceso')
 
   return (
-    <div className="rounded-xl border-2 border-black bg-white">
-      <div className="border-b border-gray-200 p-4">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+    // Contenedor principal del servicio (Gris-900)
+    <div className="rounded-xl border-2 border-black bg-white transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-b border-gray-200 p-4 dark:border-gray-700">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600 dark:text-gray-300">
           {grupo.fecha_programada && (
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
@@ -133,7 +136,7 @@ function GrupoServicio({ grupo, onTareaFinalizada }) {
 
       <div className="flex flex-col gap-3 p-4">
         {grupo.tareas.length === 0 && (
-          <p className="rounded-lg border border-dashed border-gray-300 px-3 py-4 text-center text-xs text-gray-500">
+          <p className="rounded-lg border border-dashed border-gray-300 px-3 py-4 text-center text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
             Este servicio aún no tiene tareas registradas.
           </p>
         )}
@@ -174,30 +177,31 @@ export default function MisTareas() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
+    // Agregamos dark:bg-transparent para que herede el fondo oscuro del Layout en vez de forzar un blanco
+    <div className="min-h-screen bg-white transition-colors duration-200 dark:bg-transparent">
       <div className="mx-auto max-w-md px-4 py-6">
         <header className="mb-6">
-          <h1 className="text-2xl font-bold text-black">Mis Tareas</h1>
-          <p className="mt-1 text-sm capitalize text-gray-500">{FECHA_HOY}</p>
+          <h1 className="text-2xl font-bold text-black dark:text-white">Mis Tareas</h1>
+          <p className="mt-1 text-sm capitalize text-gray-500 dark:text-gray-400">{FECHA_HOY}</p>
         </header>
 
         {error && (
-          <p className="mb-4 rounded-md border border-red-300 px-3 py-2 text-sm text-red-600">
+          <p className="mb-4 rounded-md border border-red-300 px-3 py-2 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
             {error}
           </p>
         )}
 
         {mensajeExito && (
-          <p className="mb-4 flex items-center gap-1.5 rounded-md border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700">
+          <p className="mb-4 flex items-center gap-1.5 rounded-md border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
             <CheckCircle className="h-4 w-4 shrink-0" />
             {mensajeExito}
           </p>
         )}
 
         {cargando ? (
-          <p className="text-sm text-gray-500">Cargando tareas...</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Cargando tareas...</p>
         ) : agrupado.length === 0 ? (
-          <p className="text-sm text-gray-500">No tienes tareas asignadas.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">No tienes tareas asignadas.</p>
         ) : (
           <div className="flex flex-col gap-4">
             {agrupado.map((grupo) => (
@@ -209,7 +213,7 @@ export default function MisTareas() {
             ))}
 
             {!todosPendientes && agrupado.length > 0 && (
-              <p className="text-center text-xs text-gray-500">
+              <p className="text-center text-xs text-gray-500 dark:text-gray-400">
                 Todas las tareas han sido finalizadas.
               </p>
             )}

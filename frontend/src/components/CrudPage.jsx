@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Pencil, Trash2, Plus, X } from 'lucide-react'
+import { Pencil, Trash2, Plus, X, Search } from 'lucide-react' // <-- Importamos Search
 import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'
@@ -19,6 +19,9 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   const [erroresForm, setErroresForm] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // --- NUEVO: ESTADO PARA EL BUSCADOR ---
+  const [busqueda, setBusqueda] = useState('')
+
   const cargar = useCallback(async () => {
     try {
       const data = await api.get(endpoint)
@@ -32,7 +35,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   }, [endpoint])
 
   useEffect(() => {
-    
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     cargar()
   }, [cargar])
 
@@ -48,7 +51,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
           )
           .catch(() => {})
       })
-  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endpoint])
 
   const abrirCrear = () => {
@@ -122,7 +125,6 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
       value: valores[campo.key] ?? '',
       onChange: (e) => setValores((prev) => ({ ...prev, [campo.key]: e.target.value })),
       required: campo.required && !editando,
-      // Modificamos las clases del input para que se oscurezca
       className:
         'mt-1 w-full rounded-md border border-gray-400 p-2 text-sm text-black focus:border-black focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-gray-400 transition-colors',
     }
@@ -167,21 +169,51 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     return <input type={campo.type ?? 'text'} {...comun} />
   }
 
+  // --- NUEVO: LÓGICA DE FILTRADO ---
+  const filasFiltradas = filas.filter((fila) => {
+    if (!busqueda) return true
+    
+    const termino = busqueda.toLowerCase()
+    
+    // Busca en todas las columnas que se están mostrando en la tabla
+    return columnas.some((col) => {
+      const valor = col.render ? col.render(fila) : fila[col.key]
+      if (valor == null) return false
+      return String(valor).toLowerCase().includes(termino)
+    })
+  })
+
   return (
     <div className="px-8 py-8 transition-colors duration-200">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        {/* Título adaptado al modo oscuro */}
         <h1 className="text-3xl font-bold text-black dark:text-white">{titulo}</h1>
-        {puedeEscribir && !ocultarCrear && (
-          <button
-            type="button"
-            onClick={abrirCrear}
-            className="flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
-          >
-            <Plus className="h-4 w-4" />
-            Crear Nuevo
-          </button>
-        )}
+        
+        {/* NUEVO: CONTENEDOR DEL BUSCADOR Y BOTÓN CREAR */}
+        <div className="flex w-full items-center gap-4 sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="block w-full rounded-md border border-gray-400 py-2 pl-10 pr-3 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400 dark:focus:ring-gray-400 transition-colors"
+            />
+          </div>
+
+          {puedeEscribir && !ocultarCrear && (
+            <button
+              type="button"
+              onClick={abrirCrear}
+              className="flex shrink-0 items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Crear Nuevo</span>
+            </button>
+          )}
+        </div>
       </header>
 
       {error && (
@@ -191,7 +223,6 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
       )}
 
       {formVisible && (
-        // Contenedor del formulario oscurecido
         <div className="mb-6 rounded-lg border-2 border-black bg-white p-5 dark:border-gray-700 dark:bg-gray-900 transition-colors">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black dark:text-white">
@@ -211,7 +242,6 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
               {campos
                 .filter((c) => !(editando && c.soloCrear))
                 .map((campo) => (
-                  // Etiquetas de los inputs en modo oscuro
                   <label key={campo.key} className="block text-sm font-medium text-black dark:text-gray-200">
                     {campo.label}
                     {renderInput(campo)}
@@ -247,11 +277,9 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
         </div>
       )}
 
-      {/* Contenedor de la tabla oscurecido */}
       <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900 transition-colors">
         <table className="w-full text-left text-sm">
           <thead>
-            {/* Cabecera de la tabla */}
             <tr className="border-b border-gray-300 dark:border-gray-700">
               {columnas.map((col) => (
                 <th key={col.key} className="px-4 py-3 font-semibold text-black dark:text-gray-200">
@@ -261,7 +289,6 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
               {puedeEscribir && <th className="px-4 py-3 font-semibold text-black dark:text-gray-200">Acciones</th>}
             </tr>
           </thead>
-          {/* Cuerpo de la tabla con divisores oscurecidos */}
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {cargando ? (
               <tr>
@@ -269,17 +296,17 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
                   Cargando...
                 </td>
               </tr>
-            ) : filas.length === 0 ? (
+            ) : filasFiltradas.length === 0 ? (
               <tr>
                 <td colSpan={columnas.length + 1} className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
-                  No hay registros.
+                  {busqueda ? 'No se encontraron resultados.' : 'No hay registros.'}
                 </td>
               </tr>
             ) : (
-              filas.map((fila) => (
+              // CAMBIO: Iteramos sobre filasFiltradas en lugar de filas
+              filasFiltradas.map((fila) => (
                 <tr key={fila[idKey]} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                   {columnas.map((col) => (
-                    // Celdas de texto
                     <td key={col.key} className="px-4 py-3 text-gray-700 dark:text-gray-300">
                       {col.render ? col.render(fila) : String(formatearFecha(fila[col.key]) ?? '—')}
                     </td>
