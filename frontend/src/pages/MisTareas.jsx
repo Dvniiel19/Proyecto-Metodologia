@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { Camera, CheckCircle } from 'lucide-react'
+import { Camera, CheckCircle, MapPin, User, Clock } from 'lucide-react'
 import { api, API_URL } from '../services/api'
 import useCarga from '../hooks/useCarga'
 import { fechaLargaHoy } from '../helpers/fechas'
@@ -32,9 +32,8 @@ function TareaPendiente({ tarea, onFinalizada }) {
   }
 
   return (
-    <div className="rounded-xl border-2 border-black bg-white p-4">
-      <h3 className="text-base font-semibold text-black">{tarea.descripcion}</h3>
-      <p className="mt-1 text-sm text-gray-500">{tarea.estado}</p>
+    <div className="rounded-lg border border-gray-300 bg-white p-4">
+      <h4 className="text-sm font-semibold text-black">{tarea.descripcion}</h4>
 
       <input
         ref={inputRef}
@@ -49,25 +48,25 @@ function TareaPendiente({ tarea, onFinalizada }) {
         type="button"
         disabled={subiendo}
         onClick={() => inputRef.current?.click()}
-        className="mt-4 w-full rounded-lg bg-green-600 py-3 text-sm font-semibold text-white transition-colors active:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500"
+        className="mt-3 w-full rounded-lg bg-green-600 py-2.5 text-xs font-semibold text-white transition-colors active:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500"
       >
-        {subiendo ? 'Subiendo evidencia...' : '📷 Subir Foto y Finalizar'}
+        {subiendo ? 'Subiendo evidencia...' : 'Subir Foto y Finalizar'}
       </button>
 
       <button
         type="button"
         disabled={subiendo}
         onClick={() => inputRef.current?.click()}
-        className="mt-3 flex w-full flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-black py-4 text-center disabled:opacity-50"
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-400 py-3 text-center disabled:opacity-50"
       >
-        <Camera className="h-5 w-5 text-black" />
-        <span className="text-xs font-medium text-black">
-          Toca aquí para abrir la cámara o galería
+        <Camera className="h-4 w-4 text-gray-600" />
+        <span className="text-xs font-medium text-gray-600">
+          Abrir cámara o galería
         </span>
       </button>
 
       {error && (
-        <p className="mt-3 rounded-md border border-red-300 px-3 py-2 text-sm text-red-600">
+        <p className="mt-2 rounded-md border border-red-300 px-3 py-1.5 text-xs text-red-600">
           {error}
         </p>
       )}
@@ -77,14 +76,12 @@ function TareaPendiente({ tarea, onFinalizada }) {
 
 function TareaFinalizada({ tarea }) {
   return (
-    <div className="rounded-xl border border-gray-300 bg-gray-100 p-4">
-      <h3 className="text-base font-medium text-gray-500 line-through">
-        {tarea.descripcion}
-      </h3>
-
-      <div className="mt-3 flex items-center gap-2">
-        <CheckCircle className="h-5 w-5 shrink-0 text-gray-400" />
-        <p className="text-sm text-gray-500">Evidencia enviada al supervisor</p>
+    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+      <div className="flex items-start justify-between gap-2">
+        <h4 className="text-sm font-medium text-gray-500 line-through">
+          {tarea.descripcion}
+        </h4>
+        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
       </div>
 
       {tarea.foto_evidencia && (
@@ -98,25 +95,83 @@ function TareaFinalizada({ tarea }) {
           rel="noreferrer"
           className="mt-2 inline-block text-xs text-gray-500 underline"
         >
-          Ver foto de evidencia
+          Ver evidencia
         </a>
       )}
     </div>
   )
 }
 
+function GrupoServicio({ grupo, onTareaFinalizada }) {
+  const pendientes = grupo.tareas.filter((t) => t.estado === 'En Proceso')
+  const finalizadas = grupo.tareas.filter((t) => t.estado !== 'En Proceso')
+
+  return (
+    <div className="rounded-xl border-2 border-black bg-white">
+      <div className="border-b border-gray-200 p-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+          {grupo.fecha_programada && (
+            <span className="flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
+              {grupo.fecha_programada}
+            </span>
+          )}
+          {grupo.cliente && (
+            <span className="flex items-center gap-1">
+              <User className="h-3.5 w-3.5" />
+              {grupo.cliente.nombre} {grupo.cliente.apellido}
+            </span>
+          )}
+          {grupo.cliente?.direccion && (
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5" />
+              {grupo.cliente.direccion}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 p-4">
+        {grupo.tareas.length === 0 && (
+          <p className="rounded-lg border border-dashed border-gray-300 px-3 py-4 text-center text-xs text-gray-500">
+            Este servicio aún no tiene tareas registradas.
+          </p>
+        )}
+        {pendientes.map((tarea) => (
+          <TareaPendiente
+            key={tarea.id_tarea}
+            tarea={tarea}
+            onFinalizada={onTareaFinalizada}
+          />
+        ))}
+        {finalizadas.map((tarea) => (
+          <TareaFinalizada key={tarea.id_tarea} tarea={tarea} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function MisTareas() {
-  const [tareas, setTareas] = useState([])
+  const [agrupado, setAgrupado] = useState([])
+  const [mensajeExito, setMensajeExito] = useState(null)
 
   const cargarDatos = useCallback(async () => {
-    const data = await api.get('/tarea')
-    setTareas(Array.isArray(data) ? data : [])
+    const data = await api.get('/tarea/mis-tareas')
+    setAgrupado(Array.isArray(data) ? data : [])
   }, [])
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
 
-  const pendientes = tareas.filter((t) => t.estado === 'En Proceso')
-  const finalizadas = tareas.filter((t) => t.estado !== 'En Proceso')
+  const handleTareaFinalizada = useCallback(() => {
+    setMensajeExito('Tarea finalizada. Se notificó al cliente para su validación.')
+    setTimeout(() => setMensajeExito(null), 5000)
+    cargar()
+  }, [cargar])
+
+  const todosPendientes = agrupado.some((g) =>
+    g.tareas.some((t) => t.estado === 'En Proceso'),
+  )
 
   return (
     <div className="min-h-screen bg-white">
@@ -132,18 +187,32 @@ export default function MisTareas() {
           </p>
         )}
 
+        {mensajeExito && (
+          <p className="mb-4 flex items-center gap-1.5 rounded-md border border-green-300 bg-green-50 px-3 py-2 text-sm text-green-700">
+            <CheckCircle className="h-4 w-4 shrink-0" />
+            {mensajeExito}
+          </p>
+        )}
+
         {cargando ? (
           <p className="text-sm text-gray-500">Cargando tareas...</p>
-        ) : tareas.length === 0 ? (
+        ) : agrupado.length === 0 ? (
           <p className="text-sm text-gray-500">No tienes tareas asignadas.</p>
         ) : (
           <div className="flex flex-col gap-4">
-            {pendientes.map((tarea) => (
-              <TareaPendiente key={tarea.id_tarea} tarea={tarea} onFinalizada={cargar} />
+            {agrupado.map((grupo) => (
+              <GrupoServicio
+                key={grupo.id_servicio}
+                grupo={grupo}
+                onTareaFinalizada={handleTareaFinalizada}
+              />
             ))}
-            {finalizadas.map((tarea) => (
-              <TareaFinalizada key={tarea.id_tarea} tarea={tarea} />
-            ))}
+
+            {!todosPendientes && agrupado.length > 0 && (
+              <p className="text-center text-xs text-gray-500">
+                Todas las tareas han sido finalizadas.
+              </p>
+            )}
           </div>
         )}
       </div>

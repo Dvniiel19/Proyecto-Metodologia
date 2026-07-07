@@ -6,6 +6,7 @@
  * configurado por variables de entorno (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS)
  */
 
+const path = require('path');
 const nodemailer = require('nodemailer');
 
 // Crea el "transporter" (la conexion con el servidor SMTP) leyendo la config del .env.
@@ -36,17 +37,33 @@ const obtenerTransporter = () => {
 
 // Notifica al cliente que su tarea fue finalizada por el trabajador y quedo
 // esperando su validacion. Se llama desde tareaService.finalizarTareaConEvidencia.
-const notificarClienteTareaPendienteValidacion = async ({ correoCliente, idTarea, descripcionTarea }) => {
+// rutaEvidencia es la ruta absoluta de la foto en disco; si viene, se adjunta
+// al correo y se muestra inline en el cuerpo (via cid).
+const notificarClienteTareaPendienteValidacion = async ({ correoCliente, idTarea, descripcionTarea, rutaEvidencia }) => {
     const transporter = obtenerTransporter();
     // Si no se define un remitente explicito (SMTP_FROM), se usa la misma cuenta SMTP
     const remitente = process.env.SMTP_FROM || process.env.SMTP_USER;
+
+    const conEvidencia = Boolean(rutaEvidencia);
+    const htmlEvidencia = conEvidencia
+        ? `<p>Evidencia del trabajo realizado:</p><img src="cid:evidencia-tarea" alt="Evidencia de la tarea" style="max-width:100%;border-radius:8px;" />`
+        : `<p>Por favor revisa la evidencia cargada en la plataforma.</p>`;
 
     await transporter.sendMail({
         from: remitente,
         to: correoCliente,
         subject: `Orden #${idTarea} finalizada - Pendiente de Validación`,
         text: `Hola, la tarea "${descripcionTarea}" fue finalizada por el trabajador y ahora está en estado "Pendiente de Validación".`,
-        html: `<p>Hola,</p><p>La tarea <strong>"${descripcionTarea}"</strong> fue finalizada por el trabajador.</p><p>Estado actual: <strong>Pendiente de Validación</strong>.</p><p>Por favor revisa la evidencia cargada.</p>`,
+        html: `<p>Hola,</p><p>La tarea <strong>"${descripcionTarea}"</strong> fue finalizada por el trabajador.</p><p>Estado actual: <strong>Pendiente de Validación</strong>.</p>${htmlEvidencia}`,
+        attachments: conEvidencia
+            ? [
+                  {
+                      filename: path.basename(rutaEvidencia),
+                      path: rutaEvidencia,
+                      cid: 'evidencia-tarea', // referenciado por el <img src="cid:..."> del html
+                  },
+              ]
+            : [],
     });
 };
 
