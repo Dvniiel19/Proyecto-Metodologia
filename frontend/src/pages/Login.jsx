@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
+import { Eye, EyeOff } from 'lucide-react' // 👈 Importamos los íconos para el ojito
 
 export default function Login() {
   const { login } = useAuth()
@@ -9,6 +10,7 @@ export default function Login() {
 
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
+  const [showPassword, setShowPassword] = useState(false) // 👈 Estado para alternar la visibilidad
   const [error, setError] = useState(null)
   const [cargando, setCargando] = useState(false)
 
@@ -46,17 +48,26 @@ export default function Login() {
               />
             </label>
 
-            <label className="block text-sm font-medium text-black">
-              Contraseña
-              <input
-                type="password"
-                value={contrasena}
-                onChange={(e) => setContrasena(e.target.value)}
-                required
-                placeholder="••••••••"
-                className="mt-1 w-full rounded-md border border-gray-400 p-2 text-sm text-black placeholder-gray-400 focus:border-black focus:outline-none"
-              />
-            </label>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-black">Contraseña</span>
+              <div className="relative w-full">
+                <input
+                  type={showPassword ? 'text' : 'password'} // 👈 Cambia dinámicamente el tipo de input
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  className="w-full rounded-md border border-gray-400 p-2 pr-10 text-sm text-black placeholder-gray-400 focus:border-black focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
             {error && (
               <p className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm text-red-600">
