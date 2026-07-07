@@ -1,10 +1,11 @@
 import CrudPage from '../components/CrudPage'
 import { useAuth } from '../context/AuthContext'
 
-export default function AsignarServicios() {
-const { usuario } = useAuth()
 
-return (
+export default function AsignarServicios() {
+  const { usuario } = useAuth()
+
+  return (
     <CrudPage
       titulo="Asignar Servicios"
       endpoint="/asignarServicio"
@@ -39,6 +40,7 @@ return (
           opcionesEndpoint: '/trabajador',
           opcionValor: 'id_trabajador',
           opcionEtiqueta: (t) => `${t.nombre} ${t.apellido}`,
+         
         },
       ]}
     />

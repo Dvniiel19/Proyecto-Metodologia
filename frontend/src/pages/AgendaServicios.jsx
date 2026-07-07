@@ -1,5 +1,6 @@
 import CrudPage from '../components/CrudPage'
 
+
 export default function AgendaServicios() {
   return (
     <CrudPage
@@ -18,16 +19,19 @@ export default function AgendaServicios() {
       campos={[
         { key: 'fecha_programada', label: 'Fecha Programada', type: 'date', required: true },
         { key: 'hora_inicio', label: 'Hora de Inicio', type: 'time', required: true },
-        { key: 'hora_fin', label: 'Hora de Fin (opcional)', type: 'time' },
+        { key: 'hora_fin', label: 'Hora de Fin', type: 'time' },
         {
           key: 'estado',
           label: 'Estado',
           type: 'select',
           required: true,
+          // Ciclo de vida real del servicio (ver backend constants/estadosAgenda.js)
           opciones: [
             { value: 'Pendiente', label: 'Pendiente' },
+            { value: 'Personal Asignado', label: 'Personal Asignado' },
             { value: 'En Proceso', label: 'En Proceso' },
-            { value: 'Completado', label: 'Completado' },
+            { value: 'Pendiente de Evaluacion', label: 'Pendiente de Evaluación' },
+            { value: 'Finalizado', label: 'Finalizado' },
             { value: 'Cancelado', label: 'Cancelado' },
           ],
         },

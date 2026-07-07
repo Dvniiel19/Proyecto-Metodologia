@@ -10,9 +10,15 @@ export function fechaHoyISO() {
   return `${d.getFullYear()}-${mes}-${dia}`
 }
 
+/** Fecha de hoy en formato chileno DD/MM/YYYY (como la envía el backend) */
+export function fechaHoyChile() {
+  const [anio, mes, dia] = fechaHoyISO().split('-')
+  return `${dia}/${mes}/${anio}`
+}
+
 /** Fecha de hoy en texto largo en español (ej. "viernes, 4 de julio de 2026") */
 export function fechaLargaHoy({ conAnio = true } = {}) {
-  return new Date().toLocaleDateString('es-CO', {
+  return new Date().toLocaleDateString('es-CL', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -25,9 +31,14 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ]
 
-/** Convierte "2026-06-28" (o un ISO con hora) en "28 de junio, 2026" */
+/** Convierte "28/06/2026" o "2026-06-28" (con o sin hora) en "28 de junio, 2026" */
 export function formatearFecha(fecha) {
   const soloFecha = String(fecha).slice(0, 10)
-  const [anio, mes, dia] = soloFecha.split('-')
+  let anio, mes, dia
+  if (soloFecha.includes('/')) {
+    ;[dia, mes, anio] = soloFecha.split('/')
+  } else {
+    ;[anio, mes, dia] = soloFecha.split('-')
+  }
   return `${Number(dia)} de ${MESES[Number(mes) - 1]}, ${anio}`
 }
