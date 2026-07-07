@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
   { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador'] },
   { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador'] },
+  { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador'] },
   { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
   { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
   { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },

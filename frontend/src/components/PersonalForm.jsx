@@ -31,7 +31,8 @@ export default function PersonalForm({ rolesDisponibles, onClose, onCreado }) {
         }
       })
       .catch(() => setRoles([]))
-
+    // Solo se cargan los roles una vez al montar; rolesDisponibles es estable por render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setCampo = (campo) => (e) =>

@@ -15,6 +15,7 @@ import Contratos from './pages/Contratos'
 import AgendaServicios from './pages/AgendaServicios'
 import Trabajadores from './pages/Trabajadores'
 import AsignarServicios from './pages/AsignarServicios'
+import Tareas from './pages/Tareas'
 import Insumos from './pages/Insumos'
 import Reportes from './pages/Reportes'
 import HistorialEvaluaciones from './pages/HistorialEvaluaciones'
@@ -65,6 +66,7 @@ function App() {
                 <Route path="/contratos" element={<Contratos />} />
                 <Route path="/trabajadores" element={<Trabajadores />} />
                 <Route path="/asignar-servicios" element={<AsignarServicios />} />
+                <Route path="/tareas" element={<Tareas />} />
                 <Route path="/reportes" element={<Reportes />} />
               </Route>
 
