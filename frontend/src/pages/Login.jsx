@@ -2,15 +2,14 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
-import { Eye, EyeOff } from 'lucide-react' // 👈 Importamos los íconos para el ojito
-
+import { Eye, EyeOff } from 'lucide-react'
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
-  const [showPassword, setShowPassword] = useState(false) // 👈 Estado para alternar la visibilidad
+  const [showPassword, setShowPassword] = useState(false) 
   const [error, setError] = useState(null)
   const [cargando, setCargando] = useState(false)
 
