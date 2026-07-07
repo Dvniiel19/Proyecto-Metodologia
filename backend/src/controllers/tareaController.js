@@ -78,6 +78,20 @@ const obtenerTodasLasTarea = async (req, res) => {
     }
 };
 
+/** get /tarea/mis-tareas
+ * obtiene las tareas del trabajador autenticado, agrupadas por servicio
+ */
+const obtenerMisTareas = async (req, res) => {
+    try {
+        const id_usuario = req.user.id_usuario;
+        const resultado = await tareaService.obtenerMisTareas(id_usuario);
+        return sendSuccess(res, resultado, 'Tareas obtenidas correctamente');
+    } catch (error) {
+        console.error(error);
+        return sendError(res, 'Error al obtener tus tareas', 500);
+    }
+};
+
 /** get /tarea/:id
  * obtiene una tarea especifico por id
  */
@@ -154,5 +168,6 @@ module.exports = {
     obtenerTareaPorId,
     actualizarTarea,
     eliminarTarea,
-    finalizarTarea
+    finalizarTarea,
+    obtenerMisTareas,
 };

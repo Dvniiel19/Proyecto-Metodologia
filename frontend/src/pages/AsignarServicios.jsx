@@ -30,7 +30,7 @@ export default function AsignarServicios() {
           opcionesEndpoint: '/agenda',
           opcionValor: 'id_servicio',
           opcionEtiqueta: (s) =>
-            `#${s.id_servicio} — ${formatearFecha(s.fecha_programada)} (${s.estado})`,
+            `#${s.id_servicio} — ${s.fecha_programada} (${s.estado})`,
         },
         {
           key: 'id_trabajador',
