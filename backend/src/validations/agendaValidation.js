@@ -9,6 +9,7 @@ const Joi = require('joi');
 const createAgendaSchema = Joi.object({
   fecha_programada: Joi.date()
     .iso() // Asegura formato YYYY-MM-DD
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .required()
     .messages({
       'date.base': 'La fecha programada debe ser una fecha valida',
@@ -61,6 +62,7 @@ const createAgendaSchema = Joi.object({
 const updateAgendaSchema = Joi.object({
   fecha_programada: Joi.date()
     .iso()
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .optional()
     .messages({
       'date.base': 'La fecha programada debe ser una fecha valida',
@@ -108,7 +110,22 @@ hora_fin: Joi.string()
   'object.min': 'Debes enviar al menos un campo para actualizar'
 }); 
 
+// Esquema para marcar el trabajo como terminado (PUT /agenda/:id/terminar-trabajo)
+// El body es opcional: solo puede traer una observacion final del trabajador
+const terminarTrabajoSchema = Joi.object({
+  observacion_final: Joi.string()
+    .trim()
+    .max(1000)
+    .optional()
+    .allow('')
+    .messages({
+      'string.base': 'La observacion final debe ser texto',
+      'string.max': 'La observacion final no puede superar los 1000 caracteres'
+    })
+});
+
 module.exports = {
   createAgendaSchema,
-  updateAgendaSchema
+  updateAgendaSchema,
+  terminarTrabajoSchema
 };

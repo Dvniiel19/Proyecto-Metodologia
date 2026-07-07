@@ -7,6 +7,7 @@ const Joi = require('joi');
 const createAsignarServicioSchema = Joi.object({
   fecha_asignada: Joi.date()
     .iso() // Asegura formato YYYY-MM-DD
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .required()
     .messages({
       'date.base': 'La fecha programada debe ser una fecha valida',
@@ -52,6 +53,7 @@ const createAsignarServicioSchema = Joi.object({
 const updateAsignarServicioSchema = Joi.object({
   fecha_asignada: Joi.date()
     .iso()
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .optional()
     .messages({
       'date.base': 'La fecha programada debe ser una fecha valida',

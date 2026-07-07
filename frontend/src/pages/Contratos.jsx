@@ -9,12 +9,14 @@ export default function Contratos() {
       rolesEscritura={['Administrador', 'Coordinador']}
       columnas={[
         { key: 'id_contrato', label: 'ID' },
+        { key: 'nombre', label: 'Nombre' },
         { key: 'fecha_inicio', label: 'Fecha Inicio' },
         { key: 'fecha_fin', label: 'Fecha Fin' },
         { key: 'precio', label: 'Precio' },
         { key: 'id_cliente', label: 'Cliente (ID)' },
       ]}
       campos={[
+        { key: 'nombre', label: 'Nombre del Contrato', type: 'text', required: true },
         { key: 'fecha_inicio', label: 'Fecha de Inicio', type: 'date', required: true },
         { key: 'fecha_fin', label: 'Fecha de Fin', type: 'date', required: true },
         { key: 'precio', label: 'Precio', type: 'number', required: true },
