@@ -31,7 +31,7 @@ export default function PersonalForm({ rolesDisponibles, onClose, onCreado }) {
         }
       })
       .catch(() => setRoles([]))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [])
 
   const setCampo = (campo) => (e) =>

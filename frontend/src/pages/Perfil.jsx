@@ -113,7 +113,7 @@ export default function Perfil() {
 
             {exito && (
               <p className="rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-black">
-                ✓ Contraseña actualizada correctamente.
+               
               </p>
             )}
 
