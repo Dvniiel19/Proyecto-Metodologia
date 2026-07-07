@@ -1,4 +1,5 @@
 import CrudPage from '../components/CrudPage'
+import { formatearFecha } from '../utils/fechas'
 
 export default function AgendaServicios() {
   return (
@@ -38,7 +39,8 @@ export default function AgendaServicios() {
           required: true,
           opcionesEndpoint: '/contrato',
           opcionValor: 'id_contrato',
-          opcionEtiqueta: (c) => `#${c.id_contrato} (${c.fecha_inicio} → ${c.fecha_fin})`,
+          opcionEtiqueta: (c) =>
+            `#${c.id_contrato} (${formatearFecha(c.fecha_inicio)} → ${formatearFecha(c.fecha_fin)})`,
         },
       ]}
     />

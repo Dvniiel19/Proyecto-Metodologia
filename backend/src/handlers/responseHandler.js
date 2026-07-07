@@ -3,11 +3,14 @@
  * Centraliza la forma en que respondemos a los clientes
  */
 
+const { formatearFechasChile } = require('../utils/fechas');
+
 const sendSuccess = (res, data, message = 'Operación exitosa', statusCode = 200) => {
   return res.status(statusCode).json({
     success: true,
     message,
-    data
+    // Las fechas salen siempre en formato chileno 
+    data: formatearFechasChile(data)
   });
 };
 
