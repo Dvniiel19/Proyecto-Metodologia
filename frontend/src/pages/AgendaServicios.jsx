@@ -42,7 +42,13 @@ export default function AgendaServicios() {
           required: true,
           opcionesEndpoint: '/contrato',
           opcionValor: 'id_contrato',
-          opcionEtiqueta: (c) => `#${c.id_contrato} (${c.fecha_inicio} → ${c.fecha_fin})`,
+          opcionEtiqueta: (c) =>
+            `#${c.id_contrato}${c.nombre ? ` ${c.nombre}` : ''} (${formatearFecha(c.fecha_inicio)} → ${formatearFecha(c.fecha_fin)})`,
+          // Al elegir contrato se sugiere su fecha de inicio como fecha programada
+          // (el contrato no define horarios; solo se rellenan campos vacíos)
+          autoRellenar: (c) => ({
+            fecha_programada: fechaChileAIso(String(c.fecha_inicio)),
+          }),
         },
       ]}
     />
