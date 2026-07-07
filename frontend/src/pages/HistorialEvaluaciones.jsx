@@ -5,7 +5,9 @@ import { useAuth } from '../context/AuthContext'
 import useCarga from '../hooks/useCarga'
 import { formatearFecha } from '../helpers/fechas'
 
-const ESTADOS_EVALUABLES = ['Finalizado', 'Completado']
+// 'Pendiente de Evaluacion' = trabajo terminado, esperando la nota del cliente.
+// 'Finalizado'/'Completado' se mantienen para poder ver/editar evaluaciones ya hechas.
+const ESTADOS_EVALUABLES = ['Pendiente de Evaluacion', 'Finalizado', 'Completado']
 
 export default function HistorialEvaluaciones() {
   const { usuario } = useAuth()

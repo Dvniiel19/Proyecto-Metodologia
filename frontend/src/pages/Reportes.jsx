@@ -4,17 +4,22 @@ import { api } from '../services/api'
 export default function Reportes() {
   const [agenda, setAgenda] = useState([])
   const [evaluaciones, setEvaluaciones] = useState([])
+  const [rendimiento, setRendimiento] = useState([])
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    Promise.allSettled([api.get('/agenda'), api.get('/evaluacionFinal')]).then(
-      ([agendaRes, evalRes]) => {
-        if (agendaRes.status === 'fulfilled') setAgenda(agendaRes.value ?? [])
-        if (evalRes.status === 'fulfilled') setEvaluaciones(evalRes.value ?? [])
-        const fallo = [agendaRes, evalRes].find((r) => r.status === 'rejected')
-        if (fallo) setError(fallo.reason?.message ?? 'Error cargando datos')
-      },
-    )
+    Promise.allSettled([
+      api.get('/agenda'),
+      api.get('/evaluacionFinal'),
+      // promedio de satisfaccion por trabajador, calculado con AVG en SQL
+      api.get('/reportes/rendimiento'),
+    ]).then(([agendaRes, evalRes, rendRes]) => {
+      if (agendaRes.status === 'fulfilled') setAgenda(agendaRes.value ?? [])
+      if (evalRes.status === 'fulfilled') setEvaluaciones(evalRes.value ?? [])
+      if (rendRes.status === 'fulfilled') setRendimiento(rendRes.value ?? [])
+      const fallo = [agendaRes, evalRes, rendRes].find((r) => r.status === 'rejected')
+      if (fallo) setError(fallo.reason?.message ?? 'Error cargando datos')
+    })
   }, [])
 
   const porEstado = agenda.reduce((acc, s) => {
@@ -80,6 +85,42 @@ export default function Reportes() {
             </ul>
           )}
         </div>
+      </div>
+
+      <div className="mt-6 rounded-lg border border-gray-300 bg-white">
+        <div className="border-b border-gray-200 px-5 py-4">
+          <h3 className="text-base font-semibold text-black">
+            Promedio de Satisfacción por Trabajador
+          </h3>
+        </div>
+        {rendimiento.length === 0 ? (
+          <p className="px-5 py-6 text-sm text-gray-500">
+            Aún no hay servicios evaluados con trabajadores asignados.
+          </p>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="px-5 py-3 font-semibold text-black">Trabajador</th>
+                <th className="px-5 py-3 font-semibold text-black">Evaluaciones</th>
+                <th className="px-5 py-3 font-semibold text-black">Promedio</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {rendimiento.map((t) => (
+                <tr key={t.id_trabajador}>
+                  <td className="px-5 py-3 text-gray-700">
+                    {t.nombre} {t.apellido}
+                  </td>
+                  <td className="px-5 py-3 text-gray-700">{t.total_evaluaciones}</td>
+                  <td className="px-5 py-3 font-bold text-black">
+                    {'★'.repeat(Math.round(t.promedio_satisfaccion))} ({t.promedio_satisfaccion})
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
