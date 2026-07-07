@@ -62,14 +62,14 @@ const createClienteSchema = Joi.object({
   historial_servicios: Joi.string()
     .trim()
     .min(10)
-    .max(300) 
-    .required()
+    .max(300)
+    .allow('', null) 
+    .optional()
     .messages({
       'string.base': 'Debe de ser un texto',
       'string.empty': 'El texto no puede estar vacio',
       'string.min': 'El texto debe tener al menos 10 caracteres',
       'string.max': 'El texto no puede exceder los 300 caracteres',
-      'any.required': 'El texto es un campo obligatorio'
     }),
     id_usuario: Joi.number()
         .integer()
