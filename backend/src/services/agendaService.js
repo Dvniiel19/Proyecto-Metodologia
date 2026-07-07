@@ -3,6 +3,7 @@
 const db = require('../config/db');
 const Agenda = require('../entities/agenda.entity');
 const { ESTADOS_AGENDA } = require('../constants/estadosAgenda');
+const { fechaHoyLocal } = require('../utils/fechaLocal');
 
 const agendaRepository = db.getRepository(Agenda);
 
@@ -29,7 +30,9 @@ const obtenerTodasLasAgenda = async () => {
 /**
  * obtener las agendas asignadas al trabajador vinculado a un usuario
  * Solo devuelve agendas con una asignacion en asignar_servicio para ese trabajador,
- * excluyendo las ya finalizadas (no tiene sentido fichar entrada en ellas)
+ * excluyendo las ya finalizadas (no tiene sentido fichar entrada en ellas) y las
+ * que YA tienen la jornada de HOY cerrada (salida fichada o Ausente). Los servicios
+ * duran varios dias: al dia siguiente vuelven a aparecer para fichar una nueva jornada.
  * @param {Number} id_usuario id del usuario autenticado (del token JWT)
  * @return {Array}
  */
@@ -48,6 +51,24 @@ const obtenerAgendasPorTrabajador = async (id_usuario) => {
                 ESTADOS_AGENDA.EN_PROCESO,
             ],
         })
+        // NOT EXISTS enfocado solo en HOY: se oculta el servicio unicamente si el
+        // trabajador ya cerro su jornada de hoy en el (fichada la salida o Ausente).
+        // El historial de otros dias no lo excluye
+        .andWhere((qb) => {
+            const sub = qb
+                .subQuery()
+                .select('1')
+                .from('Asistencia', 'asistencia')
+                .where('asistencia.id_servicio = agenda.id_servicio')
+                .andWhere('asistencia.id_trabajador = trabajador.id_trabajador')
+                .andWhere('asistencia.fecha = :hoy')
+                .andWhere(
+                    "(asistencia.hora_salida IS NOT NULL OR asistencia.estado_asistencia = 'Ausente')"
+                )
+                .getQuery();
+            return `NOT EXISTS ${sub}`;
+        })
+        .setParameter('hoy', fechaHoyLocal())
         .orderBy('agenda.fecha_programada', 'ASC')
         .addOrderBy('agenda.hora_inicio', 'ASC')
         .getMany();
