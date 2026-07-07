@@ -19,7 +19,7 @@ export default function Clientes() {
         { key: 'apellido', label: 'Apellido', type: 'text', required: true },
         { key: 'telefono', label: 'Teléfono', type: 'text', required: true },
         { key: 'direccion', label: 'Dirección', type: 'text', required: true },
-        { key: 'historial_servicios', label: 'Historial de Servicios (opcional)', type: 'text' },
+        { key: 'historial_servicios', label: 'Historial de Servicios (opcional)', type: 'text', required: false },
       ]}
     />
   )

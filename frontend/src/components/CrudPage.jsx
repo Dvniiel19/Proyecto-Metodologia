@@ -4,7 +4,6 @@ import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 
-
 export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, rolesEscritura, valoresFijos, ocultarCrear = false }) {
   const { rol } = useAuth()
   const puedeEscribir = rolesEscritura == null || rolesEscritura.includes(rol)
@@ -123,17 +122,15 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
       value: valores[campo.key] ?? '',
       onChange: (e) => setValores((prev) => ({ ...prev, [campo.key]: e.target.value })),
       required: campo.required && !editando,
+      // Modificamos las clases del input para que se oscurezca
       className:
-        'mt-1 w-full rounded-md border border-gray-400 p-2 text-sm text-black focus:border-black focus:outline-none',
+        'mt-1 w-full rounded-md border border-gray-400 p-2 text-sm text-black focus:border-black focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-gray-400 transition-colors',
     }
 
     if (campo.type === 'select') {
       const lista = campo.opciones ?? opciones[campo.key] ?? []
       const valorDeOpcion = (op) => (campo.opcionValor ? op[campo.opcionValor] : op.value ?? op)
 
-      // Al seleccionar una opción, `autoRellenar(opcion)` puede devolver valores
-      // derivados para otros campos del formulario (solo se rellenan los vacíos,
-      // para no pisar lo que el usuario ya escribió)
       const onChangeSelect = (e) => {
         const v = e.target.value
         setValores((prev) => {
@@ -171,9 +168,10 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-8 py-8 transition-colors duration-200">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold text-black">{titulo}</h1>
+        {/* Título adaptado al modo oscuro */}
+        <h1 className="text-3xl font-bold text-black dark:text-white">{titulo}</h1>
         {puedeEscribir && !ocultarCrear && (
           <button
             type="button"
@@ -187,21 +185,22 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
       </header>
 
       {error && (
-        <p className="mb-4 rounded-md border border-red-300 bg-white px-4 py-3 text-sm text-red-600">
+        <p className="mb-4 rounded-md border border-red-300 bg-white px-4 py-3 text-sm text-red-600 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
           {error}
         </p>
       )}
 
       {formVisible && (
-        <div className="mb-6 rounded-lg border-2 border-black bg-white p-5">
+        // Contenedor del formulario oscurecido
+        <div className="mb-6 rounded-lg border-2 border-black bg-white p-5 dark:border-gray-700 dark:bg-gray-900 transition-colors">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-black">
+            <h2 className="text-lg font-semibold text-black dark:text-white">
               {editando ? 'Editar registro' : 'Nuevo registro'}
             </h2>
             <button
               type="button"
               onClick={cerrarForm}
-              className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-black"
+              className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-black dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -212,7 +211,8 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
               {campos
                 .filter((c) => !(editando && c.soloCrear))
                 .map((campo) => (
-                  <label key={campo.key} className="block text-sm font-medium text-black">
+                  // Etiquetas de los inputs en modo oscuro
+                  <label key={campo.key} className="block text-sm font-medium text-black dark:text-gray-200">
                     {campo.label}
                     {renderInput(campo)}
                   </label>
@@ -220,7 +220,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
             </div>
 
             {erroresForm && (
-              <ul className="mt-4 rounded-md border border-red-300 bg-white px-4 py-3 text-sm text-red-600">
+              <ul className="mt-4 rounded-md border border-red-300 bg-white px-4 py-3 text-sm text-red-600 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
                 {erroresForm.map((msg) => (
                   <li key={msg}>{msg}</li>
                 ))}
@@ -231,14 +231,14 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
               <button
                 type="submit"
                 disabled={guardando}
-                className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500"
+                className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
               >
                 {guardando ? 'Guardando...' : 'Guardar'}
               </button>
               <button
                 type="button"
                 onClick={cerrarForm}
-                className="rounded-md border border-gray-400 px-4 py-2 text-sm font-semibold text-black hover:bg-gray-100"
+                className="rounded-md border border-gray-400 px-4 py-2 text-sm font-semibold text-black hover:bg-gray-100 dark:border-gray-600 dark:text-white dark:hover:bg-gray-800 transition-colors"
               >
                 Cancelar
               </button>
@@ -247,36 +247,40 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white">
+      {/* Contenedor de la tabla oscurecido */}
+      <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900 transition-colors">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-gray-300">
+            {/* Cabecera de la tabla */}
+            <tr className="border-b border-gray-300 dark:border-gray-700">
               {columnas.map((col) => (
-                <th key={col.key} className="px-4 py-3 font-semibold text-black">
+                <th key={col.key} className="px-4 py-3 font-semibold text-black dark:text-gray-200">
                   {col.label}
                 </th>
               ))}
-              {puedeEscribir && <th className="px-4 py-3 font-semibold text-black">Acciones</th>}
+              {puedeEscribir && <th className="px-4 py-3 font-semibold text-black dark:text-gray-200">Acciones</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          {/* Cuerpo de la tabla con divisores oscurecidos */}
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {cargando ? (
               <tr>
-                <td colSpan={columnas.length + 1} className="px-4 py-6 text-center text-gray-500">
+                <td colSpan={columnas.length + 1} className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
                   Cargando...
                 </td>
               </tr>
             ) : filas.length === 0 ? (
               <tr>
-                <td colSpan={columnas.length + 1} className="px-4 py-6 text-center text-gray-500">
+                <td colSpan={columnas.length + 1} className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
                   No hay registros.
                 </td>
               </tr>
             ) : (
               filas.map((fila) => (
-                <tr key={fila[idKey]}>
+                <tr key={fila[idKey]} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                   {columnas.map((col) => (
-                    <td key={col.key} className="px-4 py-3 text-gray-700">
+                    // Celdas de texto
+                    <td key={col.key} className="px-4 py-3 text-gray-700 dark:text-gray-300">
                       {col.render ? col.render(fila) : String(formatearFecha(fila[col.key]) ?? '—')}
                     </td>
                   ))}

@@ -1,7 +1,18 @@
 @import "tailwindcss";
 
+/* 1. EL ENCHUFE: Esto conecta el botón de tu Layout con el framework en Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 2. EL MÍTICO MODO OSCURO: Le quitamos el azulado a los fondos oscuros de Tailwind 
+   y los forzamos a ser tonos asfalto/negro puro premium */
+@theme {
+  --color-gray-700: #333333; /* Para los bordes */
+  --color-gray-800: #1e1e1e; /* Para los recuadros de los formularios */
+  --color-gray-900: #181818; /* Para la barra lateral (Sidebar) */
+  --color-gray-950: #121212; /* Para el fondo general de la pantalla */
+}
+
+/* 3. Transición suave para que el cambio no sea brusco */
 body {
-  margin: 0;
-  background-color: #ffffff;
-  color: #000000;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
