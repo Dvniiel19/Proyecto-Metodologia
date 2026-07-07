@@ -129,11 +129,33 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
 
     if (campo.type === 'select') {
       const lista = campo.opciones ?? opciones[campo.key] ?? []
+      const valorDeOpcion = (op) => (campo.opcionValor ? op[campo.opcionValor] : op.value ?? op)
+
+      // Al seleccionar una opción, `autoRellenar(opcion)` puede devolver valores
+      // derivados para otros campos del formulario (solo se rellenan los vacíos,
+      // para no pisar lo que el usuario ya escribió)
+      const onChangeSelect = (e) => {
+        const v = e.target.value
+        setValores((prev) => {
+          const siguiente = { ...prev, [campo.key]: v }
+          if (campo.autoRellenar && v !== '') {
+            const opcionElegida = lista.find((op) => String(valorDeOpcion(op)) === v)
+            const derivados = opcionElegida ? campo.autoRellenar(opcionElegida) ?? {} : {}
+            Object.entries(derivados).forEach(([clave, valor]) => {
+              if ((prev[clave] == null || prev[clave] === '') && valor != null && valor !== '') {
+                siguiente[clave] = String(valor)
+              }
+            })
+          }
+          return siguiente
+        })
+      }
+
       return (
-        <select {...comun}>
+        <select {...comun} onChange={onChangeSelect}>
           <option value="">Seleccionar...</option>
           {lista.map((op) => {
-            const valor = campo.opcionValor ? op[campo.opcionValor] : op.value ?? op
+            const valor = valorDeOpcion(op)
             const etiqueta = campo.opcionEtiqueta ? campo.opcionEtiqueta(op) : op.label ?? String(op)
             return (
               <option key={valor} value={valor}>

@@ -10,6 +10,13 @@ module.exports = new EntitySchema({
             type: 'int',
             generated: true,
         },
+        // Nombre descriptivo para identificar el contrato en el frontend
+        // (nullable por los contratos creados antes de que existiera la columna)
+        nombre: {
+            type: 'varchar',
+            length: 255,
+            nullable: true,
+        },
         fecha_inicio: {
             type: 'date',
             nullable: false,

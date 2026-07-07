@@ -23,11 +23,21 @@ module.exports = new EntitySchema({
         type: 'time',
         nullable: true,
         },
+        // Ciclo de vida del servicio (ver constants/estadosAgenda.js):
+        // Pendiente -> En Proceso -> Pendiente de Evaluacion -> Finalizado
+        // Se mantiene varchar (no enum de Postgres) para que synchronize no
+        // tenga que alterar el tipo de la columna; los valores validos se
+        // controlan en la capa de servicios/validaciones.
         estado: {
         type: 'varchar',
         length: 50,
         nullable: false,
         default: 'Pendiente',
+        },
+        // Observacion del trabajador/supervisor al marcar el trabajo terminado
+        observacion_final: {
+            type: 'text',
+            nullable: true,
         },
         id_contrato: {
             type: 'int',

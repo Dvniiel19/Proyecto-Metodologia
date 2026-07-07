@@ -1,7 +1,7 @@
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const usuarioService = require('../services/usuarioService');
 const rolService = require('../services/rolService');
-const { createUsuarioSchema, updateUsuarioSchema, registerSchema } = require('../validations/usuarioValidation');
+const { createUsuarioSchema, updateUsuarioSchema, registerSchema, loginSchema } = require('../validations/usuarioValidation');
 const {encrypt, compare} = require('../utils/bcryptUtils');
 const { generarToken } = require('../auth/jwt.strategy');
 
@@ -11,13 +11,18 @@ const { generarToken } = require('../auth/jwt.strategy');
  */
 const login = async (req, res) => {
     try {
-        // obtener correo y contraseña desde el body
-        const { correo, contrasena } = req.body;
-
-        // validar que los campos esten presentes
-        if (!correo || !contrasena) {
-            return sendError(res, 'Correo y contrasena son requeridos', 400);
+        // validar el body con Joi (misma estrategia que el resto de endpoints,
+        // reemplaza la validacion manual que solo revisaba presencia)
+        const { error, value } = loginSchema.validate(req.body);
+        if (error) {
+            return sendError(
+                res,
+                'Error de validacion de datos',
+                400,
+                error.details.map(err => err.message)
+            );
         }
+        const { correo, contrasena } = value;
 
         // buscar al usuario por correo en la base de datos
         const usuario = await usuarioService.obtenerUsuarioPorCorreo(correo);
