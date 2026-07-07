@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Pencil, Trash2, Plus, X } from 'lucide-react'
 import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 
 
 export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, rolesEscritura, valoresFijos, ocultarCrear = false }) {
@@ -9,7 +10,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   const puedeEscribir = rolesEscritura == null || rolesEscritura.includes(rol)
 
   const [filas, setFilas] = useState([])
-  const [opciones, setOpciones] = useState({}) // key de campo -> lista de opciones
+  const [opciones, setOpciones] = useState({}) // key de campo = lista de opciones
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
 
@@ -63,7 +64,10 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     const iniciales = {}
     campos.forEach((c) => {
       if (c.type === 'password') return
-      if (fila[c.key] != null) iniciales[c.key] = String(fila[c.key])
+      if (fila[c.key] == null) return
+      // El backend envía fechas en DD/MM/YYYY, pero <input type="date"> exige ISO
+      iniciales[c.key] =
+        c.type === 'date' ? fechaChileAIso(String(fila[c.key])) : String(fila[c.key])
     })
     setValores(iniciales)
     setErroresForm(null)
@@ -125,11 +129,33 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
 
     if (campo.type === 'select') {
       const lista = campo.opciones ?? opciones[campo.key] ?? []
+      const valorDeOpcion = (op) => (campo.opcionValor ? op[campo.opcionValor] : op.value ?? op)
+
+      // Al seleccionar una opción, `autoRellenar(opcion)` puede devolver valores
+      // derivados para otros campos del formulario (solo se rellenan los vacíos,
+      // para no pisar lo que el usuario ya escribió)
+      const onChangeSelect = (e) => {
+        const v = e.target.value
+        setValores((prev) => {
+          const siguiente = { ...prev, [campo.key]: v }
+          if (campo.autoRellenar && v !== '') {
+            const opcionElegida = lista.find((op) => String(valorDeOpcion(op)) === v)
+            const derivados = opcionElegida ? campo.autoRellenar(opcionElegida) ?? {} : {}
+            Object.entries(derivados).forEach(([clave, valor]) => {
+              if ((prev[clave] == null || prev[clave] === '') && valor != null && valor !== '') {
+                siguiente[clave] = String(valor)
+              }
+            })
+          }
+          return siguiente
+        })
+      }
+
       return (
-        <select {...comun}>
+        <select {...comun} onChange={onChangeSelect}>
           <option value="">Seleccionar...</option>
           {lista.map((op) => {
-            const valor = campo.opcionValor ? op[campo.opcionValor] : op.value ?? op
+            const valor = valorDeOpcion(op)
             const etiqueta = campo.opcionEtiqueta ? campo.opcionEtiqueta(op) : op.label ?? String(op)
             return (
               <option key={valor} value={valor}>
@@ -251,7 +277,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
                 <tr key={fila[idKey]}>
                   {columnas.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-gray-700">
-                      {col.render ? col.render(fila) : String(fila[col.key] ?? '—')}
+                      {col.render ? col.render(fila) : String(formatearFecha(fila[col.key]) ?? '—')}
                     </td>
                   ))}
                   {puedeEscribir && (

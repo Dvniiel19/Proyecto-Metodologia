@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Clock, LogIn, LogOut, UserX } from 'lucide-react'
+import { CheckCircle, Clock, LogIn, LogOut, UserX } from 'lucide-react'
 import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import useCarga from '../hooks/useCarga'
@@ -11,8 +11,13 @@ const ROLES_GESTOR = ['Administrador', 'Coordinador', 'Supervisor']
 /** Reloj control del trabajador logueado: fichar entrada y salida */
 function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
   const [idServicio, setIdServicio] = useState('')
+  const [idServicioTerminar, setIdServicioTerminar] = useState('')
+  const [observacion, setObservacion] = useState('')
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
+
+  // Servicios en los que ya se trabajó y se pueden marcar como terminados
+  const serviciosEnProceso = agenda.filter((s) => s.estado === 'En Proceso')
 
   const misAsistencias = asistencias.filter(
     (a) => a.id_trabajador === miTrabajador.id_trabajador,
@@ -32,6 +37,27 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
         id_servicio: Number(idServicio),
       })
       setIdServicio('')
+      onCambio()
+    } catch (err) {
+      setError(err.errors?.length ? err.errors.join(' · ') : err.message)
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  // Marca el trabajo del servicio como terminado (Operaciones), separado del
+  // reloj control: fichar salida NO cambia el estado del servicio.
+  const terminarTrabajo = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setGuardando(true)
+    try {
+      await api.put(
+        `/agenda/${Number(idServicioTerminar)}/terminar-trabajo`,
+        observacion.trim() ? { observacion_final: observacion.trim() } : {},
+      )
+      setIdServicioTerminar('')
+      setObservacion('')
       onCambio()
     } catch (err) {
       setError(err.errors?.length ? err.errors.join(' · ') : err.message)
@@ -65,8 +91,10 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
           <p className="text-sm text-gray-700">
             Tienes una jornada abierta en el servicio{' '}
             <span className="font-medium text-black">#{entradaAbierta.id_servicio}</span>{' '}
-            (entrada: {entradaAbierta.hora_entrada}). Al fichar la salida, el servicio pasará
-            a <span className="font-medium text-black">Finalizado</span>.
+            (entrada: {entradaAbierta.hora_entrada}). Fichar la salida solo registra tu
+            asistencia; cuando el trabajo esté listo, márcalo abajo como{' '}
+            <span className="font-medium text-black">terminado</span> para que el cliente
+            pueda evaluarlo.
           </p>
           <button
             type="button"
@@ -104,6 +132,58 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             <LogIn className="h-4 w-4" />
             {guardando ? 'Registrando...' : 'Fichar Entrada'}
           </button>
+        </form>
+      )}
+
+      {serviciosEnProceso.length > 0 && (
+        <form
+          onSubmit={terminarTrabajo}
+          className="mt-5 border-t border-gray-200 pt-4"
+        >
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-black">
+            <CheckCircle className="h-4 w-4" />
+            Marcar trabajo terminado
+          </h3>
+          <p className="mt-1 text-xs text-gray-500">
+            El servicio quedará pendiente de la evaluación del cliente.
+          </p>
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <label className="block flex-1 text-sm font-medium text-black">
+              Servicio
+              <select
+                value={idServicioTerminar}
+                onChange={(e) => setIdServicioTerminar(e.target.value)}
+                required
+                className={inputClase}
+              >
+                <option value="">Seleccionar...</option>
+                {serviciosEnProceso.map((s) => (
+                  <option key={s.id_servicio} value={s.id_servicio}>
+                    #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block flex-1 text-sm font-medium text-black">
+              Observación final (opcional)
+              <input
+                type="text"
+                value={observacion}
+                onChange={(e) => setObservacion(e.target.value)}
+                maxLength={1000}
+                placeholder="Ej: se limpió todo según checklist"
+                className={inputClase}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={guardando || idServicioTerminar === ''}
+              className="flex items-center gap-2 rounded-md bg-black px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500"
+            >
+              <CheckCircle className="h-4 w-4" />
+              {guardando ? 'Guardando...' : 'Trabajo Terminado'}
+            </button>
+          </div>
         </form>
       )}
 
@@ -223,17 +303,21 @@ export default function Asistencia() {
   const [asistencias, setAsistencias] = useState([])
   const [trabajadores, setTrabajadores] = useState([])
   const [agenda, setAgenda] = useState([])
+  const [misAgendas, setMisAgendas] = useState([])
 
   const cargarDatos = useCallback(async () => {
-    const [asis, trab, ag] = await Promise.all([
+    const [asis, trab, mias, ag] = await Promise.all([
       api.get('/asistencia'),
       api.get('/trabajador'),
-      api.get('/agenda'),
+      api.get('/agenda/mis-agendas'),
+      // la agenda completa solo la necesita el formulario de inasistencia (gestores)
+      esGestor ? api.get('/agenda') : Promise.resolve([]),
     ])
     setAsistencias(Array.isArray(asis) ? asis : [])
     setTrabajadores(Array.isArray(trab) ? trab : [])
+    setMisAgendas(Array.isArray(mias) ? mias : [])
     setAgenda(Array.isArray(ag) ? ag : [])
-  }, [])
+  }, [esGestor])
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
 
@@ -264,7 +348,7 @@ export default function Asistencia() {
           {miTrabajador && (
             <RelojControl
               miTrabajador={miTrabajador}
-              agenda={agenda}
+              agenda={misAgendas}
               asistencias={asistencias}
               onCambio={cargar}
             />

@@ -1,7 +1,7 @@
-const { Not, IsNull } = require('typeorm');
 const { sendSuccess, sendError } = require('../handlers/responseHandler');
 const evaluacionFinalService = require('../services/evaluacionFinalService');
 const { createEvaluacionFinalSchema, updateEvaluacionFinalSchema } = require('../validations/evaluacionFinalValidation');
+const { ESTADOS_AGENDA } = require('../constants/estadosAgenda');
 const db = require('../config/db');
 
 /** post /evaluacion_final
@@ -37,10 +37,12 @@ const crearEvaluacionFinal = async (req, res) => {
         if (!agenda) {
             return sendError(res, 'El id_servicio no existe', 404);
         }
-        // solo se pueden evaluar servicios que ya fueron completados
-        const ESTADOS_EVALUABLES = ['Finalizado', 'Completado'];
+        // Solo se pueden evaluar servicios cuyo trabajo fue marcado como terminado
+        // (via PUT /agenda/:id/terminar-trabajo). Se mantienen 'Finalizado' y
+        // 'Completado' por compatibilidad con datos anteriores al flujo nuevo.
+        const ESTADOS_EVALUABLES = [ESTADOS_AGENDA.PENDIENTE_EVALUACION, 'Finalizado', 'Completado'];
         if (!ESTADOS_EVALUABLES.includes(agenda.estado)) {
-            return sendError(res, 'El servicio aun no ha sido finalizado, no se puede calificar', 400);
+            return sendError(res, 'El trabajo del servicio aun no ha sido marcado como terminado, no se puede calificar', 400);
         }
         // Verificamos que el usuario que hace la evaluacion sea el titular del contrato del servicio
         const idUsuarioTitular = agenda.contrato?.cliente?.usuario?.id_usuario;
@@ -60,20 +62,14 @@ const crearEvaluacionFinal = async (req, res) => {
             return sendError(res, 'Ya hay una evaluacion para ese servicio', 409);
         }
 
-        // El trabajador responsable es quien ficho la salida que dejo el servicio en 'Finalizado'
-        const asistenciaRepository = db.getRepository('Asistencia');
-        const asistenciaDelServicio = await asistenciaRepository.findOne({
-            where: { id_servicio, hora_salida: Not(IsNull()) },
-            order: { id_asistencia: 'DESC' },
-        });
-        if (!asistenciaDelServicio) {
-            return sendError(res, 'No se encontro un trabajador responsable para este servicio', 400);
-        }
+        // La nota queda asociada al servicio; los trabajadores involucrados se
+        // derivan de asignar_servicio (un servicio puede tener varios y todos
+        // comparten la calificacion), por eso ya no se asigna un id_trabajador.
+        const evaluacionFinalCreado = await evaluacionFinalService.crearEvaluacionFinal(value);
 
-        const evaluacionFinalCreado = await evaluacionFinalService.crearEvaluacionFinal({
-            ...value,
-            id_trabajador: asistenciaDelServicio.id_trabajador,
-        });
+        // La evaluacion del cliente cierra el ciclo del servicio:
+        // 'Pendiente de Evaluacion' -> 'Finalizado'
+        await agendaRepository.update(id_servicio, { estado: ESTADOS_AGENDA.FINALIZADO });
 
         return sendSuccess(
             res,

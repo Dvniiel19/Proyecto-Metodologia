@@ -150,9 +150,30 @@ const registerSchema = createUsuarioSchema.keys({
     }),
 });
 
+// Esquema para iniciar sesion (POST /auth/login)
+const loginSchema = Joi.object({
+  correo: Joi.string()
+    .email()
+    .required()
+    .messages({
+      'string.base': 'El correo debe ser un texto',
+      'string.empty': 'El correo no puede estar vacio',
+      'string.email': 'Debes ingresar un correo valido',
+      'any.required': 'El correo es un campo obligatorio'
+    }),
+  contrasena: Joi.string()
+    .required()
+    .messages({
+      'string.base': 'La contrasena debe ser un texto',
+      'string.empty': 'La contrasena no puede estar vacia',
+      'any.required': 'La contrasena es un campo obligatorio'
+    })
+});
+
 module.exports = {
 
   createUsuarioSchema,
   updateUsuarioSchema,
-  registerSchema
+  registerSchema,
+  loginSchema
 };

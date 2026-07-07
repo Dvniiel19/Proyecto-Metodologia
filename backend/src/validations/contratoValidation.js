@@ -7,8 +7,20 @@ const Joi = require('joi');
 
 // Esquema para crear un contrato
 const createContratoSchema = Joi.object({
+  nombre: Joi.string()
+    .trim()
+    .max(255)
+    .required()
+    .messages({
+      'string.base': 'El nombre del contrato debe ser texto',
+      'string.empty': 'El nombre del contrato no puede estar vacio',
+      'string.max': 'El nombre del contrato no puede superar los 255 caracteres',
+      'any.required': 'El nombre del contrato es un campo obligatorio'
+    }),
+
   fecha_inicio: Joi.date()
-    .iso() 
+    .iso()
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .required()
     .messages({
       'date.base': 'La fecha de inicio debe ser una fecha valida',
@@ -18,6 +30,7 @@ const createContratoSchema = Joi.object({
 
   fecha_fin: Joi.date()
     .iso()
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .min(Joi.ref('fecha_inicio')) // Validar que la fecha_fin sea mayor o igual a fecha_inicio
     .required()
     .messages({
@@ -52,8 +65,19 @@ const createContratoSchema = Joi.object({
 
 // Esquema para actualizar un contrato (PATCH)
 const updateContratoSchema = Joi.object({
+  nombre: Joi.string()
+    .trim()
+    .max(255)
+    .optional()
+    .messages({
+      'string.base': 'El nombre del contrato debe ser texto',
+      'string.empty': 'El nombre del contrato no puede estar vacio',
+      'string.max': 'El nombre del contrato no puede superar los 255 caracteres'
+    }),
+
   fecha_inicio: Joi.date()
     .iso()
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .optional()
     .messages({
       'date.base': 'La fecha de inicio debe ser una fecha valida',
@@ -62,6 +86,7 @@ const updateContratoSchema = Joi.object({
 
   fecha_fin: Joi.date()
     .iso()
+    .raw() // conserva el string original: castear a Date (UTC) restaba un dia al guardar
     .min(Joi.ref('fecha_inicio'))
     .optional()
     .messages({
@@ -79,15 +104,15 @@ const updateContratoSchema = Joi.object({
       'number.positive': 'El precio debe ser mayor a 0',
       'number.precision': 'El precio no puede tener mas de 5 decimales'
     }),
+    // En un PATCH el cliente es opcional: solo se valida si viene en el body
     id_cliente: Joi.number()
         .integer()
         .positive()
-        .required()
+        .optional()
         .messages({
             'number.base': 'El ID del cliente debe ser un numero.',
             'number.integer': 'El ID del cliente debe ser un numero entero.',
-            'number.positive': 'El ID del cliente debe ser un numero positivo.',
-            'any.required': 'El ID del cliente es un campo obligatorio.'
+            'number.positive': 'El ID del cliente debe ser un numero positivo.'
         })
 
 }).min(1).messages({

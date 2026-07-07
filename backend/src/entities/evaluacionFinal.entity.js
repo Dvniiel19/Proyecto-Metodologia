@@ -1,6 +1,17 @@
 "use strict";
 const { EntitySchema } = require ('typeorm');
 
+/**
+ * MODELO RELACIONAL DE LA EVALUACION
+ * La nota del cliente califica al SERVICIO (Agenda), no a un trabajador puntual:
+ * un servicio puede tener varios trabajadores y todos comparten la calificacion.
+ *
+ *   EvaluacionFinal 1—1 Agenda 1—N AsignarServicio N—1 Trabajador
+ *
+ * asignar_servicio ya es la tabla de union entre el servicio y sus trabajadores,
+ * por lo que el historial de notas de un trabajador se obtiene por JOIN
+ * (ver reportesService.obtenerRendimientoTrabajadores) sin duplicar datos.
+ */
 module.exports = new EntitySchema({
     name: 'EvaluacionFinal',
     tableName: 'evaluacion_final',
@@ -23,6 +34,10 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
+        // DEPRECADO: se conserva solo por las evaluaciones antiguas que
+        // atribuian la nota a un unico trabajador. Las evaluaciones nuevas
+        // dejan este campo en null; los trabajadores involucrados se derivan
+        // de asignar_servicio.
         id_trabajador: {
             type: 'int',
             nullable: true,

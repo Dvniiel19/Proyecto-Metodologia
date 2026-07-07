@@ -11,7 +11,7 @@ import {
   PackageSearch,
 } from 'lucide-react'
 import { api } from '../services/api'
-import { fechaHoyISO, fechaLargaHoy } from '../helpers/fechas'
+import { fechaHoyChile, fechaLargaHoy } from '../helpers/fechas'
 
 const FECHA_HOY = fechaLargaHoy()
 
@@ -176,7 +176,8 @@ export default function DashboardAdministrativo() {
     })
   }, [])
 
-  const hoy = fechaHoyISO()
+  // El backend envía las fechas en DD/MM/YYYY
+  const hoy = fechaHoyChile()
   const serviciosHoy = agenda.filter(
     (s) => String(s.fecha_programada).slice(0, 10) === hoy,
   )

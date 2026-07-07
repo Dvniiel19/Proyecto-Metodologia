@@ -12,13 +12,25 @@ const usuarioRepository = db.getRepository(Usuario);
 */
 
 const crearUsuario = async (datosUsuario) => {
-    const nuevoUsuario = usuarioRepository.create(datosUsuario);
+    // 1. Calcular la expiración (Hoy + 1 Año) obligatoria
+    const fechaActual = new Date();
+    const fechaExpiracion = new Date();
+    fechaExpiracion.setFullYear(fechaActual.getFullYear() + 1);
+
+    // 2. Insertar las propiedades de expiración en los datos que se van a guardar
+    const datosConExpiracion = {
+        ...datosUsuario,
+        fecha_expiracion: fechaExpiracion,
+        estado_rol: 'Activo' // Por defecto inicia activo
+    };
+
+    const nuevoUsuario = usuarioRepository.create(datosConExpiracion);
     const usuarioGuardado = await usuarioRepository.save(nuevoUsuario);
+    
     // save() devuelve el objeto en memoria con el hash incluido; se elimina antes de responder
     delete usuarioGuardado.contrasena;
     return usuarioGuardado;
 };
-
 /**
  * registro unificado: crea el Usuario y su perfil (Cliente o Trabajador)
  * dentro de una unica transaccion de base de datos
@@ -32,10 +44,23 @@ const registroUnificado = async (datos, nombreRol) => {
     const { correo, contrasena, id_rol, nombre, apellido, telefono, direccion } = datos;
 
     return await db.transaction(async (manager) => {
-        // 1. Crear las credenciales dentro de la transaccion
-        const usuarioRepo = manager.getRepository(Usuario);
+    
+       // 1. Crear las credenciales dentro de la transaccion
+        const usuarioRepo = manager.getRepository('Usuario');
+
+        // --- CALCULAR EXPIRACIÓN DE 1 AÑO AQUÍ ---
+        const fechaActual = new Date();
+        const fechaExpiracion = new Date();
+        fechaExpiracion.setFullYear(fechaActual.getFullYear() + 1);
+
         const usuarioGuardado = await usuarioRepo.save(
-            usuarioRepo.create({ correo, contrasena, id_rol }),
+            usuarioRepo.create({ 
+                correo, 
+                contrasena, 
+                id_rol,
+                fecha_expiracion: fechaExpiracion, // Guardamos la fecha límite
+                estado_rol: 'Activo'               // Nace activo por defecto
+            })
         );
 
         // 2. Crear el perfil segun el rol, vinculado al usuario recien creado.
@@ -132,6 +157,38 @@ const eliminarUsuario = async (id_usuario) => {
     return true;
 };
 
+// services/usuario.service.js
+const { getRepository } = require('typeorm');
+
+/**
+ * Registra la asignación o renovación de un rol calculando 1 año de vigencia.
+ */
+async function actualizarRolUsuario(idUsuario, idRol) {
+    const usuarioRepository = getRepository("Usuario");
+    
+    // 1. Buscar al usuario
+    const usuario = await usuarioRepository.findOne({ where: { id_usuario: idUsuario } });
+    if (!usuario) {
+        throw new Error("El usuario no existe");
+    }
+
+    // 2. LOGICA DE NEGOCIO: Calcular fecha de expiración (Hoy + 1 Año)
+    const fechaActual = new Date();
+    const fechaExpiracion = new Date();
+    fechaExpiracion.setFullYear(fechaActual.getFullYear() + 1); 
+
+    // 3. Asignar los nuevos valores
+    usuario.id_rol = idRol;
+    usuario.fecha_expiracion = fechaExpiracion;
+    usuario.estado_rol = 'Activo'; // Al ser asignado por el admin, vuelve a estar activo
+
+    // 4. Guardar en la base de datos
+    return await usuarioRepository.save(usuario);
+}
+
+
+
+
 module.exports = {
     crearUsuario,
     registroUnificado,
@@ -140,4 +197,5 @@ module.exports = {
     obtenerUsuarioPorId,
     actualizarUsuario,
     eliminarUsuario,
+    actualizarRolUsuario // exportamos la nueva función
 };

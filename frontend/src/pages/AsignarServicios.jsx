@@ -1,10 +1,11 @@
 import CrudPage from '../components/CrudPage'
 import { useAuth } from '../context/AuthContext'
+import { formatearFecha } from '../utils/fechas'
 
 export default function AsignarServicios() {
-const { usuario } = useAuth()
+  const { usuario } = useAuth()
 
-return (
+  return (
     <CrudPage
       titulo="Asignar Servicios"
       endpoint="/asignarServicio"
