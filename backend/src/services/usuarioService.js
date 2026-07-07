@@ -115,7 +115,7 @@ const obtenerUsuarioPorCorreo = async (correo) => {
     // incluye contrasena explicitamente (tiene select: false) porque el login la compara
     return await usuarioRepository.findOne({
         where: { correo },
-        select: ['id_usuario', 'correo', 'contrasena', 'id_rol'],
+        select: ['id_usuario', 'correo', 'contrasena', 'id_rol', 'estado_rol', 'fecha_expiracion'],
     });
 };
 
@@ -157,14 +157,11 @@ const eliminarUsuario = async (id_usuario) => {
     return true;
 };
 
-// services/usuario.service.js
-const { getRepository } = require('typeorm');
-
 /**
  * Registra la asignación o renovación de un rol calculando 1 año de vigencia.
  */
 async function actualizarRolUsuario(idUsuario, idRol) {
-    const usuarioRepository = getRepository("Usuario");
+    const usuarioRepository = db.getRepository(Usuario);
     
     // 1. Buscar al usuario
     const usuario = await usuarioRepository.findOne({ where: { id_usuario: idUsuario } });

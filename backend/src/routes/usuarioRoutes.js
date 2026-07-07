@@ -11,11 +11,8 @@ const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 
-// POST /auth/login - Autenticar usuario y obtener token (NUEVA RUTA - PUBLICA)
-router.post('/auth/login', usuarioController.login);
-
-// POST /usuario - Crear un nuevo usuario (PUBLICA - Registro)
-router.post('/', usuarioController.crearUsuario);
+// POST /usuario - Crear un nuevo usuario (PROTEGIDA - Solo Administrador)
+router.post('/', autenticacion, autorizacion(['Administrador']), usuarioController.crearUsuario);
 
 // POST /usuario/personal - Crear cuenta + perfil de personal en una transaccion
 // (PROTEGIDA - Admin crea cualquier rol de personal; Coordinador solo Trabajadores)

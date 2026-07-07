@@ -6,11 +6,17 @@
 const { formatearFechasChile } = require('../utils/fechas');
 
 const sendSuccess = (res, data, message = 'Operación exitosa', statusCode = 200) => {
+  let fechasFormateadas;
+  try {
+    fechasFormateadas = formatearFechasChile(data);
+  } catch {
+    fechasFormateadas = data;
+  }
   return res.status(statusCode).json({
     success: true,
     message,
-    // Las fechas salen siempre en formato chileno 
-    data: formatearFechasChile(data)
+    // Las fechas salen siempre en formato chileno
+    data: fechasFormateadas,
   });
 };
 

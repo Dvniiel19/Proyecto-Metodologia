@@ -20,6 +20,7 @@ export function AuthProvider({ children }) {
   const value = {
     usuario,
     rol: usuario?.nombre_rol ?? null,
+    estado_rol: usuario?.estado_rol ?? null,
     estaAutenticado: usuario != null,
     login,
     logout,

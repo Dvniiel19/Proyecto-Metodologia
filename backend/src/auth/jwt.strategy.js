@@ -16,14 +16,16 @@ const JWT_EXPIRY = process.env.JWT_EXPIRY || '1h';
  * @param {number} id_usuario
  * @param {number} id_rol
  * @param {string} nombre_rol 
+ * @param {string} estado_rol
  * @returns {string} Token JWT firmado
  */
-const generarToken = (id_usuario, id_rol, nombre_rol) => {
+const generarToken = (id_usuario, id_rol, nombre_rol, estado_rol) => {
     try {
         const payload = {
             id_usuario,
             id_rol,
-            nombre_rol
+            nombre_rol,
+            estado_rol,
         };
 
         const token = jwt.sign(payload, JWT_SECRET, {
