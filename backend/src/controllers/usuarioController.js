@@ -206,7 +206,6 @@ const rolesRegistrables = async (req, res) => {
  */
 const crearUsuario = async (req, res) => {
     try {
-        // validamos los datos de entrada con joi
         const { error, value } = createUsuarioSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -217,8 +216,19 @@ const crearUsuario = async (req, res) => {
             );
         }
 
+        const rolUsuarioLogueado = req.user?.nombre_rol || req.user?.id_rol;
+
+        if (value.fecha_expiracion) {
+            if (rolUsuarioLogueado !== 'Administrador' && rolUsuarioLogueado !== 1) {
+                return sendError(res, 'Acceso denegado: Solo el Administrador puede asignar fechas de expiración.', 403);
+            }
+        } else {
+            value.fecha_expiracion = null;
+        }
+
         value.contrasena = await encrypt(value.contrasena);
         const usuarioCreado = await usuarioService.crearUsuario(value);
+
         return sendSuccess(
             res,
             usuarioCreado,
@@ -266,16 +276,12 @@ const obtenerUsuarioPorId = async (req, res) => {
  */
 const actualizarUsuario = async (req, res) => {
     try {
-        // [AGREGADO] Solo el propio usuario o un Administrador pueden modificar la cuenta
-        // (permite el "cambiar mi contraseña" del perfil sin abrir un hueco de seguridad)
         const esPropio = Number(req.params.id_usuario) === req.user.id_usuario;
         if (!esPropio && req.user.nombre_rol !== 'Administrador') {
             return sendError(res, 'Solo puedes modificar tu propia cuenta', 403);
         }
 
         const validacion = updateUsuarioSchema.validate(req.body);
-        
-        // validamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -284,14 +290,20 @@ const actualizarUsuario = async (req, res) => {
                 validacion.error.details.map(err => err.message)
             );
         }
-        //se se actualiza la contrasena se encripta antes de guardarla
+
+        if ('fecha_expiracion' in validacion.value || 'estado_rol' in validacion.value) {
+            if (req.user.nombre_rol !== 'Administrador') {
+                return sendError(res, 'Acceso denegado: Solo el Administrador puede renovar, modificar o eliminar caducidades.', 403);
+            }
+        }
+
         if (req.body.contrasena) {
             validacion.value.contrasena = await encrypt(validacion.value.contrasena);
         }
 
         const obtenerid = req.params.id_usuario;
         const resultado = await usuarioService.actualizarUsuario(obtenerid, validacion.value);
-    
+
         if (!resultado) {
             return sendError(res, 'Usuario no encontrado', 404);
         } else {
