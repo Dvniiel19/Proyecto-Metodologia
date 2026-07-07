@@ -153,11 +153,78 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
     });
 };
 
+// Obtiene las tareas del trabajador logueado, agrupadas por servicio/jornada.
+// 1. Busca el perfil de trabajador vinculado al usuario
+// 2. Busca todas las asignaciones de ese trabajador con relaciones completas
+// 3. Agrupa las tareas por servicio para facilitar la visualizacion en el frontend
+const obtenerMisTareas = async (id_usuario) => {
+    const trabajadorRepo = db.getRepository('Trabajador');
+    const trabajador = await trabajadorRepo.findOneBy({ id_usuario });
+    if (!trabajador) return [];
+
+    const tareas = await tareaRepository
+        .createQueryBuilder('tarea')
+        .innerJoinAndSelect('tarea.asignacion_servicio', 'asignacion')
+        .innerJoinAndSelect('asignacion.agenda', 'agenda')
+        .leftJoinAndSelect('agenda.contrato', 'contrato')
+        .leftJoinAndSelect('contrato.cliente', 'cliente')
+        .leftJoinAndSelect('asignacion.usuario', 'usuario')
+        .where('asignacion.id_trabajador = :id_trabajador', {
+            id_trabajador: trabajador.id_trabajador,
+        })
+        .orderBy('agenda.fecha_programada', 'DESC')
+        .addOrderBy('tarea.id_tarea', 'ASC')
+        .getMany();
+
+    const mapa = {};
+    for (const t of tareas) {
+        const asig = t.asignacion_servicio;
+        const agenda = asig?.agenda;
+        const idServicio = agenda?.id_servicio;
+        if (!idServicio) continue;
+
+        if (!mapa[idServicio]) {
+            mapa[idServicio] = {
+                id_servicio: idServicio,
+                fecha_programada: agenda.fecha_programada,
+                hora_inicio: agenda.hora_inicio,
+                hora_fin: agenda.hora_fin,
+                estado_servicio: agenda.estado,
+                contrato: agenda.contrato
+                    ? { id_contrato: agenda.contrato.id_contrato, precio: agenda.contrato.precio }
+                    : null,
+                cliente: agenda.contrato?.cliente
+                    ? {
+                        id_cliente: agenda.contrato.cliente.id_cliente,
+                        nombre: agenda.contrato.cliente.nombre,
+                        apellido: agenda.contrato.cliente.apellido,
+                        direccion: agenda.contrato.cliente.direccion,
+                        telefono: agenda.contrato.cliente.telefono,
+                    }
+                    : null,
+                asignado_por: asig.usuario?.correo || '—',
+                tareas: [],
+            };
+        }
+        mapa[idServicio].tareas.push({
+            id_tarea: t.id_tarea,
+            descripcion: t.descripcion,
+            estado: t.estado,
+            foto_evidencia: t.foto_evidencia,
+        });
+    }
+
+    return Object.values(mapa).sort(
+        (a, b) => new Date(b.fecha_programada) - new Date(a.fecha_programada),
+    );
+};
+
 module.exports = {
     crearTarea,
     obtenerTodasLasTarea,
     obtenerTareaPorId,
     actualizarTarea,
     eliminarTarea,
-    finalizarTareaConEvidencia
+    finalizarTareaConEvidencia,
+    obtenerMisTareas,
 };

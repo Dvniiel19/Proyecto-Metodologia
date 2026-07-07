@@ -38,7 +38,7 @@ export default function AgendaServicios() {
           required: true,
           opcionesEndpoint: '/contrato',
           opcionValor: 'id_contrato',
-          opcionEtiqueta: (c) => #${c.id_contrato} (${c.fecha_inicio} → ${c.fecha_fin}),
+          opcionEtiqueta: (c) => `#${c.id_contrato} (${c.fecha_inicio} → ${c.fecha_fin})`,
         },
       ]}
     />

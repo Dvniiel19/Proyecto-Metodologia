@@ -21,6 +21,10 @@ router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), 
 // Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/', autenticacion, tareaController.obtenerTodasLasTarea);
 
+// GET /tarea/mis-tareas - Obtener las tareas del trabajador logueado (agrupadas por servicio)
+// Requiere: Autenticacion (se usa req.user.id_usuario para filtrar)
+router.get('/mis-tareas', autenticacion, tareaController.obtenerMisTareas);
+
 //GET /tarea/:id - Obtener una tarea especifico
 // Requiere: Autenticacion (acceso menos restrictivo)
 router.get('/:id_tarea', autenticacion, tareaController.obtenerTareaPorId);

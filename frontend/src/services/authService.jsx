@@ -12,7 +12,7 @@ export function decodificarToken(token) {
 
 // Página de inicio según el rol del usuario
 export function rutaInicioPorRol(rol) {
-  if (rol === 'Administrador'  rol === 'Coordinador') return '/dashboard'
+  if (rol === 'Administrador' || rol === 'Coordinador') return '/dashboard'
   if (rol === 'Supervisor') return '/agenda'
   if (rol === 'GestorInventario') return '/insumos'
   if (rol === 'Cliente') return '/mis-servicios'
@@ -41,7 +41,7 @@ export function logout() {
 export function obtenerSesion() {
   const token = localStorage.getItem('token')
   const usuarioRaw = localStorage.getItem('usuario')
-  if (!token  !usuarioRaw) return null
+  if (!token || !usuarioRaw) return null
 
   const payload = decodificarToken(token)
   // Token vencido: limpiamos la sesión
