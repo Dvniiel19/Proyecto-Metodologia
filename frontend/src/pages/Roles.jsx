@@ -11,6 +11,7 @@ export default function Roles() {
         { key: 'nombre_rol', label: 'Nombre del Rol' },
       ]}
       campos={[{ key: 'nombre_rol', label: 'Nombre del Rol', type: 'text', required: true }]}
+      ocultarCrear={true}
     />
   )
 }

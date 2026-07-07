@@ -21,6 +21,7 @@ export default function Clientes() {
         { key: 'direccion', label: 'Dirección', type: 'text', required: true },
         { key: 'historial_servicios', label: 'Historial de Servicios (opcional)', type: 'text', required: false },
       ]}
+      ocultarCrear={true}
     />
   )
 }
