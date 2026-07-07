@@ -46,6 +46,8 @@ export default function Usuarios() {
             { key: 'id_usuario', label: 'ID' },
             { key: 'correo', label: 'Correo' },
             { key: 'id_rol', label: 'Rol (ID)' },
+            { key: 'estado_rol', label: 'Estado del Rol' },
+            { key: 'fecha_expiracion', label: 'Fecha de Expiración del Rol' }
           ]}
           campos={[
             { key: 'correo', label: 'Correo', type: 'email', required: true },

@@ -63,6 +63,30 @@ const autenticacion = async (req, res, next) => {
     }
 };
 
+
+
+
+async function protegerRuta(req, res, next) {
+    try {
+       
+        
+        const usuario = req.usuario; // O como tengas guardado el usuario en el req
+
+       
+        if (usuario && usuario.estado_rol === 'Rol expirado') {
+            return res.status(403).json({ 
+                message: "Acceso denegado. Tu rol asignado ha caducado (Límite de 1 año cumplido). Contacta al admin para renovarlo." 
+            });
+        }
+
+        // 3. Si todo está bien, continúa a la ruta
+        next();
+
+    } catch (error) {
+        return res.status(401).json({ message: "No autorizado" });
+    }
+}
+
 module.exports = {
     autenticacion
 };
