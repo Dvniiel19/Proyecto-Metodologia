@@ -135,6 +135,9 @@ const registrarEntrada = async (req, res) => {
         if (asistencia.error === 'entrada_abierta') {
             return sendError(res, 'El trabajador ya tiene una entrada registrada sin salida', 409);
         }
+        if (asistencia.error === 'ya_ficho_hoy') {
+            return sendError(res, 'Ya cerraste tu jornada de hoy en este servicio; podrás volver a fichar mañana', 409);
+        }
         return sendSuccess(res, asistencia, 'Entrada registrada exitosamente', 201);
     } catch (error) {
         console.error(error);

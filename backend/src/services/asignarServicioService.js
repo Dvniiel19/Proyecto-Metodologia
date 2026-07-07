@@ -19,7 +19,7 @@ const notificacionRepository = db.getRepository(Notificacion);
 // Asignar un trabajador a una jornada aplica 3 validaciones
 // y luego encadena 3 efectos: crear la asignacion, actualizar la jornada y notificar.
 // Los errores llevan statusCode para que el controller responda el codigo HTTP correcto
-// (404 no existe / 400 ya inicio / 409 conflicto de horario) en vez de un 500 generico.
+// (404 no existe / 400 ya finalizo / 409 conflicto de horario) en vez de un 500 generico.
 const crearAsignacion = async (datosAsignarServicio) => {
     const { id_servicio, id_trabajador } = datosAsignarServicio;
 
@@ -31,13 +31,14 @@ const crearAsignacion = async (datosAsignarServicio) => {
         throw error;
     }
 
-    // 2. Verificar que la jornada no haya iniciado aun
-    // Se arma la fecha/hora de inicio combinando fecha_programada (YYYY-MM-DD)
-    // con hora_inicio (HH:MM:SS) y se compara contra el momento actual
+    // 2. Verificar que la jornada no haya finalizado: se permite asignar mientras
+    // este pendiente o en curso (ej: reforzar personal en una jornada ya iniciada).
+    // Se arma la fecha/hora de fin combinando fecha_programada (YYYY-MM-DD) con
+    // hora_fin (HH:MM:SS); si no tiene hora_fin, la jornada vale todo el dia
     const ahora = new Date();
-    const fechaHoraInicio = new Date(`${jornada.fecha_programada}T${jornada.hora_inicio}`);
-    if (ahora >= fechaHoraInicio) {
-        const error = new Error('No se puede asignar: la jornada ya inició o está en curso');
+    const fechaHoraFin = new Date(`${jornada.fecha_programada}T${jornada.hora_fin || '23:59:59'}`);
+    if (ahora >= fechaHoraFin) {
+        const error = new Error('No se puede asignar: la jornada ya finalizó');
         error.statusCode = 400;
         throw error;
     }

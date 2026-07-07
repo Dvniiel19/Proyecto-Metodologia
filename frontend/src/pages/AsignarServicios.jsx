@@ -1,6 +1,6 @@
 import CrudPage from '../components/CrudPage'
 import { useAuth } from '../context/AuthContext'
-import { formatearFecha } from '../utils/fechas'
+import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 
 
 export default function AsignarServicios() {
@@ -32,6 +32,11 @@ export default function AsignarServicios() {
           opcionValor: 'id_servicio',
           opcionEtiqueta: (s) =>
             `#${s.id_servicio} — ${formatearFecha(s.fecha_programada)} (${s.estado})`,
+          // Al elegir la jornada se sugiere su fecha programada como fecha asignada
+          // (solo rellena si el campo esta vacio; sigue siendo editable)
+          autoRellenar: (s) => ({
+            fecha_asignada: fechaChileAIso(String(s.fecha_programada)),
+          }),
         },
         {
           key: 'id_trabajador',

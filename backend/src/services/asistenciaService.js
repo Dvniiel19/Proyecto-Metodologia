@@ -1,13 +1,13 @@
 
 
-const { In, IsNull } = require('typeorm');
+const { In, IsNull, Not } = require('typeorm');
 const db = require('../config/db');
 const Asistencia = require('../entities/asistencia.entity');
 const { ESTADOS_AGENDA } = require('../constants/estadosAgenda');
+const { fechaHoyLocal } = require('../utils/fechaLocal');
 
 const asistenciaRepository = db.getRepository(Asistencia);
 const agendaRepository = db.getRepository('Agenda');
-const asignarServicioRepository = db.getRepository('AsignarServicio');
 
 /**
  * crear una asistencia 
@@ -69,14 +69,20 @@ const registrarEntrada = async (id_trabajador, id_servicio) => {
     });
     if (entradaAbierta) return { error: 'entrada_abierta' };
 
-    const ahora = new Date();
-    // fecha en hora local (toISOString usa UTC y de noche daria el dia siguiente)
-    const fecha = [
-        ahora.getFullYear(),
-        String(ahora.getMonth() + 1).padStart(2, '0'),
-        String(ahora.getDate()).padStart(2, '0'),
-    ].join('-');
-    const hora_entrada = ahora.toTimeString().split(' ')[0]; // formato HH:MM:SS
+    const fecha = fechaHoyLocal();
+
+    // Una jornada por servicio por dia: si HOY ya cerro su jornada en este
+    // servicio (ficho salida o quedo Ausente), no puede volver a fichar hasta
+    // manana. Los servicios duran varios dias, por eso se filtra solo por hoy.
+    const jornadaCerradaHoy = await asistenciaRepository.findOne({
+        where: [
+            { id_trabajador: Number(id_trabajador), id_servicio: Number(id_servicio), fecha, hora_salida: Not(IsNull()) },
+            { id_trabajador: Number(id_trabajador), id_servicio: Number(id_servicio), fecha, estado_asistencia: 'Ausente' },
+        ],
+    });
+    if (jornadaCerradaHoy) return { error: 'ya_ficho_hoy' };
+
+    const hora_entrada = new Date().toTimeString().split(' ')[0]; // formato HH:MM:SS
 
     const nuevaAsistencia = asistenciaRepository.create({ id_trabajador, id_servicio, fecha, hora_entrada });
     const asistenciaGuardada = await asistenciaRepository.save(nuevaAsistencia);
@@ -100,47 +106,12 @@ const registrarEntrada = async (id_trabajador, id_servicio) => {
  * @param {Number} id_asistencia
  * @returns {Object | null}
  */
-// REGLA DE NEGOCIO (cierre colectivo): la salida de UN trabajador no puede
-// finalizar un servicio donde trabajan varios. Solo cuando TODOS los
-// trabajadores asignados en asignar_servicio cerraron su jornada (ficharon
-// salida o fueron asentados como 'Ausente'), el servicio pasa de 'En Proceso'
-// a 'Pendiente de Evaluacion' para que el cliente lo evalue.
-// Si un asignado nunca ficho ni fue marcado ausente, el servicio queda
-// 'En Proceso' y un supervisor puede cerrarlo manualmente via
-// PUT /agenda/:id/terminar-trabajo.
-const cerrarServicioSiTodosSalieron = async (id_servicio) => {
-    const asignaciones = await asignarServicioRepository.findBy({
-        id_servicio: Number(id_servicio),
-    });
-    // sin asignaciones registradas no hay contra que comparar: no se auto-cierra
-    if (asignaciones.length === 0) return false;
-    const idsAsignados = [...new Set(asignaciones.map((a) => a.id_trabajador))];
-
-    // Un trabajador "cerro su jornada" si tiene una asistencia del servicio
-    // con hora_salida registrada o quedo asentado como 'Ausente'
-    const asistenciasDelServicio = await asistenciaRepository.findBy({
-        id_servicio: Number(id_servicio),
-    });
-    const idsCerrados = new Set(
-        asistenciasDelServicio
-            .filter((a) => a.hora_salida != null || a.estado_asistencia === 'Ausente')
-            .map((a) => a.id_trabajador)
-    );
-
-    const todosSalieron = idsAsignados.every((id) => idsCerrados.has(id));
-    if (!todosSalieron) return false;
-
-    // El WHERE por estado evita pisar servicios ya evaluados o cancelados
-    await agendaRepository.update(
-        { id_servicio: Number(id_servicio), estado: ESTADOS_AGENDA.EN_PROCESO },
-        { estado: ESTADOS_AGENDA.PENDIENTE_EVALUACION }
-    );
-    return true;
-};
-
 // Reloj control — salida. Completa el registro existente con hora_salida.
 // Si la salida ya fue registrada, retorna { error: 'ya_registrada' } para que el controller devuelva 409.
-// Luego evalua el cierre colectivo del servicio (ver cerrarServicioSiTodosSalieron).
+// IMPORTANTE: fichar salida solo cierra la jornada de asistencia de HOY; NO cambia
+// el estado del servicio. Los servicios duran varios dias y el trabajador debe poder
+// volver a fichar manana. El cierre del servicio es una accion explicita via
+// PUT /agenda/:id/terminar-trabajo (ver agendaService.terminarTrabajo).
 const registrarSalida = async (id_asistencia) => {
     const asistencia = await obtenerAsistenciaPorId(id_asistencia);
     if (!asistencia) return null;
@@ -148,7 +119,6 @@ const registrarSalida = async (id_asistencia) => {
 
     const hora_salida = new Date().toTimeString().split(' ')[0];
     await asistenciaRepository.update(id_asistencia, { hora_salida });
-    await cerrarServicioSiTodosSalieron(asistencia.id_servicio);
     return await obtenerAsistenciaPorId(id_asistencia);
 };
 
@@ -177,12 +147,9 @@ const registrarInasistencia = async (id_trabajador, id_servicio, fecha) => {
         hora_entrada: null, // una ausencia no tiene hora de entrada
         estado_asistencia: 'Ausente',
     });
-    const inasistenciaGuardada = await asistenciaRepository.save(nuevaInasistencia);
-
-    // Marcar al ausente puede ser el ultimo cierre que faltaba para el servicio
-    await cerrarServicioSiTodosSalieron(id_servicio);
-
-    return inasistenciaGuardada;
+    // La ausencia solo asienta la jornada del dia; el estado del servicio
+    // se cierra explicitamente via PUT /agenda/:id/terminar-trabajo
+    return await asistenciaRepository.save(nuevaInasistencia);
 };
 
 /**
