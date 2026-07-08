@@ -49,7 +49,7 @@ function AlertasInsumos({ version, onReabastecer }) {
                 {insumo.limite_seguridad ?? 10}).
               </p>
               
-              {/* 2. Solo Administrador, Gestor o Supervisor pueden ver el botón de Reabastecer */}
+              {/* 2. Solo Administrador, Gestor o Supervisor pueden ver el boton de Reabastecer */}
               {(rol === 'Administrador' || rol === 'GestorInventario' || rol === 'Supervisor') && (
                 <button
                   type="button"

@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-// Este componente envuelve tus rutas y pregunta: "¿El rol de este usuario está permitido aquí?"
+// Este componente envuelve tus rutas y pregunta: "¿El rol de este usuario está permitido aqui?"
 const ProtectedRoute = ({ rolesPermitidos }) => {
-    // 1. Extraemos también 'estado_rol' desde el estado global de tu AuthContext
+    // 1. Extraemos tambien 'estado_rol' desde el estado global de tu AuthContext
     const { estaAutenticado, rol, estado_rol } = useAuth()
 
     // Sin sesión activa: al login

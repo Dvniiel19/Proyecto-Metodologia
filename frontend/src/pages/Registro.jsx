@@ -4,7 +4,7 @@ import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
 import { inputClase } from '../helpers/estilos'
-import { Eye, EyeOff } from 'lucide-react' // 👈 1. Importamos los iconos
+import { Eye, EyeOff } from 'lucide-react' // 1. Importamos los iconos
 
 export default function Registro() {
   const { login } = useAuth()
@@ -22,7 +22,7 @@ export default function Registro() {
   const [errores, setErrores] = useState(null)
   const [cargando, setCargando] = useState(false)
   
-  // 👈 2. Agregamos el estado para controlar el ojito
+  //  2. Agregamos el estado para controlar el ojito
   const [showPassword, setShowPassword] = useState(false) 
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Registro() {
         ...form,
         id_rol: rolCliente.id_rol,
       })
-      // registro exitoso: iniciamos sesión automáticamente
+      // registro exitoso: iniciamos sesion automaticamente
       const usuario = await login(form.correo, form.contrasena)
       navigate(rutaInicioPorRol(usuario.nombre_rol), { replace: true })
     } catch (err) {

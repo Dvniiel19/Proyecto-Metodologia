@@ -95,7 +95,7 @@ function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-  ? 'bg-black text-white dark:bg-gray-800 dark:text-white' /* <-- Ahora el botón activo sera gris oscuro */
+  ? 'bg-black text-white dark:bg-gray-800 dark:text-white' /* <-- Ahora el botOn activo será gris oscuro */
   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50'
                   }`
                 }
@@ -127,7 +127,7 @@ function Sidebar() {
           </NavLink>
 
           <div className="flex items-center gap-1">
-            {/* NUEVO BOTÓN DE MODO OSCURO */}
+            {/* NUEVO BOTON DE MODO OSCURO */}
             <button
               type="button"
               title={darkMode ? 'Modo Claro' : 'Modo Oscuro'}

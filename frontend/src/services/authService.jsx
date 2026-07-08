@@ -44,7 +44,7 @@ export function obtenerSesion() {
   if (!token || !usuarioRaw) return null
 
   const payload = decodificarToken(token)
-  // Token vencido: limpiamos la sesión
+  // Token vencido: limpiamos la sesion
   if (!payload || (payload.exp && payload.exp * 1000 < Date.now())) {
     logout()
     return null

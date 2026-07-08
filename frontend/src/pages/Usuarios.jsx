@@ -8,7 +8,7 @@ import PersonalForm from '../components/PersonalForm'
 
 export default function Usuarios() {
   const [formVisible, setFormVisible] = useState(false)
-  // Incrementar la versión fuerza al CrudPage a recargar tras crear personal
+  // Incrementar la version fuerza al CrudPage a recargar tras crear personal
   const [version, setVersion] = useState(0)
 
   return (
