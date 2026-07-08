@@ -14,7 +14,7 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 // POST /insumos - crear un nuevo insumos
 // Requiere: Administrador o GestorInventario
-router.post('/', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.crearInsumos);
+router.post('/', autenticacion, autorizacion(['Administrador', 'GestorInventario','Supervisor']), insumosController.crearInsumos);
 
 // GET /insumos - obtener todos los insumoss
 // Requiere: Autenticacion (acceso menos restrictivo)
@@ -34,7 +34,7 @@ router.get('/', autenticacion, insumosController.obtenerTodosLosInsumos);
  *   "observaciones": "Compra a distribuidor"
  * }
  */
-router.post('/movimiento', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.registrarMovimientoInsumo);
+router.post('/movimiento', autenticacion, autorizacion(['Administrador', 'GestorInventario','Supervisor']), insumosController.registrarMovimientoInsumo);
 
 /**
  * GET /insumos/alertas
@@ -58,11 +58,11 @@ router.get('/:id_insumo', autenticacion, insumosController.obtenerInsumosPorId);
 
 // PATCH /insumos/:id actualizar un insumos
 // Requiere: Administrador o GestorInventario
-router.patch('/:id_insumo', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.actualizarInsumos);
+router.patch('/:id_insumo', autenticacion, autorizacion(['Administrador', 'GestorInventario','Supervisor']), insumosController.actualizarInsumos);
 
 // DELETE /insumos/:id eliminar un insumos
 // Requiere: Administrador o GestorInventario
-router.delete('/:id_insumo', autenticacion, autorizacion(['Administrador', 'GestorInventario']), insumosController.eliminarInsumos);
+router.delete('/:id_insumo', autenticacion, autorizacion(['Administrador', 'GestorInventario','Supervisor']), insumosController.eliminarInsumos);
 
 
 module.exports = router;

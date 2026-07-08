@@ -21,21 +21,21 @@ import {
 import { useAuth } from '../context/AuthContext'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador'] },
-  { label: 'Rol', icon: ShieldCheck, to: '/rol', roles: ['Administrador'] },
-  { label: 'Clientes', icon: Building2, to: '/clientes', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-  { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
-  { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
-  { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
-  { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
-  { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario'] },
-  { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador'] },
+    { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
+    { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador','Supervisor'] },
+    { label: 'Rol', icon: ShieldCheck, to: '/rol', roles: ['Administrador', 'Supervisor'] },
+    { label: 'Clientes', icon: Building2, to: '/clientes', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Supervisor', 'Trabajador'] },
+    { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
+    { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
+    { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
+    { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario', 'Supervisor'] },
+    { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
 ]
 
 function Sidebar() {

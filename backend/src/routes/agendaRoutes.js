@@ -30,7 +30,7 @@ router.get('/:id_agenda', autenticacion, agendaController.obtenerAgendaPorId);
 
 // PATCH /agenda/:id - Actualizar un evento
 // Requiere: Administrador o Coordinador
-router.patch('/:id_agenda', autenticacion, autorizacion(['Administrador', 'Coordinador']), agendaController.actualizarAgenda);
+router.patch('/:id_agenda', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), agendaController.actualizarAgenda);
 
 // PUT /agenda/:id/terminar-trabajo - Marcar el trabajo como terminado (habilita evaluacion del cliente)
 // Requiere: Trabajador (solo sus servicios), Supervisor, Coordinador o Administrador
@@ -43,6 +43,6 @@ router.put(
 
 // DELETE /agenda/:id - Eliminar un evento
 // Requiere: Administrador o Coordinador
-router.delete('/:id_agenda', autenticacion, autorizacion(['Administrador', 'Coordinador']), agendaController.eliminarAgenda);
+router.delete('/:id_agenda', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), agendaController.eliminarAgenda);
 
 module.exports = router;
