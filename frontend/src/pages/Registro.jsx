@@ -4,13 +4,12 @@ import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
 import { inputClase } from '../helpers/estilos'
+import { Eye, EyeOff } from 'lucide-react' // 👈 1. Importamos los iconos
 
 export default function Registro() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  // El registro público es solo para clientes; el id del rol Cliente
-  // se obtiene del backend para no hardcodearlo
   const [rolCliente, setRolCliente] = useState(null)
   const [form, setForm] = useState({
     nombre: '',
@@ -22,6 +21,9 @@ export default function Registro() {
   })
   const [errores, setErrores] = useState(null)
   const [cargando, setCargando] = useState(false)
+  
+  // 👈 2. Agregamos el estado para controlar el ojito
+  const [showPassword, setShowPassword] = useState(false) 
 
   useEffect(() => {
     api
@@ -123,17 +125,27 @@ export default function Registro() {
               />
             </label>
 
-            <label className="block text-sm font-medium text-black">
-              Contraseña
-              <input
-                type="password"
-                value={form.contrasena}
-                onChange={setCampo('contrasena')}
-                required
-                placeholder="Mín. 8: mayúscula, número y símbolo"
-                className={inputClase}
-              />
-            </label>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-black">Contraseña</span>
+              {/* 👈 3. Envolvemos el input y agregamos el botón */}
+              <div className="relative w-full">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={form.contrasena}
+                  onChange={setCampo('contrasena')}
+                  required
+                  placeholder="Mín. 8: mayúscula, número y símbolo"
+                  className={`${inputClase} pr-10`} // Agregamos pr-10 para que el texto no pise el icono
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
             {errores && (
               <ul className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm text-red-600">
