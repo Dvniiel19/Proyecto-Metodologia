@@ -80,7 +80,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
     <div className="mb-6 rounded-lg border border-gray-300 bg-white p-5 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
         <Clock className="h-5 w-5" />
-        Reloj Control — {miTrabajador.nombre} {miTrabajador.apellido}
+        Reloj Control  - {miTrabajador.nombre} {miTrabajador.apellido}
       </h2>
 
       {entradaAbierta ? (
@@ -89,7 +89,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             Tienes una jornada abierta en el servicio{' '}
             <span className="font-medium text-black dark:text-white">#{entradaAbierta.id_servicio}</span>{' '}
             (entrada: {entradaAbierta.hora_entrada}). Fichar la salida solo registra tu
-            asistencia; cuando el trabajo esté listo, márcalo abajo como{' '}
+            asistencia de la jornada. Cuando el trabajo esté listo, márcalo abajo como{' '}
             <span className="font-medium text-black dark:text-white">terminado</span> para que el cliente
             pueda evaluarlo.
           </p>
@@ -106,7 +106,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
       ) : (
         <form onSubmit={ficharEntrada} className="mt-4 flex flex-wrap items-end gap-3">
           <label className="block flex-1 text-sm font-medium text-black dark:text-gray-200">
-            Servicio de la jornada
+            Seleccione el Servicio 
             <select
               value={idServicio}
               onChange={(e) => setIdServicio(e.target.value)}
@@ -142,7 +142,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             Marcar trabajo terminado
           </h3>
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            El servicio quedará pendiente de la evaluación del cliente.
+            El servicio quedará pendiente para la evaluación del cliente.
           </p>
           <div className="mt-3 flex flex-wrap items-end gap-3">
             <label className="block flex-1 text-sm font-medium text-black dark:text-gray-200">
@@ -168,7 +168,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
                 value={observacion}
                 onChange={(e) => setObservacion(e.target.value)}
                 maxLength={1000}
-                placeholder="Ej: se limpió todo según checklist"
+                placeholder="Ej: se limpió todo según lo solicitado"
                 className={clsInput}
               />
             </label>
@@ -225,7 +225,7 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
     <div className="mb-6 rounded-lg border border-gray-300 bg-white p-5 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
         <UserX className="h-5 w-5" />
-        Registrar Inasistencia
+        Registrar Alguna Inasistencia
       </h2>
 
       <form onSubmit={handleSubmit} className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -327,7 +327,7 @@ export default function Asistencia() {
     <div className="px-8 py-8 transition-colors duration-200">
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-black dark:text-white">Asistencia</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Reloj control y registro de ausencias</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Registro de entradas, salidas y ausencias</p>
       </header>
 
       {error && (

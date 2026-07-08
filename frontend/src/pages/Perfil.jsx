@@ -81,7 +81,7 @@ export default function Perfil() {
                 value={contrasena}
                 onChange={(e) => setContrasena(e.target.value)}
                 required
-                placeholder="Mín. 8: mayúscula, número y símbolo"
+                placeholder="Mín 8: mayúscula, número y símbolo"
                 className={inputClase}
               />
             </label>

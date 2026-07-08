@@ -308,7 +308,7 @@ export default function Insumos() {
           campos={[
             { key: 'nombre_insumo', label: 'Nombre del Insumo', type: 'text', required: true },
             { key: 'stock', label: 'Stock', type: 'number', required: true },
-            { key: 'limite_seguridad', label: 'Límite de Seguridad', type: 'number' },
+            { key: 'limite_seguridad', label: 'Límite de Seguridad (Opcional)', type: 'number' },
             
           ]}
         />
