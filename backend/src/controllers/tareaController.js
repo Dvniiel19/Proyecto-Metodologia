@@ -162,6 +162,53 @@ const eliminarTarea = async (req, res) => {
     }
 };
 
+/** get /tarea/pendientes-cliente
+ * obtiene las tareas pendientes de validación del cliente autenticado
+ */
+const obtenerTareasPendientesCliente = async (req, res) => {
+    try {
+        const id_usuario = req.user.id_usuario;
+        const resultado = await tareaService.obtenerTareasPendientesCliente(id_usuario);
+        return sendSuccess(res, resultado, 'Tareas pendientes obtenidas correctamente');
+    } catch (error) {
+        console.error(error);
+        return sendError(res, 'Error al obtener tareas pendientes', 500);
+    }
+};
+
+/** put /tarea/:id_tarea/validar-cliente
+ * el cliente aprueba o rechaza una tarea finalizada por el trabajador
+ */
+const validarTareaCliente = async (req, res) => {
+    try {
+        const { id_tarea } = req.params;
+        const { accion } = req.body;
+        const id_usuario = req.user.id_usuario;
+
+        if (!accion || !['aprobado', 'rechazado'].includes(accion)) {
+            return sendError(res, 'Debe enviar una acción válida: "aprobado" o "rechazado"', 400);
+        }
+
+        const resultado = await tareaService.validarTareaCliente(Number(id_tarea), id_usuario, accion);
+        if (!resultado) {
+            return sendError(res, 'Tarea no encontrada', 404);
+        }
+
+        return sendSuccess(
+            res,
+            resultado,
+            accion === 'aprobado' ? 'Tarea aprobada correctamente' : 'Tarea rechazada correctamente',
+            200,
+        );
+    } catch (error) {
+        if (error.statusCode) {
+            return sendError(res, error.message, error.statusCode);
+        }
+        console.error(error);
+        return sendError(res, 'Error al validar la tarea', 500, [error.message]);
+    }
+};
+
 module.exports = {
     crearTarea,
     obtenerTodasLasTarea,
@@ -170,4 +217,6 @@ module.exports = {
     eliminarTarea,
     finalizarTarea,
     obtenerMisTareas,
+    obtenerTareasPendientesCliente,
+    validarTareaCliente,
 };
