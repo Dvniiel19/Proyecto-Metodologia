@@ -34,7 +34,7 @@ module.exports = new EntitySchema({
         },
         id_servicio: {
             type: 'int',
-            nullable: false,
+            nullable: true,
         },
     },
     

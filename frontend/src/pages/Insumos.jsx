@@ -73,9 +73,9 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
 
   const puedeGuardar =
     idInsumo !== '' &&
-    idServicio !== '' &&
     Number.isInteger(cantidadNum) &&
     cantidadNum > 0 &&
+    (tipo !== 'salida' || idServicio !== '') &&
     !salidaExcedeStock
 
   const handleSubmit = async (e) => {
@@ -87,7 +87,7 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
         id_insumo: Number(idInsumo),
         cantidad: cantidadNum,
         tipo_movimiento: tipo,
-        id_servicio: Number(idServicio),
+        id_servicio: tipo === 'salida' ? Number(idServicio) : null, 
         observaciones: observaciones || undefined,
       })
       onGuardado()
@@ -130,7 +130,17 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
 
           <label className="block text-sm font-medium text-black">
             Tipo de Movimiento
-            <select value={tipo} onChange={(e) => setTipo(e.target.value)} className={inputClase}>
+            <select
+          value={tipo}
+           onChange={(e) => {
+            setTipo(e.target.value)
+
+            if (e.target.value === 'ingreso') {
+            setIdServicio('')
+          }
+        }}
+  className={inputClase}
+>
               <option value="ingreso">Ingreso</option>
               <option value="salida">Salida</option>
             </select>
@@ -152,18 +162,32 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
               </span>
             )}
           </label>
+      
 
-          <label className="block text-sm font-medium text-black">
-            Servicio Asociado
-            <select value={idServicio} onChange={(e) => setIdServicio(e.target.value)} required className={inputClase}>
-              <option value="">Seleccionar...</option>
-              {agenda.map((s) => (
-                <option key={s.id_servicio} value={s.id_servicio}>
-                  #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)} ({s.estado})
-                </option>
-              ))}
-            </select>
-          </label>
+{/*
+  ingreso → NO muestra Servicio Asociado
+  salida → SÍ muestra Servicio Asociado
+ */}
+      {tipo === 'salida' && (
+     <label className="block text-sm font-medium text-black">
+        Servicio Asociado
+        <select
+         value={idServicio}
+         onChange={(e) => setIdServicio(e.target.value)}
+         required
+         className={inputClase}
+    >
+      <option value="">Seleccionar...</option>
+
+      {agenda.map((s) => (
+        <option key={s.id_servicio} value={s.id_servicio}>
+          #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)} ({s.estado})
+        </option>
+      ))}
+    </select>
+  </label>
+)}
+
 
           <label className="block text-sm font-medium text-black sm:col-span-2">
             Observaciones (opcional)
@@ -258,35 +282,34 @@ export default function Insumos() {
             { key: 'nombre_insumo', label: 'Nombre' },
             { key: 'stock', label: 'Stock' },
             { key: 'limite_seguridad', label: 'Límite de Seguridad' },
+
             {
-              key: 'estado_insumo',
-              label: 'Estado',
-              render: (fila) => (
-                <span
-                  className={
-                    fila.estado_insumo === 'Stock Critico'
-                      ? 'font-semibold text-red-600'
-                      : 'text-gray-700'
-                  }
-                >
-                  {fila.estado_insumo}
-                </span>
-              ),
-            },
+           key: 'estado_insumo',
+           label: 'Estado',
+           render: (fila) => {
+      const esCritico = Number(fila.stock) < Number(fila.limite_seguridad)
+      const estadoCalculado = esCritico ? 'Stock Critico' : 'Normal'
+
+    return (
+      <span
+        className={
+          esCritico
+            ? 'font-semibold text-red-600'
+            : 'text-gray-700'
+        }
+      >
+        {estadoCalculado}
+      </span>
+    )
+  },
+},
+
           ]}
           campos={[
             { key: 'nombre_insumo', label: 'Nombre del Insumo', type: 'text', required: true },
             { key: 'stock', label: 'Stock', type: 'number', required: true },
             { key: 'limite_seguridad', label: 'Límite de Seguridad', type: 'number' },
-            {
-              key: 'estado_insumo',
-              label: 'Estado',
-              type: 'select',
-              opciones: [
-                { value: 'Normal', label: 'Normal' },
-                { value: 'Stock Critico', label: 'Stock Crítico' },
-              ],
-            },
+            
           ]}
         />
       </div>

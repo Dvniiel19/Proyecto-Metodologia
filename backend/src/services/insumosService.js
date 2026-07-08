@@ -108,6 +108,8 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
 
     let nuevoStock;
     const tipoMovimientoLower = tipo_movimiento.toLowerCase();
+    const idServicioFinal = tipoMovimientoLower === 'salida' ? Number(id_servicio) : null;
+    const observacionesFinal = observaciones && observaciones.trim() !== '' ? observaciones.trim() : null;
 
     // 2. Calcular el stock nuevo segun el tipo de movimiento.
     // Regla de negocio: una salida nunca puede dejar el stock en negativo
@@ -150,8 +152,13 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
         tipo_movimiento: tipoMovimientoLower,
         observaciones: observaciones || null,
         insumo: { id_insumo: parseInt(id_insumo) },
-        agenda: { id_servicio: parseInt(id_servicio) },
     };
+
+    //salidas se asociana un servicio 
+    // INGRESOS NO yaque son reposicion de inventario  
+    if (tipoMovimientoLower === 'salida') {
+       movimiento.agenda = { id_servicio: parseInt(id_servicio) };
+    }
 
     const movimientoRegistrado = await consumoInsumoRepository.save(movimiento);
 
