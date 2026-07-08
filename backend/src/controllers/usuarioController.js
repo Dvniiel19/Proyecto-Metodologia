@@ -301,6 +301,24 @@ const actualizarUsuario = async (req, res) => {
             validacion.value.contrasena = await encrypt(validacion.value.contrasena);
         }
 
+        // 👇 NUEVA LÓGICA: Actualización automática del estado según la fecha
+        if ('fecha_expiracion' in validacion.value) {
+            if (validacion.value.fecha_expiracion) {
+                const fechaNueva = new Date(validacion.value.fecha_expiracion);
+                const ahora = new Date();
+                
+                // Comparamos si la nueva fecha es en el futuro
+                if (fechaNueva > ahora) {
+                    validacion.value.estado_rol = 'Activo';
+                } else {
+                    validacion.value.estado_rol = 'Rol expirado';
+                }
+            } else {
+                // Si el admin borra la fecha dejándola en null (tiempo infinito)
+                validacion.value.estado_rol = 'Activo';
+            }
+        }
+
         const obtenerid = req.params.id_usuario;
         const resultado = await usuarioService.actualizarUsuario(obtenerid, validacion.value);
 

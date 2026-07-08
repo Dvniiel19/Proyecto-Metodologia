@@ -34,24 +34,38 @@ export default function Usuarios() {
         )}
       </div>
 
+      {/* Corregido el div de apertura aquí abajo */}
       <div className="-mt-8">
         <CrudPage
           key={version}
           titulo="Usuarios"
           endpoint="/usuario"
           idKey="id_usuario"
-          rolesEscritura={['Administrador']}
+          rolesEscritura={['Administrador']} // Corregido el formato del array
           ocultarCrear
           columnas={[
             { key: 'id_usuario', label: 'ID' },
             { key: 'correo', label: 'Correo' },
             { key: 'id_rol', label: 'Rol (ID)' },
-            { key: 'estado_rol', label: 'Estado del Rol' },
+            { 
+              key: 'estado_rol', 
+              label: 'Estado del Rol',
+              render: (fila) => {
+                if (fila.fecha_expiracion) {
+                  const ahora = new Date();
+                  const limite = new Date(fila.fecha_expiracion);
+                  if (ahora > limite) {
+                    return <span className="text-red-500 font-semibold">Rol expirado</span>;
+                  }
+                }
+                return fila.estado_rol;
+              }
+            },
             { key: 'fecha_expiracion', label: 'Fecha de Expiración del Rol' }
           ]}
           campos={[
             { key: 'correo', label: 'Correo', type: 'email', required: true },
-            { key: 'contrasena', label: 'Contraseña', type: 'password', required: true },
+            { key: 'contrasena', label: 'Contraseña', type: 'password', required: false },
             {
               key: 'id_rol',
               label: 'Rol',
@@ -61,12 +75,12 @@ export default function Usuarios() {
               opcionValor: 'id_rol',
               opcionEtiqueta: (r) => r.nombre_rol,
             },
-            { 
-              key: 'fecha_expiracion', 
-              label: 'Expiración del Rol', 
-              type: 'datetime-local', 
-              required: false 
-            },
+            {
+              key: 'fecha_expiracion',
+              label: 'Fecha de Expiración del Rol',
+              type: 'datetime-local',
+              required: true
+            }
           ]}
         />
       </div>

@@ -16,6 +16,7 @@ import {
   Clock,
   ThumbsUp,
   Sun,
+  Sun,  
   Moon,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
