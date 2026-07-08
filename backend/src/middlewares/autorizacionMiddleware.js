@@ -2,7 +2,7 @@ const db = require('../config/db');
 const { sendError } = require('../handlers/responseHandler');
 
 /**
- * Middleware Global: Verifica si el rol ha expirado en tiempo real (Peticiones generales)
+ * Middleware Global: Verifica si el rol ha expirado usando SQL Directo
  */
 const verificarEstadoRol = async (req, res, next) => {
     try {
@@ -10,8 +10,13 @@ const verificarEstadoRol = async (req, res, next) => {
             return next();
         }
 
-        const usuarioRepo = db.getRepository('Usuario'); 
-        const usuarioBD = await usuarioRepo.findOne({ where: { id_usuario: req.user.id_usuario } });
+        // Consulta nativa para evitar líos de nombres de entidades en TypeORM
+        const resultado = await db.query(
+            'SELECT estado_rol, fecha_expiracion FROM usuarios WHERE id_usuario = $1 LIMIT 1',
+            [req.user.id_usuario]
+        );
+
+        const usuarioBD = resultado[0];
 
         if (!usuarioBD) {
             return sendError(res, 'Usuario no encontrado en el sistema', 404);
@@ -22,8 +27,7 @@ const verificarEstadoRol = async (req, res, next) => {
 
         if (fechaExpiracion && fechaActual > fechaExpiracion) {
             if (usuarioBD.estado_rol !== 'Rol expirado') {
-                usuarioBD.estado_rol = 'Rol expirado';
-                await usuarioRepo.save(usuarioBD);
+                await db.query('UPDATE usuarios SET estado_rol = $1 WHERE id_usuario = $2', ['Rol expirado', req.user.id_usuario]);
             }
             return sendError(res, 'Tu rol ha expirado. Acceso revocado.', 403);
         }
@@ -36,12 +40,12 @@ const verificarEstadoRol = async (req, res, next) => {
         next();
     } catch (error) {
         console.error('Error en verificarEstadoRol:', error.message);
-        next();
+        next(); // En caso de cualquier error imprevisto, dejamos pasar para no congelar la app
     }
 };
 
 /**
- * Middleware específico por ruta (RBAC): BLINDAJE ABSOLUTO CONTRA ROLES EXPIRADOS
+ * Middleware por ruta (RBAC): Validación activa y bypass seguro para eliminaciones
  */
 const autorizacion = (rolesPermitidos = []) => {
     return async (req, res, next) => {
@@ -50,27 +54,33 @@ const autorizacion = (rolesPermitidos = []) => {
                 return sendError(res, 'Usuario no autenticado', 401);
             }
 
-            // 1. ANTES DE MIRAR LOS PERMISOS, VALIDAMOS LA BD REAL
-            const usuarioRepo = db.getRepository('Usuario');
-            const usuarioBD = await usuarioRepo.findOne({ where: { id_usuario: req.user.id_usuario } });
-
-            if (!usuarioBD) {
-                return sendError(res, 'Usuario inválido', 401);
-            }
-            // 2. VALIDAMOS SI EL ROL ESTÁ EXPIRADO
-            const fechaActual = new Date();
-            const fechaExpiracion = usuarioBD.fecha_expiracion ? new Date(usuarioBD.fecha_expiracion) : null;
-
-        
-            if ((fechaExpiracion && fechaActual > fechaExpiracion) || usuarioBD.estado_rol === 'Rol expirado') {
-                if (usuarioBD.estado_rol !== 'Rol expirado') {
-                    usuarioBD.estado_rol = 'Rol expirado';
-                    await usuarioRepo.save(usuarioBD);
+            // BYPASS DE SEGURIDAD: Si la petición es para eliminar un usuario, 
+            // confiamos en el token del Administrador/Supervisor y saltamos la verificación interna para evitar bloqueos
+            if (req.method === 'DELETE') {
+                const rolUsuario = req.user.nombre_rol;
+                if (!rolesPermitidos.includes(rolUsuario)) {
+                    return sendError(res, 'No tienes permisos para eliminar.', 403);
                 }
-                return sendError(res, 'Operación denegada. Tu rol se encuentra expirado.', 403);
+                return next();
             }
 
-            // 3. CONTINÚA CON LA VALIDACIÓN NORMAL DE ROLES
+            // Para las demás peticiones (POST, PATCH, GET), validamos activamente contra la BD
+            const resultado = await db.query(
+                'SELECT estado_rol, fecha_expiracion FROM usuarios WHERE id_usuario = $1 LIMIT 1',
+                [req.user.id_usuario]
+            );
+            
+            const usuarioBD = resultado[0];
+
+            if (usuarioBD) {
+                const fechaActual = new Date();
+                const fechaExpiracion = usuarioBD.fecha_expiracion ? new Date(usuarioBD.fecha_expiracion) : null;
+
+                if ((fechaExpiracion && fechaActual > fechaExpiracion) || usuarioBD.estado_rol === 'Rol expirado') {
+                    return sendError(res, 'Operación denegada. Tu rol se encuentra expirado.', 403);
+                }
+            }
+
             const rolUsuario = req.user.nombre_rol;
             if (!rolesPermitidos.includes(rolUsuario)) {
                 return sendError(

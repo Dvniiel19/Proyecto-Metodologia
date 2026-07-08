@@ -109,8 +109,20 @@ const eliminarAsignacion = async (req, res) => {
         } else {
             return sendSuccess(res, null, 'Asignación eliminada correctamente');
         }
+
     } catch (error) {
-        return sendError(res, 'Error al eliminar asignación', 500);
+        console.error('Error crítico al eliminar asignación:', error.message);
+        
+        // Atajamos el bloqueo si la asignación tiene checklists, asistencia o consumos amarrados
+        if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
+            return sendError(
+                res, 
+                'No se puede eliminar esta asignación porque cuenta con tareas en proceso, registros de asistencia o insumos asociados.', 
+                400
+            );
+        }
+
+        return sendError(res, 'No se pudo completar la eliminación de la asignación debido a restricciones del sistema.', 400);
     }
 };
 
