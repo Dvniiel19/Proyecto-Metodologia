@@ -97,7 +97,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             type="button"
             disabled={guardando}
             onClick={ficharSalida}
-            className="mt-3 flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+            className="mt-3 flex items-center gap-2 rounded-md bg-[#35627A] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2b5064] disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
           >
             <LogOut className="h-4 w-4" />
             {guardando ? 'Registrando...' : 'Fichar Salida'}

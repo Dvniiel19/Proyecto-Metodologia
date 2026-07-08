@@ -26,6 +26,8 @@ export default function Registro() {
   const [showPassword, setShowPassword] = useState(false) 
 
   useEffect(() => {
+    document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark')
+
     api
       .get('/auth/roles-registrables')
       .then((roles) => setRolCliente(roles?.find((r) => r.nombre_rol === 'Cliente') ?? null))
@@ -55,17 +57,17 @@ export default function Registro() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-8">
+    <div className="admin-panel-bg flex min-h-screen items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="rounded-xl border-2 border-black bg-white p-8">
-          <h1 className="text-2xl font-bold text-black">Crear Cuenta</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            
+        <div className="rounded-xl border-2 border-black bg-white p-8 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
+          <h1 className="text-2xl font-bold text-black dark:text-white">Crear Cuenta</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Regístrate como cliente para contratar y evaluar servicios de aseo
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <label className="block text-sm font-medium text-black">
+              <label className="block text-sm font-medium text-black dark:text-gray-200">
                 Nombre
                 <input
                   type="text"
@@ -76,7 +78,7 @@ export default function Registro() {
                   className={inputClase}
                 />
               </label>
-              <label className="block text-sm font-medium text-black">
+              <label className="block text-sm font-medium text-black dark:text-gray-200">
                 Apellido
                 <input
                   type="text"
@@ -89,7 +91,7 @@ export default function Registro() {
               </label>
             </div>
 
-            <label className="block text-sm font-medium text-black">
+            <label className="block text-sm font-medium text-black dark:text-gray-200">
               Teléfono
               <input
                 type="tel"
@@ -101,7 +103,7 @@ export default function Registro() {
               />
             </label>
 
-            <label className="block text-sm font-medium text-black">
+            <label className="block text-sm font-medium text-black dark:text-gray-200">
               Dirección
               <input
                 type="text"
@@ -113,7 +115,7 @@ export default function Registro() {
               />
             </label>
 
-            <label className="block text-sm font-medium text-black">
+            <label className="block text-sm font-medium text-black dark:text-gray-200">
               Correo
               <input
                 type="email"
@@ -125,30 +127,20 @@ export default function Registro() {
               />
             </label>
 
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-black">Contraseña</span>
-              {/* 👈 3. Envolvemos el input y agregamos el botón */}
-              <div className="relative w-full">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={form.contrasena}
-                  onChange={setCampo('contrasena')}
-                  required
-                  placeholder="Mín. 8: mayúscula, número y símbolo"
-                  className={`${inputClase} pr-10`} // Agregamos pr-10 para que el texto no pise el icono
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none transition-colors"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
+            <label className="block text-sm font-medium text-black dark:text-gray-200">
+              Contraseña
+              <input
+                type="password"
+                value={form.contrasena}
+                onChange={setCampo('contrasena')}
+                required
+                placeholder="Mín. 8: mayúscula, número y símbolo"
+                className={inputClase}
+              />
+            </label>
 
             {errores && (
-              <ul className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm text-red-600">
+              <ul className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
                 {errores.map((msg) => (
                   <li key={msg}>{msg}</li>
                 ))}
@@ -163,10 +155,10 @@ export default function Registro() {
               {cargando ? 'Creando cuenta...' : 'Crear Cuenta'}
             </button>
 
-            <p className="text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400">
               ¿Ya tienes cuenta?{' '}
-              <Link to="/login" className="font-medium text-black underline">
-                Iniciar sesión
+              <Link to="/login" className="font-medium text-black underline dark:text-white">
+                Inicia sesión
               </Link>
             </p>
           </form>
