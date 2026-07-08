@@ -4,9 +4,6 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
 import { Eye, EyeOff, Moon, Sun } from 'lucide-react' // 👈 Importamos la Luna y el Sol
 
-// Pantalla de Login: unica ruta publica junto al registro. Envia las
-// credenciales al backend y, con el token recibido, redirige a la pagina de
-// inicio que corresponde al rol del usuario.
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -23,24 +20,19 @@ export default function Login() {
   // Al cargar la pantalla, revisamos si el modo oscuro ya estaba activado en el navegador
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    const temaGuardado = localStorage.getItem('theme') === 'dark'
-    document.documentElement.classList.toggle('dark', temaGuardado)
-    setIsDark(temaGuardado)
+    setIsDark(document.documentElement.classList.contains('dark'))
   }, [])
   // Función para alternar el tema al presionar el botón
   const toggleTheme = () => {
     if (isDark) {
       document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
       setIsDark(false)
     } else {
       document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
       setIsDark(true)
     }
   }
 
-  // Intenta iniciar sesion; si el backend acepta, cada rol entra a su vista inicial
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
@@ -57,13 +49,13 @@ export default function Login() {
 
   return (
     // Se agregó 'relative' y dark:bg-gray-950 para el fondo asfalto
-    <div className="admin-panel-bg relative flex min-h-screen items-center justify-center px-4 transition-colors duration-200">
+    <div className="relative flex min-h-screen items-center justify-center bg-white px-4 transition-colors duration-200 dark:bg-gray-950">
       
       {/* NUEVO: BOTÓN FLOTANTE DEL MODO OSCURO EN LA ESQUINA */}
       <button
         type="button"
         onClick={toggleTheme}
-        className="absolute right-6 top-6 z-10 rounded-full bg-white/85 p-2.5 text-gray-600 shadow-sm transition-colors hover:bg-white dark:bg-gray-900/85 dark:text-gray-300 dark:hover:bg-gray-800"
+        className="absolute right-6 top-6 rounded-full p-2.5 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
         title="Alternar tema"
       >
         {isDark ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
@@ -72,7 +64,7 @@ export default function Login() {
       <div className="w-full max-w-sm">
         {/* Recuadro de login oscurecido */}
         <div className="rounded-xl border-2 border-black bg-white p-8 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
-          <h1 className="text-2xl font-bold text-black dark:text-white">Sistema de Aseo</h1>
+          <h1 className="text-2xl font-bold text-black dark:text-white">Aseo Gestión</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Inicia sesión para continuar</p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
@@ -96,7 +88,7 @@ export default function Login() {
                   value={contrasena}
                   onChange={(e) => setContrasena(e.target.value)}
                   required
-                  placeholder="Ejemplo123!"
+                  placeholder="••••••••"
                   className="w-full rounded-md border border-gray-400 p-2 pr-10 text-sm text-black placeholder-gray-400 focus:border-black focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-gray-400 transition-colors"
                 />
                 <button
