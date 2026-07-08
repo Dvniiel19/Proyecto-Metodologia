@@ -149,7 +149,7 @@ export default function Layout() {
     // Agregamos dark:bg-gray-950 para que el fondo de toda la pantalla derecha cambie a ultra oscuro
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto">
+      <main className="admin-panel-bg min-w-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
     </div>
