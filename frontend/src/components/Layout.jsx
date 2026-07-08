@@ -30,8 +30,8 @@ const NAV_ITEMS = [
   { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador'] },
   { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
   { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador'] },
+  { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+  { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
   { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Trabajador'] }, //adminstrar porsiaka
   { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
   { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
@@ -95,7 +95,7 @@ function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-  ? 'bg-black text-white dark:bg-gray-800 dark:text-white' /* <-- Ahora el botón activo será gris oscuro */
+  ? 'bg-black text-white dark:bg-gray-800 dark:text-white' /* <-- Ahora el botón activo sera gris oscuro */
   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800/50'
                   }`
                 }
