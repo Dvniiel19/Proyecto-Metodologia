@@ -1,3 +1,4 @@
+// Punto de entrada de React: monta <App /> dentro del div#root del index.html
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/index.css'

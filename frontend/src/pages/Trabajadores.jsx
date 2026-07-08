@@ -1,3 +1,6 @@
+// Pagina de Trabajadores: CRUD del personal de aseo. La creacion se hace con
+// PersonalForm (crea cuenta + perfil de trabajador juntos) y la tabla muestra
+// el promedio de satisfaccion que calcula el backend desde las evaluaciones.
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import CrudPage from '../components/CrudPage'
@@ -18,7 +21,7 @@ export default function Trabajadores() {
             className="flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
           >
             <Plus className="h-4 w-4" />
-            Crear Nuevo
+            Crear Nuevo Trabajador
           </button>
         </div>
 

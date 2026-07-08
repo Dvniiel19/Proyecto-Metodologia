@@ -1,3 +1,6 @@
+// Pagina "Mis Tareas" (rol Trabajador): muestra sus servicios asignados
+// agrupados por jornada, y permite finalizar cada tarea subiendo la foto de
+// evidencia obligatoria (requisito de evidencia y notificacion al cliente).
 import { useCallback, useRef, useState } from 'react'
 import { Camera, CheckCircle, MapPin, User, Clock } from 'lucide-react'
 import { api, API_URL } from '../services/api'
@@ -6,16 +9,21 @@ import { fechaLargaHoy } from '../helpers/fechas'
 
 const FECHA_HOY = fechaLargaHoy({ conAnio: false })
 
+// Tarea "En Proceso": el boton abre el selector de archivos y al elegir la
+// foto se sube de inmediato, finalizando la tarea
 function TareaPendiente({ tarea, onFinalizada }) {
   const inputRef = useRef(null)
   const [subiendo, setSubiendo] = useState(false)
   const [error, setError] = useState(null)
 
+  // Al seleccionar la imagen: se arma un FormData (multipart) y se envia al
+  // endpoint de finalizar; el backend guarda la evidencia, cambia el estado a
+  // "Pendiente de Validación" y notifica por correo al cliente
   const handleFileChange = async (e) => {
     const archivo = e.target.files?.[0]
     if (!archivo) return
 
-    setSubiendo(true)
+    setSubiendo(true) // bloquea los botones para evitar doble subida
     setError(null)
     const formData = new FormData()
     formData.append('foto_evidencia', archivo)
@@ -27,7 +35,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
       setError(err.message)
     } finally {
       setSubiendo(false)
-      e.target.value = ''
+      e.target.value = '' // limpia el input para poder reintentar con la misma foto
     }
   }
 
@@ -41,7 +49,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
         type="file"
         accept="image/*"
         onChange={handleFileChange}
-        className="hidden"
+        className="hidden" 
       />
 
       <button
@@ -61,7 +69,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
       >
         <Camera className="h-4 w-4 text-gray-600 dark:text-gray-400" />
         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-          Abrir cámara o galería
+          Abrir galería
         </span>
       </button>
 
@@ -74,6 +82,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
   )
 }
 
+// Tarea ya finalizada: se muestra tachada, con enlace a su evidencia
 function TareaFinalizada({ tarea }) {
   return (
     // Las tareas finalizadas se ven un poco más translúcidas/apagadas en modo oscuro
@@ -103,6 +112,8 @@ function TareaFinalizada({ tarea }) {
   )
 }
 
+// Tarjeta de una jornada/servicio: cabecera con fecha, cliente y direccion,
+// y adentro sus tareas separadas en pendientes y finalizadas
 function GrupoServicio({ grupo, onTareaFinalizada }) {
   const pendientes = grupo.tareas.filter((t) => t.estado === 'En Proceso')
   const finalizadas = grupo.tareas.filter((t) => t.estado !== 'En Proceso')
@@ -165,12 +176,14 @@ export default function MisTareas() {
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
 
+  // Tras finalizar una tarea: confirma al trabajador y recarga la lista
   const handleTareaFinalizada = useCallback(() => {
     setMensajeExito('Tarea finalizada. Se notificó al cliente para su validación.')
     setTimeout(() => setMensajeExito(null), 5000)
     cargar()
   }, [cargar])
 
+  // true si queda al menos una tarea en proceso (controla el mensaje final)
   const todosPendientes = agrupado.some((g) =>
     g.tareas.some((t) => t.estado === 'En Proceso'),
   )

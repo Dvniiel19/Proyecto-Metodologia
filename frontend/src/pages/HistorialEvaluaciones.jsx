@@ -1,3 +1,6 @@
+// Pagina "Mis Servicios" (rol Cliente): historial de servicios contratados con
+// la opcion de evaluar (nota 1-5 + comentario) los que ya fueron terminados.
+// Cumple el requisito de evaluacion del cliente.
 import { useCallback, useState } from 'react'
 import ServiceCard from '../components/ServiceCard'
 import { api } from '../services/api'
@@ -32,15 +35,19 @@ export default function HistorialEvaluaciones() {
       return
     }
 
+    // Filtro de titularidad en cliente: solo los contratos de este cliente
     const misContratos = (contratos ?? [])
       .filter((c) => c.id_cliente === miCliente.id_cliente)
       .map((c) => c.id_contrato)
 
+    // Indice id_servicio -> evaluacion para cruzar en O(1)
     const evalPorServicio = {}
     ;(evaluaciones ?? []).forEach((ev) => {
       if (ev.id_servicio != null) evalPorServicio[ev.id_servicio] = ev
     })
 
+    // Arma el modelo que consume ServiceCard: solo los servicios de mis
+    // contratos, con su estado normalizado y la evaluacion existente (si hay)
     const misServicios = (agenda ?? [])
       .filter((s) => misContratos.includes(s.id_contrato))
       .map((s) => {
@@ -63,6 +70,8 @@ export default function HistorialEvaluaciones() {
   const { cargando, error: errorCarga, recargar: cargar } = useCarga(cargarDatos)
   const error = errorCarga ?? errorAccion
 
+  // Guarda la nota del cliente: PATCH si el servicio ya tiene evaluacion
+  // (editar), POST si es la primera vez (el backend valida titularidad y estado)
   const handleEvaluate = async (idServicio, { calificacion, comentario }) => {
     const servicio = servicios.find((s) => s.id === idServicio)
     try {
@@ -85,6 +94,7 @@ export default function HistorialEvaluaciones() {
     }
   }
 
+  // Elimina la evaluacion propia, con confirmacion previa
   const handleDelete = async (idServicio) => {
     const servicio = servicios.find((s) => s.id === idServicio)
     if (!servicio?.id_evaluacion) return

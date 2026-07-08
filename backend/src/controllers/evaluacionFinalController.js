@@ -38,8 +38,7 @@ const crearEvaluacionFinal = async (req, res) => {
             return sendError(res, 'El id_servicio no existe', 404);
         }
         // Solo se pueden evaluar servicios cuyo trabajo fue marcado como terminado
-        // (via PUT /agenda/:id/terminar-trabajo). Se mantienen 'Finalizado' y
-        // 'Completado' por compatibilidad con datos anteriores al flujo nuevo.
+        // (PUT /agenda/:id/terminar-trabajo). Se mantienen 'Finalizado' y Completado' para compatibilidad con servicios antiguos que no pasaron por el flujo de evaluacion.
         const ESTADOS_EVALUABLES = [ESTADOS_AGENDA.PENDIENTE_EVALUACION, 'Finalizado', 'Completado'];
         if (!ESTADOS_EVALUABLES.includes(agenda.estado)) {
             return sendError(res, 'El trabajo del servicio aun no ha sido marcado como terminado, no se puede calificar', 400);
@@ -62,13 +61,8 @@ const crearEvaluacionFinal = async (req, res) => {
             return sendError(res, 'Ya hay una evaluacion para ese servicio', 409);
         }
 
-        // La nota queda asociada al servicio; los trabajadores involucrados se
-        // derivan de asignar_servicio (un servicio puede tener varios y todos
-        // comparten la calificacion), por eso ya no se asigna un id_trabajador.
+        // Creamos la evaluacion final y actualizamos el estado del servicio a 'Finalizado'
         const evaluacionFinalCreado = await evaluacionFinalService.crearEvaluacionFinal(value);
-
-        // La evaluacion del cliente cierra el ciclo del servicio:
-        // 'Pendiente de Evaluacion' -> 'Finalizado'
         await agendaRepository.update(id_servicio, { estado: ESTADOS_AGENDA.FINALIZADO });
 
         return sendSuccess(
@@ -101,10 +95,8 @@ const obtenerTodasLasEvaluacionFinal = async (req, res) => {
 const obtenerEvaluacionFinalPorId = async (req, res) => {
     try {
         const { id_evaluacion } = req.params;
-        // llamar al servicio obtenerEvaluacion_FinalPorId(id_evaluacion_final)
         const evaluacionFinal = await evaluacionFinalService.obtenerEvaluacionFinalPorId(id_evaluacion); 
         
-        // si no existe retrona el error 404
         if (!evaluacionFinal) {
             return sendError(res, 'evaluacion_final no encontrado', 404);
         } else {
@@ -122,7 +114,6 @@ const actualizarEvaluacionFinal = async (req, res) => {
     try {
         const validacion = updateEvaluacionFinalSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -151,10 +142,8 @@ const actualizarEvaluacionFinal = async (req, res) => {
 const eliminarEvaluacionFinal = async (req, res) => {
     try {
         const { id_evaluacion} = req.params;
-        // llamar al servicio eliminarevaluacion_final(id_evaluacion_final)
         const eliminado = await evaluacionFinalService.eliminarEvaluacionFinal(id_evaluacion);
         
-        // si no se elimino retornar error 404
         if (!eliminado) {
             return sendError(res, 'evaluacion_final no encontrado', 404);
         } else {

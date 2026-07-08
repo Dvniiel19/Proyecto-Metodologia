@@ -15,3 +15,22 @@
 body {
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
+
+.admin-panel-bg {
+  background-color: #f9fafb;
+  background-image:
+    linear-gradient(rgba(249, 250, 251, 0.72), rgba(249, 250, 251, 0.9)),
+    url('../assets/fondo-aseo.png');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dark .admin-panel-bg {
+  background-color: #121212;
+  background-image:
+    linear-gradient(rgba(18, 18, 18, 0.74), rgba(18, 18, 18, 0.92)),
+    url('../assets/fondo-aseo-dark.png');
+}

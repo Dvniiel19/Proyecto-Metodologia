@@ -7,7 +7,6 @@ const { createValidacionSupervisorSchema, updateValidacionSupervisorSchema } = r
  */
 const crearValidacionSupervisor = async (req, res) => {
     try {
-        // validamos los datos de entrada con joi
         const { error, value } = createValidacionSupervisorSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -17,9 +16,7 @@ const crearValidacionSupervisor = async (req, res) => {
                 error.details.map(err => err.message)
             );
         }
-        // llamamos al servicio para crear el contrato
         const validacionSupervisorCreado = await validacionSupervisorService.crearValidacionSupervisor(value);
-        // respondemos con exito
         return sendSuccess(
             res,
             validacionSupervisorCreado,
@@ -106,7 +103,6 @@ const eliminarValidacionSupervisor = async (req, res) => {
         }
     } catch (error) {
         console.error('Error crítico al eliminar validación:', error.message);
-        
       
         if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
             return sendError(

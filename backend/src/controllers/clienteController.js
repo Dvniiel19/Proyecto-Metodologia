@@ -99,7 +99,6 @@ const actualizarCliente = async (req, res) => {
  */
 const eliminarCliente = async (req, res) => {
     try {
-        // CORREGIDO: Ahora extrae id_cliente exactamente como se llama en tus rutas
         const { id_cliente } = req.params; 
 
         if (!id_cliente) {
@@ -109,7 +108,6 @@ const eliminarCliente = async (req, res) => {
             });
         }
 
-        // Ejecutamos tu servicio pasándole la variable correcta
         await clienteService.eliminarCliente(id_cliente); 
 
         return res.status(200).json({
@@ -120,7 +118,7 @@ const eliminarCliente = async (req, res) => {
     } catch (error) {
         console.error('Error crítico al eliminar cliente:', error.message);
         
-        // Atajamos el bloqueo de llaves foráneas (si tiene contratos o servicios activos)
+        // Si el error es por restricciones de clave foránea, devolvemos un mensaje 
         if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
             return res.status(400).json({
                 status: 'error',

@@ -20,22 +20,24 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
+// Menu lateral completo: cada item declara que roles pueden verlo.
+// El sidebar filtra esta lista segun el rol del usuario logueado.
 const NAV_ITEMS = [
-    { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
-    { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador','Supervisor'] },
-    { label: 'Rol', icon: ShieldCheck, to: '/rol', roles: ['Administrador', 'Supervisor'] },
-    { label: 'Clientes', icon: Building2, to: '/clientes', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-    { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-    { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-    { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-    { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-    { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-    { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Supervisor', 'Trabajador'] },
-    { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
-    { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
-    { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
-    { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario', 'Supervisor'] },
-    { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
+  { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador'] },
+  { label: 'Rol', icon: ShieldCheck, to: '/rol', roles: ['Administrador'] },
+  { label: 'Clientes', icon: Building2, to: '/clientes', roles: ['Administrador', 'Coordinador'] },
+  { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador'] },
+  { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+  { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador'] },
+  { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+  { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+  { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Trabajador'] }, //adminstrar porsiaka
+  { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
+  { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
+  { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
+  { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario'] },
+  { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador'] },
 ]
 
 function Sidebar() {
@@ -43,6 +45,7 @@ function Sidebar() {
   const navigate = useNavigate()
 
   // --- LÓGICA MODO OSCURO ---
+  // El tema elegido se persiste en localStorage para recordarlo entre sesiones
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark'
@@ -50,6 +53,7 @@ function Sidebar() {
     return false
   })
 
+  // Aplica u oculta la clase "dark" en <html>, que activa los estilos dark: de Tailwind
   useEffect(() => {
     const root = window.document.documentElement
     if (darkMode) {
@@ -62,11 +66,13 @@ function Sidebar() {
   }, [darkMode])
   // ---------------------------
 
+  // Avatar con la inicial del correo, y menu filtrado por el rol del usuario
   const inicial = usuario?.correo?.charAt(0).toUpperCase() ?? '?'
   const itemsVisibles = NAV_ITEMS.filter(
     (item) => item.roles == null || item.roles.includes(rol),
   )
 
+  // Cierra la sesion (limpia token) y redirige al login
   const handleLogout = () => {
     logout()
     navigate('/login', { replace: true })
@@ -76,8 +82,8 @@ function Sidebar() {
     // Se agregan clases dark:border-gray-800 dark:bg-gray-900 para oscurecer la barra lateral
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-gray-300 bg-white dark:border-gray-800 dark:bg-gray-900 transition-colors duration-200">
       <div className="border-b border-gray-200 px-6 py-5 dark:border-gray-800">
-        <h2 className="text-lg font-bold text-black dark:text-white">Aseo Gestión</h2>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Panel Administrativo</p>
+        <h2 className="text-lg font-bold text-black dark:text-white">Sistema de Aseo </h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Panel </p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
@@ -151,7 +157,7 @@ export default function Layout() {
     // Agregamos dark:bg-gray-950 para que el fondo de toda la pantalla derecha cambie a ultra oscuro
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto">
+      <main className="admin-panel-bg min-w-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
     </div>

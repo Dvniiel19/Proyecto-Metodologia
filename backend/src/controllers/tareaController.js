@@ -56,8 +56,6 @@ const finalizarTarea = async (req, res) => {
             200
         );
     } catch (error) {
-        // Errores de negocio del servicio traen statusCode (ej: 502 si fallo el correo
-        // y la transaccion hizo rollback); el resto son errores inesperados (500)
         if (error.statusCode) {
             return sendError(res, error.message, error.statusCode);
         }
@@ -98,10 +96,8 @@ const obtenerMisTareas = async (req, res) => {
 const obtenerTareaPorId = async (req, res) => {
     try {
         const { id_tarea } = req.params;
-        // llamar al servicio obtenertareaPorId(id_tarea)
         const tarea = await tareaService.obtenerTareaPorId(id_tarea); 
         
-        // si no existe retrona el error 404
         if (!tarea) {
             return sendError(res, 'tarea no encontrada', 404);
         } else {
@@ -148,10 +144,8 @@ const actualizarTarea = async (req, res) => {
 const eliminarTarea = async (req, res) => {
     try {
         const { id_tarea } = req.params;
-        // llamar al servicio eliminarTarea(id_tarea)
         const eliminado = await tareaService.eliminarTarea(id_tarea);
         
-        // si no se elimino retornar error 404
         if (!eliminado) {
             return sendError(res, 'tarea no encontrada', 404);
         } else {

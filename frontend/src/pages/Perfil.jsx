@@ -4,6 +4,8 @@ import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { inputClase } from '../helpers/estilos'
 
+// Perfil del usuario logueado: muestra sus datos de cuenta (correo y rol)
+// y permite cambiar la contraseña con confirmacion.
 export default function Perfil() {
   const { usuario, rol } = useAuth()
 
@@ -13,13 +15,16 @@ export default function Perfil() {
   const [exito, setExito] = useState(false)
   const [guardando, setGuardando] = useState(false)
 
+  // Validacion en vivo: se muestra el aviso apenas la confirmacion difiere
   const noCoinciden = confirmacion !== '' && contrasena !== confirmacion
 
+  // Cambia la contraseña del propio usuario (el id sale de la sesion)
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrores(null)
     setExito(false)
 
+    // Doble chequeo antes de enviar (ademas del aviso en vivo)
     if (contrasena !== confirmacion) {
       setErrores(['Las contraseñas no coinciden'])
       return
@@ -81,7 +86,7 @@ export default function Perfil() {
                 value={contrasena}
                 onChange={(e) => setContrasena(e.target.value)}
                 required
-                placeholder="Mín. 8: mayúscula, número y símbolo"
+                placeholder="Mín 8: mayúscula, número y símbolo"
                 className={inputClase}
               />
             </label>

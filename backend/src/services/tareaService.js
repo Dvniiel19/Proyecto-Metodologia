@@ -4,6 +4,7 @@ const { notificarClienteTareaPendienteValidacion } = require('./emailService');
 
 const tareaRepository = db.getRepository(Tareas);
 
+// Mapea la relacion de asignacion a la estructura esperada por TypeORM
 const mapearRelacionAsignacion = (datosTarea = {}) => {
     const payload = { ...datosTarea };
     if (payload.id_asignacion) {
@@ -13,11 +14,13 @@ const mapearRelacionAsignacion = (datosTarea = {}) => {
     return payload;
 };
 
+// Crea una tarea nueva vinculada a una asignacion de servicio
 const crearTarea = async (datosTarea) => {
     const nuevaTarea = tareaRepository.create(mapearRelacionAsignacion(datosTarea));
     return await tareaRepository.save(nuevaTarea);
 };
 
+// Lista todas las tareas con su asignacion (vista del supervisor/admin)
 const obtenerTodasLasTarea = async () => {
     return await tareaRepository.find({
         relations: { asignacion_servicio: true },
@@ -32,6 +35,7 @@ const obtenerTareaPorId = async (id_tarea) => {
 };
 
 const actualizarTarea = async (id_tarea, datosActualizados) => {
+    // update() no devuelve la entidad, por eso se vuelve a consultar para responder al front
     await tareaRepository.update(Number(id_tarea), mapearRelacionAsignacion(datosActualizados));
     return await obtenerTareaPorId(id_tarea);
 };
@@ -41,9 +45,15 @@ const eliminarTarea = async (id_tarea) => {
     return result.affected > 0;
 };
 
+// REQUISITO EVIDENCIA: el trabajador finaliza la tarea adjuntando UNA foto.
+// Dentro de una transaccion: valida el estado, guarda la ruta de la evidencia,
+// cambia el estado a "Pendiente de Validación" y notifica por correo al cliente.
 const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
     return await db.transaction(async (manager) => {
         const repositorioTx = manager.getRepository(Tareas);
+
+        // Se cargan las relaciones en cadena (tarea -> asignacion -> agenda ->
+        // contrato -> cliente -> usuario) para llegar al correo del cliente titular
 
         const tarea = await repositorioTx.findOne({
             where: { id_tarea: Number(id_tarea) },
@@ -62,17 +72,13 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
             return null;
         }
 
-        // Solo se puede finalizar una tarea que sigue en proceso; evita que una
-        // segunda subida pise la evidencia de una tarea ya enviada a validacion
         if (tarea.estado !== 'En Proceso') {
             const error = new Error(`La tarea no se puede finalizar porque su estado actual es "${tarea.estado}".`);
             error.statusCode = 409;
             throw error;
         }
 
-        // El cliente no siempre tiene una cuenta de usuario vinculada (id_usuario es
-        // nullable), asi que el correo de notificacion es best-effort: si no hay
-        // correo o si falla el envio, la tarea igual se finaliza y guarda su evidencia.
+        // Se obtiene el correo del cliente titular del contrato asociado a la tarea
         const correoCliente = tarea?.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.correo;
 
         tarea.estado = 'Pendiente de Validación';
@@ -86,8 +92,7 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
                 await notificarClienteTareaPendienteValidacion({
                     correoCliente,
                     idTarea: tarea.id_tarea,
-                    // La descripcion vive en la asignacion; las tareas antiguas
-                    // conservan la propia como respaldo
+                    // La descripcion de la tarea puede estar en la asignacion (si se definio ahi) o en la propia tarea (si es antigua)
                     descripcionTarea: tarea.asignacion_servicio?.descripcion ?? tarea.descripcion,
                     rutaEvidencia: archivoEvidencia.path,
                 });
@@ -108,12 +113,12 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
 };
 
 const obtenerMisTareas = async (id_usuario) => {
+    // Vista del trabajador: todas las tareas de limpieza asignadas a SUS servicios, con la foto de evidencia si ya fue finalizada. 
     const trabajadorRepo = db.getRepository('Trabajador');
     const trabajador = await trabajadorRepo.findOneBy({ id_usuario });
     if (!trabajador) return [];
 
-    // Se parte desde las asignaciones (no desde las tareas) para que el trabajador
-    // vea todos sus servicios asignados, incluso los que aun no tienen tareas creadas
+    // Se obtiene la lista de asignaciones del trabajador, con sus agendas y tareas, para luego mapearlas a la estructura que espera el front.
     const asignaciones = await db
         .getRepository('AsignarServicio')
         .createQueryBuilder('asignacion')
@@ -129,6 +134,7 @@ const obtenerMisTareas = async (id_usuario) => {
         .addOrderBy('tarea.id_tarea', 'ASC')
         .getMany();
 
+    // Se agrupan las asignaciones por servicio (id_servicio) para que el front muestre una tarjeta por jornada con todas sus tareas adentro
     const mapa = {};
     for (const asig of asignaciones) {
         const agenda = asig.agenda;
@@ -161,8 +167,7 @@ const obtenerMisTareas = async (id_usuario) => {
         for (const t of asig.tareas || []) {
             mapa[idServicio].tareas.push({
                 id_tarea: t.id_tarea,
-                // La descripcion vive en la asignacion; las tareas antiguas
-                // conservan la propia como respaldo
+                // La descripcion de la tarea puede estar en la asignacion (si se definio ahi) o en la propia tarea (si es antigua)
                 descripcion: asig.descripcion ?? t.descripcion,
                 estado: t.estado,
                 foto_evidencia: t.foto_evidencia,
@@ -170,11 +175,14 @@ const obtenerMisTareas = async (id_usuario) => {
         }
     }
 
+    // Servicios mas recientes primero
     return Object.values(mapa).sort(
         (a, b) => new Date(b.fecha_programada) - new Date(a.fecha_programada),
     );
 };
 
+// Vista del cliente: tareas en "Pendiente de Validación" que pertenecen a SUS
+// contratos, con la foto de evidencia para que decida aprobar o rechazar
 const obtenerTareasPendientesCliente = async (id_usuario) => {
     const repo = db.getRepository(Tareas);
 
@@ -192,7 +200,8 @@ const obtenerTareasPendientesCliente = async (id_usuario) => {
         },
     });
 
-    // Filtramos solo las tareas del cliente autenticado
+    // Filtro de titularidad: solo las tareas cuyo contrato pertenece al usuario
+    // autenticado (el id viene del token, nunca del body)
     return tareas.filter(
         (t) => t.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.id_usuario === Number(id_usuario),
     ).map((t) => ({
@@ -214,6 +223,8 @@ const obtenerTareasPendientesCliente = async (id_usuario) => {
     }));
 };
 
+// El cliente aprueba o rechaza una tarea finalizada. Transaccional porque ademas
+// de cambiar la tarea puede cerrar la agenda completa (todas las tareas listas).
 const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
     return await db.transaction(async (manager) => {
         const repositorioTx = manager.getRepository(Tareas);
@@ -235,7 +246,7 @@ const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
             return null;
         }
 
-        // Verificar que sea el dueño
+        // Se valida que el usuario autenticado sea el titular del contrato asociado a la tarea
         const idUsuarioTitular = tarea.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.id_usuario;
         if (Number(idUsuarioTitular) !== Number(id_usuario)) {
             const error = new Error('No tienes permiso para validar esta tarea');
@@ -243,7 +254,7 @@ const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
             throw error;
         }
 
-        // Solo se puede validar una tarea en "Pendiente de Validación"
+        // Solo se puede validar una tarea en "Pendiente de Validacion"
         if (tarea.estado !== 'Pendiente de Validación') {
             const error = new Error(`La tarea no se puede validar porque su estado actual es "${tarea.estado}".`);
             error.statusCode = 409;
@@ -264,7 +275,8 @@ const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
         tarea.estado = nuevosEstados[accion];
         await repositorioTx.save(tarea);
 
-        // Si se aprobó la tarea, actualizamos el estado de la agenda si todas las tareas están completadas
+        // Post-condicion: si con esta aprobacion todas las tareas de la agenda quedan aprobadas o rechazadas, se cierra 
+        // la agenda cambiando su estado a "Pendiente de Evaluacion"
         if (accion === 'aprobado') {
             const agendaRepo = manager.getRepository('Agenda');
             const agenda = await agendaRepo.findOne({

@@ -1,3 +1,7 @@
+// Pagina de Asistencia: cumple el requisito de marcaje de llegada/salida.
+// Tiene dos caras segun el rol: el Trabajador ve su "reloj control" (fichar
+// entrada/salida y marcar trabajo terminado) y los gestores (Supervisor,
+// Coordinador, Admin) pueden ademas registrar inasistencias manuales.
 import { useCallback, useState } from 'react'
 import { CheckCircle, Clock, LogIn, LogOut, UserX } from 'lucide-react'
 import { api } from '../services/api'
@@ -5,6 +9,7 @@ import { useAuth } from '../context/AuthContext'
 import useCarga from '../hooks/useCarga'
 import { fechaHoyISO } from '../helpers/fechas'
 
+// Roles con permisos de gestion en esta pantalla
 const ROLES_GESTOR = ['Administrador', 'Coordinador', 'Supervisor']
 
 // Estilos de input integrados aquí para añadir fácilmente las clases de modo oscuro
@@ -18,14 +23,18 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // Solo se puede marcar como terminado un servicio que este "En Proceso"
   const serviciosEnProceso = agenda.filter((s) => s.estado === 'En Proceso')
   const misAsistencias = asistencias.filter(
     (a) => a.id_trabajador === miTrabajador.id_trabajador,
   )
+  // Jornada abierta = tiene hora de entrada pero aun no registra salida.
+  // Determina que formulario se muestra: fichar entrada o fichar salida.
   const entradaAbierta = misAsistencias.find(
     (a) => a.hora_entrada != null && a.hora_salida == null,
   )
 
+  // Registra la hora de llegada del trabajador en el servicio elegido
   const ficharEntrada = async (e) => {
     e.preventDefault()
     setError(null)
@@ -44,6 +53,9 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
     }
   }
 
+  // Marca el servicio como terminado: el backend lo pasa a estado "Finalizado"
+  // y desde ese momento el cliente puede evaluarlo (es distinto de fichar salida,
+  // que solo registra la asistencia personal)
   const terminarTrabajo = async (e) => {
     e.preventDefault()
     setError(null)
@@ -63,6 +75,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
     }
   }
 
+  // Cierra la jornada abierta registrando la hora de salida
   const ficharSalida = async () => {
     setError(null)
     setGuardando(true)
@@ -80,7 +93,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
     <div className="mb-6 rounded-lg border border-gray-300 bg-white p-5 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
         <Clock className="h-5 w-5" />
-        Reloj Control — {miTrabajador.nombre} {miTrabajador.apellido}
+        Reloj Control  - {miTrabajador.nombre} {miTrabajador.apellido}
       </h2>
 
       {entradaAbierta ? (
@@ -89,7 +102,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             Tienes una jornada abierta en el servicio{' '}
             <span className="font-medium text-black dark:text-white">#{entradaAbierta.id_servicio}</span>{' '}
             (entrada: {entradaAbierta.hora_entrada}). Fichar la salida solo registra tu
-            asistencia; cuando el trabajo esté listo, márcalo abajo como{' '}
+            asistencia de la jornada. Cuando el trabajo esté listo, márcalo abajo como{' '}
             <span className="font-medium text-black dark:text-white">terminado</span> para que el cliente
             pueda evaluarlo.
           </p>
@@ -97,7 +110,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             type="button"
             disabled={guardando}
             onClick={ficharSalida}
-            className="mt-3 flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+            className="mt-3 flex items-center gap-2 rounded-md bg-[#35627A] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2b5064] disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
           >
             <LogOut className="h-4 w-4" />
             {guardando ? 'Registrando...' : 'Fichar Salida'}
@@ -106,7 +119,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
       ) : (
         <form onSubmit={ficharEntrada} className="mt-4 flex flex-wrap items-end gap-3">
           <label className="block flex-1 text-sm font-medium text-black dark:text-gray-200">
-            Servicio de la jornada
+            Seleccione el Servicio 
             <select
               value={idServicio}
               onChange={(e) => setIdServicio(e.target.value)}
@@ -142,7 +155,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
             Marcar trabajo terminado
           </h3>
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            El servicio quedará pendiente de la evaluación del cliente.
+            El servicio quedará pendiente para la evaluación del cliente.
           </p>
           <div className="mt-3 flex flex-wrap items-end gap-3">
             <label className="block flex-1 text-sm font-medium text-black dark:text-gray-200">
@@ -168,7 +181,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
                 value={observacion}
                 onChange={(e) => setObservacion(e.target.value)}
                 maxLength={1000}
-                placeholder="Ej: se limpió todo según checklist"
+                placeholder="Ej: se limpió todo según lo solicitado"
                 className={clsInput}
               />
             </label>
@@ -194,13 +207,34 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
 }
 
 /** Formulario de inasistencia manual (Supervisor / Coordinador / Admin) */
-function FormInasistencia({ trabajadores, agenda, onCambio }) {
+function FormInasistencia({ trabajadores, agenda, asignaciones = [], onCambio }) {
   const [idTrabajador, setIdTrabajador] = useState('')
   const [idServicio, setIdServicio] = useState('')
   const [fecha, setFecha] = useState(fechaHoyISO())
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // Select dependiente: solo se ofrecen los servicios asignados (via
+  // asignar_servicio) al trabajador elegido, para no poder marcarlo ausente
+  // en un servicio que no le corresponde
+  const serviciosDelTrabajador = idTrabajador
+    ? agenda.filter((s) =>
+        asignaciones.some(
+          (a) =>
+            a.id_trabajador === Number(idTrabajador) &&
+            a.id_servicio === s.id_servicio,
+        ),
+      )
+    : []
+
+  // Al cambiar de trabajador se resetea el servicio elegido, porque la lista
+  // de opciones ya no es la misma
+  const cambiarTrabajador = (e) => {
+    setIdTrabajador(e.target.value)
+    setIdServicio('')
+  }
+
+  // Registra una ausencia: crea una asistencia con estado "Ausente" sin horas
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
@@ -225,7 +259,7 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
     <div className="mb-6 rounded-lg border border-gray-300 bg-white p-5 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-black dark:text-white">
         <UserX className="h-5 w-5" />
-        Registrar Inasistencia
+        Registrar Alguna Inasistencia
       </h2>
 
       <form onSubmit={handleSubmit} className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -233,7 +267,7 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
           Trabajador
           <select
             value={idTrabajador}
-            onChange={(e) => setIdTrabajador(e.target.value)}
+            onChange={cambiarTrabajador}
             required
             className={clsInput}
           >
@@ -252,10 +286,17 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
             value={idServicio}
             onChange={(e) => setIdServicio(e.target.value)}
             required
+            disabled={!idTrabajador}
             className={clsInput}
           >
-            <option value="">Seleccionar...</option>
-            {agenda.map((s) => (
+            <option value="">
+              {!idTrabajador
+                ? 'Seleccione un trabajador primero...'
+                : serviciosDelTrabajador.length === 0
+                  ? 'Sin servicios asignados'
+                  : 'Seleccionar...'}
+            </option>
+            {serviciosDelTrabajador.map((s) => (
               <option key={s.id_servicio} value={s.id_servicio}>
                 #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)}
               </option>
@@ -301,23 +342,32 @@ export default function Asistencia() {
   const [trabajadores, setTrabajadores] = useState([])
   const [agenda, setAgenda] = useState([])
   const [misAgendas, setMisAgendas] = useState([])
+  const [asignaciones, setAsignaciones] = useState([])
 
+  // Carga todo en paralelo; la agenda completa y las asignaciones solo se
+  // piden si el usuario es gestor (el trabajador comun solo necesita sus
+  // propias agendas)
   const cargarDatos = useCallback(async () => {
-    const [asis, trab, mias, ag] = await Promise.all([
+    const [asis, trab, mias, ag, asig] = await Promise.all([
       api.get('/asistencia'),
       api.get('/trabajador'),
       api.get('/agenda/mis-agendas'),
       esGestor ? api.get('/agenda') : Promise.resolve([]),
+      esGestor ? api.get('/asignarServicio') : Promise.resolve([]),
     ])
     setAsistencias(Array.isArray(asis) ? asis : [])
     setTrabajadores(Array.isArray(trab) ? trab : [])
     setMisAgendas(Array.isArray(mias) ? mias : [])
     setAgenda(Array.isArray(ag) ? ag : [])
+    setAsignaciones(Array.isArray(asig) ? asig : [])
   }, [esGestor])
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
 
+  // Vincula el usuario logueado con su perfil de trabajador (si lo tiene);
+  // sin este vinculo no se muestra el reloj control
   const miTrabajador = trabajadores.find((t) => t.id_usuario === usuario.id_usuario)
+  // Traduce id_trabajador a nombre legible para la tabla
   const nombreTrabajador = (id) => {
     const t = trabajadores.find((x) => x.id_trabajador === id)
     return t ? `${t.nombre} ${t.apellido}` : `#${id}`
@@ -327,7 +377,7 @@ export default function Asistencia() {
     <div className="px-8 py-8 transition-colors duration-200">
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-black dark:text-white">Asistencia</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Reloj control y registro de ausencias</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Registro de entradas, salidas y ausencias</p>
       </header>
 
       {error && (
@@ -356,7 +406,12 @@ export default function Asistencia() {
           )}
 
           {esGestor && (
-            <FormInasistencia trabajadores={trabajadores} agenda={agenda} onCambio={cargar} />
+            <FormInasistencia
+              trabajadores={trabajadores}
+              agenda={agenda}
+              asignaciones={asignaciones}
+              onCambio={cargar}
+            />
           )}
 
           <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
@@ -379,6 +434,7 @@ export default function Asistencia() {
                     </td>
                   </tr>
                 ) : (
+                  // El gestor ve todas las asistencias; el trabajador solo las suyas
                   asistencias
                     .filter((a) => esGestor || a.id_trabajador === miTrabajador?.id_trabajador)
                     .map((a) => (

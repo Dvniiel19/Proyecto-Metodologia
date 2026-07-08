@@ -1,7 +1,9 @@
+// Pagina "Asignar Servicios": cumple el requisito de asignacion de operarios.
+// Vincula un trabajador a una jornada de la agenda con la descripcion de su
+// tarea; el backend valida disponibilidad y cruces de horario al guardar.
 import CrudPage from '../components/CrudPage'
 import { useAuth } from '../context/AuthContext'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'
-
 
 export default function AsignarServicios() {
   const { usuario } = useAuth()
@@ -23,7 +25,15 @@ export default function AsignarServicios() {
         { key: 'estado', label: 'Estado' },
       ]}
       campos={[
-        { key: 'fecha_asignada', label: 'Fecha Asignada', type: 'date', required: true },
+        {
+          key: 'id_trabajador',
+          label: 'Trabajador',
+          type: 'select',
+          required: true,
+          opcionesEndpoint: '/trabajador',
+          opcionValor: 'id_trabajador',
+          opcionEtiqueta: (t) => `${t.nombre} ${t.apellido}`,
+        },
         {
           key: 'id_servicio',
           label: 'Servicio (Agenda)',
@@ -40,20 +50,16 @@ export default function AsignarServicios() {
           }),
         },
         {
-          key: 'id_trabajador',
-          label: 'Trabajador',
-          type: 'select',
-          required: true,
-          opcionesEndpoint: '/trabajador',
-          opcionValor: 'id_trabajador',
-          opcionEtiqueta: (t) => `${t.nombre} ${t.apellido}`,
-
-        },
-        {
           key: 'descripcion',
           label: 'Descripción de la tarea',
           type: 'text',
           required: true,
+        },
+        { 
+          key: 'fecha_asignada', 
+          label: 'Fecha Asignada', 
+          type: 'date', 
+          required: true 
         },
       ]}
     />

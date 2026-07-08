@@ -1,3 +1,6 @@
+// Pagina de Reportes (Admin/Coordinador): resume servicios por estado,
+// distribucion de notas y promedio de satisfaccion por trabajador (este
+// ultimo lo calcula el backend con agregacion SQL).
 import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 
@@ -22,11 +25,13 @@ export default function Reportes() {
     })
   }, [])
 
+  // Conteo de servicios agrupados por estado: { "En Proceso": 3, "Finalizado": 5, ... }
   const porEstado = agenda.reduce((acc, s) => {
     acc[s.estado] = (acc[s.estado] ?? 0) + 1
     return acc
   }, {})
 
+  // Conteo de evaluaciones agrupadas por nota (1 a 5)
   const porNota = evaluaciones.reduce((acc, ev) => {
     acc[ev.nota] = (acc[ev.nota] ?? 0) + 1
     return acc
@@ -36,7 +41,7 @@ export default function Reportes() {
     <div className="px-8 py-8 transition-colors duration-200">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-black dark:text-white">Reportes</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Resumen general de la operación</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Resumen de Servicios</p>
       </header>
 
       {error && (
@@ -72,7 +77,7 @@ export default function Reportes() {
         {/* PANEL: EVALUACIONES POR NOTA */}
         <div className="rounded-lg border border-gray-300 bg-white transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
           <div className="border-b border-gray-200 px-5 py-4 dark:border-gray-700">
-            <h3 className="text-base font-semibold text-black dark:text-white">Evaluaciones por Nota</h3>
+            <h3 className="text-base font-semibold text-black dark:text-white">Evaluaciones por Notas</h3>
           </div>
           {evaluaciones.length === 0 ? (
             <p className="px-5 py-6 text-sm text-gray-500 dark:text-gray-400">No hay evaluaciones registradas.</p>
@@ -104,7 +109,7 @@ export default function Reportes() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="px-5 py-3 font-semibold text-black dark:text-white">Trabajador</th>
+                <th className="px-5 py-3 font-semibold text-black dark:text-white">Nombre del Trabajador</th>
                 <th className="px-5 py-3 font-semibold text-black dark:text-white">Evaluaciones</th>
                 <th className="px-5 py-3 font-semibold text-black dark:text-white">Promedio</th>
               </tr>
