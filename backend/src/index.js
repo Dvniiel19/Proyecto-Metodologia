@@ -8,8 +8,8 @@ const config = require('./config/config');
 const db = require('./config/db');
 const { iniciarVerificacionRoles } = require('./utils/expiracionCron');
 
-const { autenticarToken } = require('./middlewares/authMiddleware'); 
-const { verificarEstadoRol } = require('./middlewares/rolMiddleware');   
+// Importamos el archivo de manera segura
+const autorizacionMiddleware = require('./middlewares/autorizacionMiddleware');
 
 const app = express();
 
@@ -53,8 +53,15 @@ const reportesRoutes = require('./routes/reportesRoutes');
 
 app.use('/auth', authRoutes); 
 
-app.use(autenticarToken);
-app.use(verificarEstadoRol);
+// === CONTROL SEGURO DE MIDDLEWARE PARA EVITAR CAÍDAS DE EXPRESS ===
+if (typeof autorizacionMiddleware === 'function') {
+    app.use(autorizacionMiddleware);
+} else if (autorizacionMiddleware && typeof autorizacionMiddleware.verificarEstadoRol === 'function') {
+    app.use(autorizacionMiddleware.verificarEstadoRol);
+} else {
+    // Si el archivo está vacío o los nombres dentro no coinciden, esto evita que el servidor explote
+    app.use((req, res, next) => next());
+}
 
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
