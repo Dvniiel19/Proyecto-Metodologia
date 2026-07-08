@@ -101,14 +101,14 @@ export default function PersonalForm({ rolesDisponibles, onClose, onCreado }) {
           )}
 
           <label className="block text-sm font-medium text-black">
-            Correo (para iniciar sesión)
+            Correo para iniciar sesión
             <input type="email" value={form.correo} onChange={setCampo('correo')} required className={inputClase} />
           </label>
           <label className="block text-sm font-medium text-black">
             Contraseña inicial
             <input type="text" value={form.contrasena} onChange={setCampo('contrasena')} required className={inputClase} />
             <span className="mt-1 block text-xs text-gray-500">
-              Se sugiere una genérica: la persona podrá cambiarla desde su perfil.
+              (Cambiar la contraseña después de iniciar sesión)
             </span>
           </label>
         </div>

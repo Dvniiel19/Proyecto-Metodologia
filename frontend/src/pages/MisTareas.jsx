@@ -41,7 +41,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
         type="file"
         accept="image/*"
         onChange={handleFileChange}
-        className="hidden"
+        className="hidden" 
       />
 
       <button
@@ -61,7 +61,7 @@ function TareaPendiente({ tarea, onFinalizada }) {
       >
         <Camera className="h-4 w-4 text-gray-600 dark:text-gray-400" />
         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-          Abrir cámara o galería
+          Abrir galería
         </span>
       </button>
 

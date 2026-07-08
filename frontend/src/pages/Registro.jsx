@@ -60,7 +60,7 @@ export default function Registro() {
         <div className="rounded-xl border-2 border-black bg-white p-8">
           <h1 className="text-2xl font-bold text-black">Crear Cuenta</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Regístrate como cliente para contratar y evaluar servicios de aseo
+            
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
@@ -166,7 +166,7 @@ export default function Registro() {
             <p className="text-center text-sm text-gray-500">
               ¿Ya tienes cuenta?{' '}
               <Link to="/login" className="font-medium text-black underline">
-                Inicia sesión
+                Iniciar sesión
               </Link>
             </p>
           </form>
