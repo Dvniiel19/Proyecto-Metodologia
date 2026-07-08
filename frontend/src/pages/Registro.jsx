@@ -6,6 +6,9 @@ import { rutaInicioPorRol } from '../services/authService'
 import { inputClase } from '../helpers/estilos'
 import { Eye, EyeOff } from 'lucide-react' // 👈 1. Importamos los iconos
 
+// Registro publico de Clientes: crea la cuenta con rol Cliente fijo (el rol
+// nunca lo elige el usuario, se obtiene del backend) y luego inicia sesion
+// automaticamente redirigiendo a su pagina de inicio.
 export default function Registro() {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -25,6 +28,8 @@ export default function Registro() {
   // 👈 2. Agregamos el estado para controlar el ojito
   const [showPassword, setShowPassword] = useState(false) 
 
+  // Pide al backend los roles habilitados para registro publico y toma solo
+  // "Cliente"; asi el id_rol correcto no queda escrito a mano en el frontend
   useEffect(() => {
     document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark')
 
@@ -34,9 +39,11 @@ export default function Registro() {
       .catch(() => setRolCliente(null))
   }, [])
 
+  // onChange generico: actualiza solo el campo indicado del formulario
   const setCampo = (campo) => (e) =>
     setForm((prev) => ({ ...prev, [campo]: e.target.value }))
 
+  // Registra la cuenta y, si sale bien, hace login automatico con las mismas credenciales
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrores(null)

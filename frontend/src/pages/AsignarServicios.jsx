@@ -1,3 +1,6 @@
+// Pagina "Asignar Servicios": cumple el requisito de asignacion de operarios.
+// Vincula un trabajador a una jornada de la agenda con la descripcion de su
+// tarea; el backend valida disponibilidad y cruces de horario al guardar.
 import CrudPage from '../components/CrudPage'
 import { useAuth } from '../context/AuthContext'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'

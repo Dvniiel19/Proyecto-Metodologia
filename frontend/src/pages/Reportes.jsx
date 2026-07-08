@@ -1,3 +1,6 @@
+// Pagina de Reportes (Admin/Coordinador): resume servicios por estado,
+// distribucion de notas y promedio de satisfaccion por trabajador (este
+// ultimo lo calcula el backend con agregacion SQL).
 import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 
@@ -22,11 +25,13 @@ export default function Reportes() {
     })
   }, [])
 
+  // Conteo de servicios agrupados por estado: { "En Proceso": 3, "Finalizado": 5, ... }
   const porEstado = agenda.reduce((acc, s) => {
     acc[s.estado] = (acc[s.estado] ?? 0) + 1
     return acc
   }, {})
 
+  // Conteo de evaluaciones agrupadas por nota (1 a 5)
   const porNota = evaluaciones.reduce((acc, ev) => {
     acc[ev.nota] = (acc[ev.nota] ?? 0) + 1
     return acc

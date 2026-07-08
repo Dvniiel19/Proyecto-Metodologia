@@ -1,3 +1,6 @@
+// Pagina "Agenda de Servicios": programacion de jornadas de limpieza.
+// Cada servicio nace de un contrato, con fecha, rango horario y un estado
+// que sigue el ciclo de vida definido en el backend (constants/estadosAgenda.js).
 import CrudPage from '../components/CrudPage'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 

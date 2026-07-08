@@ -1,8 +1,12 @@
+// PersonalForm: formulario que usa el admin para crear cuentas de personal
+// (trabajadores, supervisores, etc.). En un solo POST crea el usuario con su
+// rol y el backend crea tambien el perfil asociado.
 import { useEffect, useState } from 'react'
 import { UserPlus, X } from 'lucide-react'
 import { api } from '../services/api'
 import { inputClase } from '../helpers/estilos'
 
+// Contraseña inicial por defecto; el usuario debe cambiarla al entrar
 const CONTRASENA_GENERICA = 'Cambiar123!'
 
 
@@ -19,6 +23,8 @@ export default function PersonalForm({ rolesDisponibles, onClose, onCreado }) {
   const [errores, setErrores] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // Al montar, carga los roles del sistema y deja solo los que esta pantalla
+  // permite crear (rolesDisponibles los define la pagina que abre el formulario)
   useEffect(() => {
     api
       .get('/rol')
@@ -35,9 +41,12 @@ export default function PersonalForm({ rolesDisponibles, onClose, onCreado }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Helper generico: devuelve el onChange de cada input actualizando solo su campo
   const setCampo = (campo) => (e) =>
     setForm((prev) => ({ ...prev, [campo]: e.target.value }))
 
+  // Envia el formulario al endpoint de creacion de personal; si hay errores de
+  // validacion del backend se listan bajo el formulario
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrores(null)

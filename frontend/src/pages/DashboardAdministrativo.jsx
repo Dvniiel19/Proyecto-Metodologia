@@ -13,8 +13,13 @@ import {
 import { api } from '../services/api'
 import { fechaHoyChile, fechaLargaHoy } from '../helpers/fechas'
 
+// Dashboard del Administrador/Coordinador: tarjetas de metricas (servicios de
+// hoy, trabajadores, alertas de stock, promedio de evaluaciones), tabla de
+// servicios del dia y panel de alertas + ultimas evaluaciones.
+
 const FECHA_HOY = fechaLargaHoy()
 
+// Tarjeta de metrica; "alerta" la pinta en rojo (usada para stock critico)
 function MetricCard({ label, valor, icon: Icon, alerta }) {
   return (
     <div className="rounded-lg border border-gray-300 bg-white p-5 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
@@ -29,6 +34,7 @@ function MetricCard({ label, valor, icon: Icon, alerta }) {
   )
 }
 
+// Lista de servicios agendados para hoy; los botones Ver/Editar llevan a la agenda
 function ServiciosHoyTable({ servicios }) {
   const navigate = useNavigate()
 
@@ -91,6 +97,8 @@ function ServiciosHoyTable({ servicios }) {
   )
 }
 
+// Panel derecho: alertas de reabastecimiento (requisito de inventario) y las
+// ultimas 3 evaluaciones de clientes (requisito de evaluacion)
 function AlertasYEvaluacionesPanel({ alertas, evaluaciones }) {
   const navigate = useNavigate()
 
@@ -157,6 +165,8 @@ export default function DashboardAdministrativo() {
   const [evaluaciones, setEvaluaciones] = useState([])
   const [error, setError] = useState(null)
 
+  // Carga las 4 fuentes en paralelo. allSettled (y no all) para que si una
+  // falla, el dashboard igual muestre las demas y solo reporte el error
   useEffect(() => {
     Promise.allSettled([
       api.get('/agenda'),
@@ -176,10 +186,12 @@ export default function DashboardAdministrativo() {
     })
   }, [])
 
+  // Filtra los servicios cuya fecha programada es hoy (fecha en zona de Chile)
   const hoy = fechaHoyChile()
   const serviciosHoy = agenda.filter(
     (s) => String(s.fecha_programada).slice(0, 10) === hoy,
   )
+  // Promedio de satisfaccion calculado en el momento a partir de todas las notas
   const promedio =
     evaluaciones.length > 0
       ? (evaluaciones.reduce((acc, ev) => acc + Number(ev.nota), 0) / evaluaciones.length).toFixed(1)
