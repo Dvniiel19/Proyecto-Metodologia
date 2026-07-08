@@ -33,8 +33,10 @@ module.exports = new EntitySchema({
             nullable: false,
         },
         id_servicio: {
+            // Nullable: los movimientos de ingreso de stock no estan ligados
+            // a una jornada, por eso existen registros historicos sin servicio
             type: 'int',
-            nullable: false,
+            nullable: true,
         },
     },
     
