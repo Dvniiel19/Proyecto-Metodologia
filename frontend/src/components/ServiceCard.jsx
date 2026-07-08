@@ -22,12 +22,12 @@ function EvaluationForm({ initialRating = 0, initialComment = '', onSubmit, onCa
       <StarRating value={rating} onChange={setRating} />
 
       <label className="mt-4 block text-sm font-medium text-black">
-        Comentarios (opcional)
+        Agregar Comentarios (opcional)
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           rows={3}
-          placeholder="Cuéntanos cómo fue el servicio..."
+          placeholder="Observaciones sobre el servicio..."
           className="mt-1 w-full resize-none rounded-md border border-gray-400 p-2 text-sm text-black placeholder-gray-400 focus:border-black focus:outline-none"
         />
       </label>
