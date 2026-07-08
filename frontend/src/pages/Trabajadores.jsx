@@ -40,7 +40,7 @@ export default function Trabajadores() {
           titulo="Trabajadores"
           endpoint="/trabajador"
           idKey="id_trabajador"
-          rolesEscritura={['Administrador', 'Coordinador']}
+          rolesEscritura={['Administrador', 'Coordinador', 'Supervisor']} // Solo estos roles pueden crear, editar o eliminar trabajadores
           ocultarCrear
           columnas={[
             { key: 'id_trabajador', label: 'ID' },

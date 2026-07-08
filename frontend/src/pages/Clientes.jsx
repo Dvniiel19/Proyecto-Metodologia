@@ -6,7 +6,7 @@ export default function Clientes() {
       titulo="Clientes"
       endpoint="/cliente"
       idKey="id_cliente"
-      rolesEscritura={['Administrador', 'Coordinador']}
+      rolesEscritura={['Administrador', 'Coordinador']} // Solo estos roles pueden crear, editar o eliminar clientes
       columnas={[
         { key: 'id_cliente', label: 'ID' },
         { key: 'nombre', label: 'Nombre' },

@@ -3,9 +3,11 @@ import { AlertTriangle, ArrowDownUp, X } from 'lucide-react'
 import CrudPage from '../components/CrudPage'
 import { api } from '../services/api'
 import { inputClase } from '../helpers/estilos'
+import { useAuth } from '../context/AuthContext' // 1. Importamos el hook de autenticación
 
 function AlertasInsumos({ version, onReabastecer }) {
   const [alertas, setAlertas] = useState([])
+  const { rol } = useAuth() // Obtenemos el rol actual
 
   useEffect(() => {
     api
@@ -30,13 +32,17 @@ function AlertasInsumos({ version, onReabastecer }) {
                 {insumo.stock} unidades disponibles (límite de seguridad:{' '}
                 {insumo.limite_seguridad ?? 10}).
               </p>
-              <button
-                type="button"
-                onClick={() => onReabastecer(insumo)}
-                className="mt-3 rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-green-700"
-              >
-                Reabastecer
-              </button>
+              
+              {/* 2. Solo Administrador, Gestor o Supervisor pueden ver el botón de Reabastecer */}
+              {(rol === 'Administrador' || rol === 'GestorInventario' || rol === 'Supervisor') && (
+                <button
+                  type="button"
+                  onClick={() => onReabastecer(insumo)}
+                  className="mt-3 rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-green-700"
+                >
+                  Reabastecer
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -64,7 +70,6 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
   const insumoSeleccionado = insumos.find((i) => String(i.id_insumo) === idInsumo)
   const cantidadNum = parseInt(cantidad, 10)
 
-  // Regla de negocio visible: una salida nunca puede dejar el stock en negativo
   const salidaExcedeStock =
     tipo === 'salida' &&
     insumoSeleccionado != null &&
@@ -131,16 +136,15 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
           <label className="block text-sm font-medium text-black">
             Tipo de Movimiento
             <select
-          value={tipo}
-           onChange={(e) => {
-            setTipo(e.target.value)
-
-            if (e.target.value === 'ingreso') {
-            setIdServicio('')
-          }
-        }}
-  className={inputClase}
->
+              value={tipo}
+              onChange={(e) => {
+                setTipo(e.target.value)
+                if (e.target.value === 'ingreso') {
+                  setIdServicio('')
+                }
+              }}
+              className={inputClase}
+            >
               <option value="ingreso">Ingreso</option>
               <option value="salida">Salida</option>
             </select>
@@ -162,32 +166,25 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
               </span>
             )}
           </label>
-      
 
-{/*
-  ingreso → NO muestra Servicio Asociado
-  salida → SÍ muestra Servicio Asociado
- */}
-      {tipo === 'salida' && (
-     <label className="block text-sm font-medium text-black">
-        Servicio Asociado
-        <select
-         value={idServicio}
-         onChange={(e) => setIdServicio(e.target.value)}
-         required
-         className={inputClase}
-    >
-      <option value="">Seleccionar...</option>
-
-      {agenda.map((s) => (
-        <option key={s.id_servicio} value={s.id_servicio}>
-          #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)} ({s.estado})
-        </option>
-      ))}
-    </select>
-  </label>
-)}
-
+          {tipo === 'salida' && (
+            <label className="block text-sm font-medium text-black">
+              Servicio Asociado
+              <select
+                value={idServicio}
+                onChange={(e) => setIdServicio(e.target.value)}
+                required
+                className={inputClase}
+              >
+                <option value="">Seleccionar...</option>
+                {agenda.map((s) => (
+                  <option key={s.id_servicio} value={s.id_servicio}>
+                    #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)} ({s.estado})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <label className="block text-sm font-medium text-black sm:col-span-2">
             Observaciones (opcional)
@@ -231,9 +228,9 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
 }
 
 export default function Insumos() {
-  // Incrementar la versión fuerza al CrudPage y a las alertas a recargar
   const [version, setVersion] = useState(0)
-  const [movimiento, setMovimiento] = useState(null) // null | { prefill }
+  const [movimiento, setMovimiento] = useState(null)
+  const { rol } = useAuth() 
 
   const handleGuardado = () => {
     setMovimiento(null)
@@ -243,16 +240,19 @@ export default function Insumos() {
   return (
     <div>
       <div className="px-8 pt-8">
-        <div className="mb-6 flex justify-end">
-          <button
-            type="button"
-            onClick={() => setMovimiento({ prefill: null })}
-            className="flex items-center gap-2 rounded-md border-2 border-black bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-gray-100"
-          >
-            <ArrowDownUp className="h-4 w-4" />
-            Registrar Movimiento
-          </button>
-        </div>
+        {}
+        {(rol === 'Administrador' || rol === 'GestorInventario' || rol === 'Supervisor') && (
+          <div className="mb-6 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setMovimiento({ prefill: null })}
+              className="flex items-center gap-2 rounded-md border-2 border-black bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-gray-100"
+            >
+              <ArrowDownUp className="h-4 w-4" />
+              Registrar Movimiento
+            </button>
+          </div>
+        )}
 
         {movimiento && (
           <MovimientoForm
@@ -276,40 +276,31 @@ export default function Insumos() {
           titulo="Insumos"
           endpoint="/insumos"
           idKey="id_insumo"
-          rolesEscritura={['Administrador', 'GestorInventario']}
+      
+          rolesEscritura={['Administrador', 'GestorInventario', 'Supervisor']}
           columnas={[
             { key: 'id_insumo', label: 'ID' },
             { key: 'nombre_insumo', label: 'Nombre' },
             { key: 'stock', label: 'Stock' },
             { key: 'limite_seguridad', label: 'Límite de Seguridad' },
-
             {
-           key: 'estado_insumo',
-           label: 'Estado',
-           render: (fila) => {
-      const esCritico = Number(fila.stock) < Number(fila.limite_seguridad)
-      const estadoCalculado = esCritico ? 'Stock Critico' : 'Normal'
-
-    return (
-      <span
-        className={
-          esCritico
-            ? 'font-semibold text-red-600'
-            : 'text-gray-700'
-        }
-      >
-        {estadoCalculado}
-      </span>
-    )
-  },
-},
-
+              key: 'estado_insumo',
+              label: 'Estado',
+              render: (fila) => {
+                const esCritico = Number(fila.stock) < Number(fila.limite_seguridad)
+                const estadoCalculado = esCritico ? 'Stock Critico' : 'Normal'
+                return (
+                  <span className={esCritico ? 'font-semibold text-red-600' : 'text-gray-700'}>
+                    {estadoCalculado}
+                  </span>
+                )
+              },
+            },
           ]}
           campos={[
             { key: 'nombre_insumo', label: 'Nombre del Insumo', type: 'text', required: true },
             { key: 'stock', label: 'Stock', type: 'number', required: true },
             { key: 'limite_seguridad', label: 'Límite de Seguridad', type: 'number' },
-            
           ]}
         />
       </div>

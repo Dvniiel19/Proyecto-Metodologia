@@ -12,14 +12,14 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 
 // POST /usuario - Crear un nuevo usuario (PROTEGIDA - Solo Administrador)
-router.post('/', autenticacion, autorizacion(['Administrador']), usuarioController.crearUsuario);
+router.post('/', autenticacion, autorizacion(['Administrador', 'Supervisor']), usuarioController.crearUsuario);
 
 // POST /usuario/personal - Crear cuenta + perfil de personal en una transaccion
 // (PROTEGIDA - Admin crea cualquier rol de personal; Coordinador solo Trabajadores)
-router.post('/personal', autenticacion, autorizacion(['Administrador', 'Coordinador']), usuarioController.crearPersonal);
+router.post('/personal', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), usuarioController.crearPersonal);
 
 // GET /usuario - Obtener todos los usuarios (PROTEGIDA - Solo Administrador)
-router.get('/', autenticacion, autorizacion(['Administrador']), usuarioController.obtenerTodosLosUsuarios);
+router.get('/', autenticacion, autorizacion(['Administrador', 'Supervisor']), usuarioController.obtenerTodosLosUsuarios);
 
 /// GET /usuario/:id_usuario - Obtener un usuario específico
 router.get('/:id_usuario', autenticacion, usuarioController.obtenerUsuarioPorId);

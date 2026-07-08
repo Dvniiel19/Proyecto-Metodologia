@@ -23,12 +23,12 @@ const crearValidacionSupervisor = async (req, res) => {
         return sendSuccess(
             res,
             validacionSupervisorCreado,
-            'Validacion de Supervisor creada con exito',
+            'Validación de Supervisor creada con éxito',
             201
         );
     } catch (error) {
         console.error(error);
-        return sendError(res, 'Error al crear el contrato', 500);
+        return sendError(res, 'Error al procesar el registro de la validación.', 500);
     }
 };
 
@@ -50,17 +50,15 @@ const obtenerTodasLasValidacioneSupervisor = async (req, res) => {
 const obtenerValidacionSupervisorPorId = async (req, res) => {
     try {
         const { id_validacion } = req.params;
-        // llamar al servicio obtenerValidacion_SupervisorPorId(id_validacion_Supervisor)
         const validacionSupervisor = await validacionSupervisorService.obtenerValidacionSupervisorPorId(id_validacion); 
         
-        // si no existe retrona el error 404
         if (!validacionSupervisor) {
-            return sendError(res, 'Validacion de Supervisor no encontrada', 404);
+            return sendError(res, 'Validación de Supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, validacionSupervisor, 'Validacion de Supervisor obtenida correctamente');
+            return sendSuccess(res, validacionSupervisor, 'Validación de Supervisor obtenida correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al obtener la validacion de Supervisor', 500);
+        return sendError(res, 'Error al obtener la validación de Supervisor', 500);
     }
 };
 
@@ -71,7 +69,6 @@ const actualizarValidacionSupervisor = async (req, res) => {
     try {
         const validacion = updateValidacionSupervisorSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -85,12 +82,12 @@ const actualizarValidacionSupervisor = async (req, res) => {
         const resultado = await validacionSupervisorService.actualizarValidacionSupervisor(obtenerid, validacion.value);
     
         if (!resultado) {
-            return sendError(res, 'Validacion de Supervisor no encontrada', 404);
+            return sendError(res, 'Validación de Supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, resultado, 'Validacion de Supervisor actualizada correctamente');
+            return sendSuccess(res, resultado, 'Validación de Supervisor actualizada correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al actualizar validacion de Supervisor', 500);
+        return sendError(res, 'Error al actualizar la validación de Supervisor', 500);
     }
 };
 
@@ -99,18 +96,26 @@ const actualizarValidacionSupervisor = async (req, res) => {
  */
 const eliminarValidacionSupervisor = async (req, res) => {
     try {
-        const { id_validacion} = req.params;
-        // llamar al servicio eliminarValidacion_supervisor(id_validacion_supervisor)
+        const { id_validacion } = req.params;
         const eliminado = await validacionSupervisorService.eliminarValidacionSupervisor(id_validacion);
         
-        // si no se elimino retornar error 404
         if (!eliminado) {
-            return sendError(res, 'Validacion de Supervisor no encontrada', 404);
+            return sendError(res, 'Validación de Supervisor no encontrada', 404);
         } else {
-            return sendSuccess(res, null, 'Validacion de Supervisor eliminada correctamente');
+            return sendSuccess(res, null, 'Validación de Supervisor eliminada correctamente');
         }
     } catch (error) {
-        return sendError(res, 'Error al eliminar validacion de Supervisor', 500);
+        console.error('Error crítico al eliminar validación:', error.message);
+        
+      
+        if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
+            return sendError(
+                res, 
+                'No se puede eliminar esta validación porque está vinculada a un historial operativo o asignación del sistema.', 
+                400
+            );
+        }
+        return sendError(res, 'No se pudo completar la eliminación de la validación debido a restricciones del registro.', 400);
     }
 };
 
