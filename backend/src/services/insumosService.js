@@ -3,9 +3,7 @@ const Insumos = require('../entities/insumos.entity');
 const { notificarStockCritico } = require('./emailService');
 
 const insumosRepository = db.getRepository(Insumos);
-
-// Unica fuente de verdad de la regla de negocio "stock critico": al llegar al limite (<=)
-// el insumo pasa a 'Stock Critico' (sin tilde, igual que en la validacion Joi y en el
+//al llegar al limite el insumo pasa a 'Stock Critico' 
 // filtro de /insumos/alertas). La usan actualizarInsumo y registrarMovimientoInsumo.
 const calcularEstadoInsumo = (stock, limite_seguridad) =>
     stock <= limite_seguridad ? 'Stock Critico' : 'Normal';
@@ -112,7 +110,7 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
     const observacionesFinal = observaciones && observaciones.trim() !== '' ? observaciones.trim() : null;
 
     // 2. Calcular el stock nuevo segun el tipo de movimiento.
-    // Regla de negocio: una salida nunca puede dejar el stock en negativo
+    // una salida nunca puede dejar el stock en negativo
     if (tipoMovimientoLower === 'salida') {
         if (cantidad > insumo.stock) {
             const error = new Error(`Stock insuficiente. Disponible: ${insumo.stock}, Solicitado: ${cantidad}`);
@@ -134,9 +132,7 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
 
     const insumoActualizado = await insumosRepository.save(insumo);
 
-    // Alerta proactiva: ademas de dejar el estado en BD, se dispara una notificacion
-    // activa. Si el canal de alerta falla no se revierte el movimiento de stock
-    // (el registro contable manda), solo se deja constancia en el log.
+    // Si el stock queda critico, intentamos enviar un correo de alerta. Si falla, solo logueamos el error y seguimos.
     if (hayStockCritico) {
         try {
             await notificarStockCritico(insumoActualizado);
@@ -145,8 +141,7 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
         }
     }
 
-    // 3. Dejar el movimiento registrado en el historico (tabla consumo_insumo),
-    // enlazado al insumo y a la jornada (agenda) donde se uso
+    // 3. Dejar el movimiento registrado en el historico (tabla consumo_insumo), enlazado al insumo y a la jornada (agenda) donde se uso
     const movimiento = {
         cantidad_utilizada: cantidad,
         tipo_movimiento: tipoMovimientoLower,
@@ -154,8 +149,7 @@ const registrarMovimientoInsumo = async (id_insumo, cantidad, tipo_movimiento, i
         insumo: { id_insumo: parseInt(id_insumo) },
     };
 
-    //salidas se asociana un servicio 
-    // INGRESOS NO yaque son reposicion de inventario  
+    //  Si es una salida, asociamos el movimiento a la agenda (servicio) correspondiente
     if (tipoMovimientoLower === 'salida') {
        movimiento.agenda = { id_servicio: parseInt(id_servicio) };
     }

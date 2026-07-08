@@ -11,8 +11,7 @@ const { generarToken } = require('../auth/jwt.strategy');
  */
 const login = async (req, res) => {
     try {
-        // validar el body con Joi (misma estrategia que el resto de endpoints,
-        // reemplaza la validacion manual que solo revisaba presencia)
+        // validamos los datos de entrada con joi
         const { error, value } = loginSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -27,7 +26,6 @@ const login = async (req, res) => {
         // buscar al usuario por correo en la base de datos
         const usuario = await usuarioService.obtenerUsuarioPorCorreo(correo);
 
-        // verificar que el usuario exista
         if (!usuario) {
             return sendError(res, 'Correo o contraseña incorrectos', 401);
         }
@@ -46,7 +44,6 @@ const login = async (req, res) => {
         // generar token JWT con id_usuario, id_rol, nombre_rol y estado_rol
         const token = generarToken(usuario.id_usuario, usuario.id_rol, nombreRol, usuario.estado_rol);
 
-        // retornar el token y datos basicos del usuario
         return sendSuccess(
             res,
             {
@@ -70,9 +67,7 @@ const login = async (req, res) => {
     }
 };
 
-// Roles que pueden auto-registrarse desde el formulario 
-// Solo Cliente: las cuentas de trabajadores y roles administrativos las crea
-// un Administrador desde la gestion de usuarios
+// roles que puedes registrarse
 const ROLES_REGISTRABLES = ['Cliente'];
 
 /** post /auth/register
@@ -81,9 +76,7 @@ const ROLES_REGISTRABLES = ['Cliente'];
  */
 const registro = async (req, res) => {
     try {
-        // 1. Resolver el rol ANTES de validar: la validacion condicional de Joi
-        // (direccion obligatoria solo para clientes) depende del nombre del rol,
-        // y los IDs pueden variar entre bases de datos
+        // Resolver el rol ANTES de validar: la validacion condicional de Joi direccion obligatoria  depende del nombre del rol
         const idRol = Number(req.body?.id_rol);
         if (!Number.isInteger(idRol) || idRol <= 0) {
             return sendError(res, 'Error de validacion de datos', 400, ['El rol es un campo obligatorio']);
@@ -97,7 +90,7 @@ const registro = async (req, res) => {
             return sendError(res, `Solo puedes registrarte como: ${ROLES_REGISTRABLES.join(' o ')}`, 403);
         }
 
-        // 2. Validar el payload combinado con el contexto del rol resuelto
+        // Validar el payload combinado con el contexto del rol resuelto
         const { error, value } = registerSchema.validate(req.body, {
             context: { esCliente: rol.nombre_rol === 'Cliente' },
         });
@@ -110,13 +103,13 @@ const registro = async (req, res) => {
             );
         }
 
-        // 3. Correo duplicado se responde como conflicto y no como error generico
+        // Correo duplicado se responde como conflicto y no como error generico
         const existente = await usuarioService.obtenerUsuarioPorCorreo(value.correo);
         if (existente) {
             return sendError(res, 'Ya existe una cuenta con ese correo', 409);
         }
 
-        // 4. Hashear la contrasena y ejecutar la transaccion (usuario + perfil)
+        // Hashear la contrasena y ejecutar la transaccion (usuario + perfil)
         value.contrasena = await encrypt(value.contrasena);
         const resultado = await usuarioService.registroUnificado(value, rol.nombre_rol);
 
@@ -127,8 +120,7 @@ const registro = async (req, res) => {
     }
 };
 
-// Roles de personal que se crean desde la administracion.
-// Reutiliza la misma transaccion del registro publico (usuario + perfil Trabajador).
+// roles que se pueden crear
 const ROLES_PERSONAL = ['Trabajador', 'Supervisor', 'Coordinador', 'GestorInventario'];
 
 /** post /usuario/personal
@@ -137,7 +129,7 @@ const ROLES_PERSONAL = ['Trabajador', 'Supervisor', 'Coordinador', 'GestorInvent
  */
 const crearPersonal = async (req, res) => {
     try {
-        // 1. Resolver y validar el rol destino
+        // 1. Resolver y validar el rol destino para el nuevo personal ANTES de validar el resto del payload
         const idRol = Number(req.body?.id_rol);
         if (!Number.isInteger(idRol) || idRol <= 0) {
             return sendError(res, 'Error de validacion de datos', 400, ['El rol es un campo obligatorio']);
@@ -301,7 +293,7 @@ const actualizarUsuario = async (req, res) => {
             validacion.value.contrasena = await encrypt(validacion.value.contrasena);
         }
 
-        // 👇 NUEVA LÓGICA: Actualización automática del estado según la fecha
+        // Si se proporciona fecha_expiracion, actualizar estado_rol en consecuencia
         if ('fecha_expiracion' in validacion.value) {
             if (validacion.value.fecha_expiracion) {
                 const fechaNueva = new Date(validacion.value.fecha_expiracion);
@@ -341,7 +333,7 @@ const eliminarUsuario = async (req, res) => {
     try {
         const { id_usuario } = req.params;
 
-        // Aquí va tu lógica original (la que usaba db.query para borrar de trabajadores, cliente y usuarios)
+        // logica para eliminar un usuario y sus perfiles asociados (trabajador o cliente)
         await db.query('DELETE FROM trabajadores WHERE id_usuario = $1', [id_usuario]);
         await db.query('DELETE FROM cliente WHERE id_usuario = $1', [id_usuario]);
         await db.query('DELETE FROM usuarios WHERE id_usuario = $1', [id_usuario]);
@@ -350,8 +342,6 @@ const eliminarUsuario = async (req, res) => {
 
     } catch (error) {
         console.error('Error crítico al eliminar usuario:', error.message);
-        
-        // === AQUÍ CAMBIAMOS EL MENSAJE EN INGLÉS POR UNO PROFESIONAL EN ESPAÑOL ===
         return sendError(
             res, 
             'No se puede eliminar este usuario porque tiene servicios asignados o registros activos en el sistema.', 
@@ -363,7 +353,7 @@ const eliminarUsuario = async (req, res) => {
 
 async function asignarRol(req, res) {
     try {
-        // El admin envía el id del usuario y el id del rol en el cuerpo de la petición
+        // El admin envia el id del usuario y el id del rol en el cuerpo de la peticion
         const { idUsuario, idRol } = req.body; 
 
         // Validamos brevemente que vengan los datos requeridos por HTTP
@@ -371,7 +361,7 @@ async function asignarRol(req, res) {
             return res.status(400).json({ message: "idUsuario e idRol son obligatorios" });
         }
 
-        // Llamamos al servicio para que ejecute la lógica
+        // Llamamos al servicio para que ejecute la logica
         const usuarioActualizado = await usuarioService.actualizarRolUsuario(idUsuario, idRol);
 
         // Respondemos al cliente
@@ -381,7 +371,7 @@ async function asignarRol(req, res) {
         });
 
     } catch (error) {
-        // Si el servicio lanza el error "El usuario no existe" u otro, lo manejamos aquí
+        // Si el servicio lanza el error "El usuario no existe" u otro, lo manejamos aqui
         return res.status(500).json({ 
             message: "Error al asignar el rol", 
             error: error.message 

@@ -7,7 +7,6 @@ const { createAsistenciaSchema, updateAsistenciaSchema, registrarEntradaSchema, 
  */
 const crearAsistencia = async (req, res) => {
     try {
-        // validamos los datos de entrada con joi
         const { error, value } = createAsistenciaSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -17,9 +16,7 @@ const crearAsistencia = async (req, res) => {
                 error.details.map(err => err.message)
             );
         }
-        // llamamos al servicio para crear el agenda
         const asistenciaCreada = await asistenciaService.crearAsistencia(value);
-        // respondemos con exito
         return sendSuccess(
             res,
             asistenciaCreada,
@@ -50,10 +47,8 @@ const obtenerTodasLasAsistencia = async (req, res) => {
 const obtenerAsistenciaPorId = async (req, res) => {
     try {
         const { id_asistencia } = req.params;
-        // llamar al servicio obtenerasistenciaPorId(id_asistencia)
         const asistencia = await asistenciaService.obtenerAsistenciaPorId(id_asistencia); 
         
-        // si no existe retrona el error 404
         if (!asistencia) {
             return sendError(res, 'asistencia no encontrada', 404);
         } else {
@@ -100,7 +95,6 @@ const actualizarAsistencia = async (req, res) => {
 const eliminarAsistencia = async (req, res) => {
     try {
         const { id_asistencia } = req.params;
-        // llamar al servicio eliminarasistencia(id_asistencia)
         const eliminado = await asistenciaService.eliminarAsistencia(id_asistencia);
         
         // si no se elimino retornar error 404
@@ -114,9 +108,9 @@ const eliminarAsistencia = async (req, res) => {
     }
 };
 
-//  Reloj control: entrada. Valida los ids con Joi (fecha y hora las genera el servicio).
+//  Reloj control: entrada. Valida los ids con Joi (fecha y hora las genera el servicio). 
 /** post /asistencia/entrada
- * el trabajador ficha su entrada — genera fecha y hora automaticamente
+ * el trabajador ficha su entrada y genera fecha y hora automaticamente 
  */
 const registrarEntrada = async (req, res) => {
     try {
@@ -145,7 +139,7 @@ const registrarEntrada = async (req, res) => {
     }
 };
 
-// Registro manual de inasistencia (lo hace un supervisor o coordinador).
+// Registro de inasistencia (lo hace un supervisor o coordinador).
 /** post /asistencia/inasistencia
  * asienta la ausencia de un trabajador en un servicio y fecha determinados
  */
@@ -196,7 +190,7 @@ const registrarSalida = async (req, res) => {
     }
 };
 
-// Historial de asistencias filtrado por trabajador (para la vista del trabajador en el front).
+// Historial de asistencias filtrado por trabajador para la vista del trabajador en el front.
 /** get /asistencia/trabajador/:id_trabajador
  * obtiene todos los registros de asistencia de un trabajador
  */

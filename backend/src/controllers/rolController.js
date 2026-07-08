@@ -50,10 +50,8 @@ const obtenerTodosLosRol = async (req, res) => {
 const obtenerRolPorId = async (req, res) => {
     try {
         const { id_rol } = req.params;
-        // llamar al servicio obtenerRolPorId(id_rol)
         const rol = await rolService.obtenerRolPorId(id_rol); 
         
-        // si no existe retrona el error 404
         if (!rol) {
             return sendError(res, 'Rol no encontrado', 404);
         } else {
@@ -71,7 +69,6 @@ const actualizarRol = async (req, res) => {
     try {
         const validacion = updateRolSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -100,10 +97,8 @@ const actualizarRol = async (req, res) => {
 const eliminarRol = async (req, res) => {
     try {
         const { id_rol } = req.params;
-        // llamar al servicio eliminarRol(id_rol)
         const eliminado = await rolService.eliminarRol(id_rol);
         
-        // si no se elimino retornar error 404
         if (!eliminado) {
             return sendError(res, 'Rol no encontrado', 404);
         } else {

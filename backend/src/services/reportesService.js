@@ -10,7 +10,7 @@ const db = require('../config/db');
  *   Trabajador -> asignar_servicio -> Agenda -> EvaluacionFinal
  *
  * Cada trabajador hereda la nota de todos los servicios evaluados en los que
- * participo. Los trabajadores sin evaluaciones no aparecen (INNER JOIN).
+ * participo. Los trabajadores sin evaluaciones no aparecen.
  * @return {Array} [{ id_trabajador, nombre, apellido, total_evaluaciones, promedio_satisfaccion }]
  */
 

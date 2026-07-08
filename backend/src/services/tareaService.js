@@ -1,15 +1,10 @@
-// Servicio de Tareas: contiene toda la logica de negocio de las tareas de limpieza
-// (CRUD, finalizacion con evidencia fotografica, validacion del cliente y
-// vistas filtradas por usuario). El controlador solo delega aqui.
 const db = require('../config/db');
 const Tareas = require('../entities/tarea.entity');
 const { notificarClienteTareaPendienteValidacion } = require('./emailService');
 
 const tareaRepository = db.getRepository(Tareas);
 
-// El frontend envia id_asignacion plano, pero TypeORM espera la relacion como
-// objeto anidado ({ asignacion_servicio: { id_asignacion } }). Este helper hace
-// esa traduccion antes de crear o actualizar una tarea.
+// Mapea la relacion de asignacion a la estructura esperada por TypeORM
 const mapearRelacionAsignacion = (datosTarea = {}) => {
     const payload = { ...datosTarea };
     if (payload.id_asignacion) {
@@ -46,7 +41,6 @@ const actualizarTarea = async (id_tarea, datosActualizados) => {
 };
 
 const eliminarTarea = async (id_tarea) => {
-    // affected > 0 indica si realmente existia la fila; el controlador responde 404 si es false
     const result = await tareaRepository.delete(Number(id_tarea));
     return result.affected > 0;
 };
@@ -78,17 +72,13 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
             return null;
         }
 
-        // Solo se puede finalizar una tarea que sigue en proceso; evita que una
-        // segunda subida pise la evidencia de una tarea ya enviada a validacion
         if (tarea.estado !== 'En Proceso') {
             const error = new Error(`La tarea no se puede finalizar porque su estado actual es "${tarea.estado}".`);
             error.statusCode = 409;
             throw error;
         }
 
-        // El cliente no siempre tiene una cuenta de usuario vinculada (id_usuario es
-        // nullable), asi que el correo de notificacion es best-effort: si no hay
-        // correo o si falla el envio, la tarea igual se finaliza y guarda su evidencia.
+        // Se obtiene el correo del cliente titular del contrato asociado a la tarea
         const correoCliente = tarea?.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.correo;
 
         tarea.estado = 'Pendiente de Validación';
@@ -102,8 +92,7 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
                 await notificarClienteTareaPendienteValidacion({
                     correoCliente,
                     idTarea: tarea.id_tarea,
-                    // La descripcion vive en la asignacion; las tareas antiguas
-                    // conservan la propia como respaldo
+                    // La descripcion de la tarea puede estar en la asignacion (si se definio ahi) o en la propia tarea (si es antigua)
                     descripcionTarea: tarea.asignacion_servicio?.descripcion ?? tarea.descripcion,
                     rutaEvidencia: archivoEvidencia.path,
                 });
@@ -123,17 +112,13 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
     });
 };
 
-// Vista "Mis Tareas" del trabajador: agrupa sus asignaciones por servicio,
-// con los datos del cliente, el contrato y las tareas de cada jornada
 const obtenerMisTareas = async (id_usuario) => {
-    // El token trae id_usuario, pero las asignaciones apuntan a id_trabajador:
-    // primero se resuelve el perfil de trabajador vinculado a ese usuario
+    // Vista del trabajador: todas las tareas de limpieza asignadas a SUS servicios, con la foto de evidencia si ya fue finalizada. 
     const trabajadorRepo = db.getRepository('Trabajador');
     const trabajador = await trabajadorRepo.findOneBy({ id_usuario });
     if (!trabajador) return [];
 
-    // Se parte desde las asignaciones (no desde las tareas) para que el trabajador
-    // vea todos sus servicios asignados, incluso los que aun no tienen tareas creadas
+    // Se obtiene la lista de asignaciones del trabajador, con sus agendas y tareas, para luego mapearlas a la estructura que espera el front.
     const asignaciones = await db
         .getRepository('AsignarServicio')
         .createQueryBuilder('asignacion')
@@ -149,8 +134,7 @@ const obtenerMisTareas = async (id_usuario) => {
         .addOrderBy('tarea.id_tarea', 'ASC')
         .getMany();
 
-    // Se agrupan las asignaciones por servicio (id_servicio) para que el front
-    // muestre una tarjeta por jornada con todas sus tareas adentro
+    // Se agrupan las asignaciones por servicio (id_servicio) para que el front muestre una tarjeta por jornada con todas sus tareas adentro
     const mapa = {};
     for (const asig of asignaciones) {
         const agenda = asig.agenda;
@@ -183,8 +167,7 @@ const obtenerMisTareas = async (id_usuario) => {
         for (const t of asig.tareas || []) {
             mapa[idServicio].tareas.push({
                 id_tarea: t.id_tarea,
-                // La descripcion vive en la asignacion; las tareas antiguas
-                // conservan la propia como respaldo
+                // La descripcion de la tarea puede estar en la asignacion (si se definio ahi) o en la propia tarea (si es antigua)
                 descripcion: asig.descripcion ?? t.descripcion,
                 estado: t.estado,
                 foto_evidencia: t.foto_evidencia,
@@ -263,8 +246,7 @@ const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
             return null;
         }
 
-        // Verificar que sea el dueño: el titular del contrato es el unico que
-        // puede validar; evita que un cliente valide tareas ajenas cambiando el id
+        // Se valida que el usuario autenticado sea el titular del contrato asociado a la tarea
         const idUsuarioTitular = tarea.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.id_usuario;
         if (Number(idUsuarioTitular) !== Number(id_usuario)) {
             const error = new Error('No tienes permiso para validar esta tarea');
@@ -272,7 +254,7 @@ const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
             throw error;
         }
 
-        // Solo se puede validar una tarea en "Pendiente de Validación"
+        // Solo se puede validar una tarea en "Pendiente de Validacion"
         if (tarea.estado !== 'Pendiente de Validación') {
             const error = new Error(`La tarea no se puede validar porque su estado actual es "${tarea.estado}".`);
             error.statusCode = 409;
@@ -293,9 +275,8 @@ const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
         tarea.estado = nuevosEstados[accion];
         await repositorioTx.save(tarea);
 
-        // Post-condicion: si con esta aprobacion TODAS las tareas del servicio
-        // quedan resueltas (aprobadas o rechazadas), la agenda pasa a
-        // "Pendiente de Evaluacion" para habilitar la nota del cliente
+        // Post-condicion: si con esta aprobacion todas las tareas de la agenda quedan aprobadas o rechazadas, se cierra 
+        // la agenda cambiando su estado a "Pendiente de Evaluacion"
         if (accion === 'aprobado') {
             const agendaRepo = manager.getRepository('Agenda');
             const agenda = await agendaRepo.findOne({

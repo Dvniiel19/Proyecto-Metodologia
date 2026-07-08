@@ -124,7 +124,7 @@ const registrarMovimientoInsumo = async(req, res)=> {
         }
         const { id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones } = value;
         const idServicioMovimiento = tipo_movimiento === 'salida' ? Number(id_servicio) : null;
-// Llamamos al servicio para registrar el movimiento, que se encargara de actualizar el stock y evaluar alertas criticas
+// Llamamos al servicio para registrar el movimiento que se encargara de actualizar el stock y evaluar alertas criticas
         const respuesta = await insumosService.registrarMovimientoInsumo(
             id_insumo,
             cantidad,
@@ -135,8 +135,6 @@ const registrarMovimientoInsumo = async(req, res)=> {
 
         return sendSuccess(res, respuesta, `Movimiento de ${tipo_movimiento.toLowerCase()} registrado exitosamente`, 201);
     } catch (error) {
-        // Los errores de negocio del servicio traen statusCode (404 / 400);
-        // cualquier otro error es inesperado y se responde 500
         if (error.statusCode) {
             return sendError(res, error.message, error.statusCode);
         }

@@ -17,9 +17,7 @@ const crearTrabajador = async (req, res) => {
                 error.details.map(err => err.message)
             );
         }
-        // llamamos al servicio para crear el trabajador
         const trabajadorCreado = await trabajadorService.crearTrabajador(value);
-        // respondemos con exito
         return sendSuccess(
             res,
             trabajadorCreado,
@@ -50,10 +48,8 @@ const obtenerTodosLosTrabajador = async (req, res) => {
 const obtenerTrabajadorPorId = async (req, res) => {
     try {
         const { id_trabajador } = req.params;
-        // llamar al servicio obtenerTrabajadorPorId(id_trabajador)
         const trabajador = await trabajadorService.obtenerTrabajadorPorId(id_trabajador); 
         
-        // si no existe retrona el error 404
         if (!trabajador) {
             return sendError(res, 'Trabajador no encontrado', 404);
         } else {
@@ -71,7 +67,6 @@ const actualizarTrabajador = async (req, res) => {
     try {
         const validacion = updateTrabajadorSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -112,7 +107,6 @@ const eliminarTrabajador = async (req, res) => {
     } catch (error) {
         console.error('Error crítico al eliminar trabajador:', error.message);
         
-        // Atajamos si el trabajador está amarrado a asignación de servicios, tareas o asistencia
         if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
             return sendError(
                 res, 

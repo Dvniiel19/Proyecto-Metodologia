@@ -7,7 +7,6 @@ const { createContratoSchema, updateContratoSchema } = require('../validations/c
  */
 const crearContrato = async (req, res) => {
     try {
-        // validamos los datos de entrada con joi
         const { error, value } = createContratoSchema.validate(req.body);
         if (error) {
             return sendError(
@@ -17,9 +16,7 @@ const crearContrato = async (req, res) => {
                 error.details.map(err => err.message)
             );
         }
-        // llamamos al servicio para crear el contrato
         const contratoCreado = await contratoService.crearContrato(value);
-        // respondemos con exito
         return sendSuccess(
             res,
             contratoCreado,
@@ -50,10 +47,8 @@ const obtenerTodosLosContrato = async (req, res) => {
 const obtenerContratoPorId = async (req, res) => {
     try {
         const { id_contrato } = req.params;
-        // llamar al servicio obtenerContratoPorId(id_contrato)
         const contrato = await contratoService.obtenerContratoPorId(id_contrato); 
         
-        // si no existe retrona el error 404
         if (!contrato) {
             return sendError(res, 'contrato no encontrado', 404);
         } else {
@@ -71,7 +66,6 @@ const actualizarContrato = async (req, res) => {
     try {
         const validacion = updateContratoSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -113,7 +107,7 @@ const eliminarContrato = async (req, res) => {
             });
         }
 
-        // Ejecutamos la query directa
+        // ejecutamos la eliminación directamente en la base de datos para manejar mejor los errores de clave foránea
         await db.query('DELETE FROM contrato WHERE id_contrato = $1', [id_contrato]);
 
         return res.status(200).json({
@@ -124,7 +118,7 @@ const eliminarContrato = async (req, res) => {
     } catch (error) {
         console.error('Error crítico al eliminar contrato:', error.message);
         
-        // Captura el error en español si está amarrado a otra tabla
+        // Si el error es por restricciones de clave foránea, devolvemos un mensaje 
         if (error.message.includes('foreign key') || error.message.includes('violates')) {
             return res.status(400).json({
                 status: 'error',

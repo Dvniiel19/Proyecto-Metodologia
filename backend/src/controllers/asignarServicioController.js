@@ -28,7 +28,7 @@ const crearAsignacion = async (req, res) => {
     } catch (error) {
         console.error(error);
         // El service lanza errores de negocio con statusCode (404 jornada no existe,
-        // 400 jornada ya iniciada, 409 cruce de horario); aqui se respeta ese codigo.
+        // 400 jornada ya iniciada, 409 cruce de horario)
         // Cualquier otro error inesperado cae al 500 generico
         if (error.statusCode) {
             return sendError(res, error.message, error.statusCode);
@@ -113,7 +113,7 @@ const eliminarAsignacion = async (req, res) => {
     } catch (error) {
         console.error('Error crítico al eliminar asignación:', error.message);
         
-        // Atajamos el bloqueo si la asignación tiene checklists, asistencia o consumos amarrados
+        // si el error es por restricción de clave foránea, devolvemos el mensaje
         if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
             return sendError(
                 res, 
