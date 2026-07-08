@@ -15,7 +15,6 @@ import {
   Star,
   Clock,
   ThumbsUp,
-  Sun,
   Sun,  
   Moon,
 } from 'lucide-react'
