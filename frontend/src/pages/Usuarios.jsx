@@ -61,6 +61,12 @@ export default function Usuarios() {
               opcionValor: 'id_rol',
               opcionEtiqueta: (r) => r.nombre_rol,
             },
+            { 
+              key: 'fecha_expiracion', 
+              label: 'Expiración del Rol', 
+              type: 'datetime-local', 
+              required: false 
+            },
           ]}
         />
       </div>
