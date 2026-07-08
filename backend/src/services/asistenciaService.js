@@ -108,9 +108,9 @@ const registrarEntrada = async (id_trabajador, id_servicio) => {
  */
 // Reloj control — salida. Completa el registro existente con hora_salida.
 // Si la salida ya fue registrada, retorna { error: 'ya_registrada' } para que el controller devuelva 409.
-// IMPORTANTE: fichar salida solo cierra la jornada de asistencia de HOY; NO cambia
+// fichar salida solo cierra la jornada de asistencia de HOY; NO cambia
 // el estado del servicio. Los servicios duran varios dias y el trabajador debe poder
-// volver a fichar manana. El cierre del servicio es una accion explicita via
+// volver a fichar manaña. El cierre del servicio es una accion explicita via
 // PUT /agenda/:id/terminar-trabajo (ver agendaService.terminarTrabajo).
 const registrarSalida = async (id_asistencia) => {
     const asistencia = await obtenerAsistenciaPorId(id_asistencia);
@@ -129,7 +129,7 @@ const registrarSalida = async (id_asistencia) => {
  * @param {String} fecha formato YYYY-MM-DD
  * @returns {Object}
  */
-// Registro manual de ausencia (lo asienta un supervisor/coordinador).
+// Registro  de ausencia (lo asienta un supervisor/coordinador).
 // Si ya existe un registro para ese trabajador/servicio/fecha retorna
 // { error: 'ya_registrada' } para que el controller devuelva 409.
 const registrarInasistencia = async (id_trabajador, id_servicio, fecha) => {

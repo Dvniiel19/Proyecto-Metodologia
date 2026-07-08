@@ -50,10 +50,8 @@ const obtenerTodosLosConsumoInsumo = async (req, res) => {
 const obtenerConsumoInsumoPorId = async (req, res) => {
     try {
         const { id_consumo } = req.params;
-        // llamar al servicio obtenerconsumo_insumoPorId(id_consumo_insumo)
         const consumoInsumo = await consumoInsumoService.obtenerConsumoInsumoPorId(id_consumo); 
         
-        // si no existe retrona el error 404
         if (!consumoInsumo) {
             return sendError(res, 'consumo_insumo no encontrado', 404);
         } else {
@@ -71,7 +69,6 @@ const actualizarConsumoInsumo = async (req, res) => {
     try {
         const validacion = updateConsumoInsumoSchema.validate(req.body);
         
-        // Verificamos si el joi encontro errores de validacion
         if (validacion.error) {
             return sendError(
                 res,
@@ -100,10 +97,8 @@ const actualizarConsumoInsumo = async (req, res) => {
 const eliminarConsumoInsumo = async (req, res) => {
     try {
         const { id_consumo } = req.params;
-        // llamar al servicio eliminarconsumo_insumo(id_consumo_insumo)
         const eliminado = await consumoInsumoService.eliminarConsumoInsumo(id_consumo);
         
-        // si no se elimino retornar error 404
         if (!eliminado) {
             return sendError(res, 'consumo_insumo no encontrado', 404);
         } else {

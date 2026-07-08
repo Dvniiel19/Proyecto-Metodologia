@@ -30,8 +30,7 @@ const obtenerTodasLasAgenda = async () => {
 /**
  * obtener las agendas asignadas al trabajador vinculado a un usuario
  * Solo devuelve agendas con una asignacion en asignar_servicio para ese trabajador,
- * excluyendo las ya finalizadas (no tiene sentido fichar entrada en ellas) y las
- * que YA tienen la jornada de HOY cerrada (salida fichada o Ausente). Los servicios
+ * excluyendo las ya finalizadas y las que YA tienen la jornada de HOY cerrada (salida fichada o Ausente). Los servicios
  * duran varios dias: al dia siguiente vuelven a aparecer para fichar una nueva jornada.
  * @param {Number} id_usuario id del usuario autenticado (del token JWT)
  * @return {Array}
@@ -99,9 +98,9 @@ const actualizarAgenda = async (id_servicio, datosActualizados) => {
 
 /**
  * verificar si una agenda esta asignada al trabajador vinculado a un usuario
- * (se usa para que un Trabajador solo pueda terminar sus propios servicios)
+ * Para que un Trabajador solo pueda terminar sus propios servicios
  * @param {Number} id_servicio
- * @param {Number} id_usuario id del usuario autenticado (del token JWT)
+ * @param {Number} id_usuario 
  * @return {Boolean}
  */
 
@@ -117,8 +116,8 @@ const esAgendaDelUsuario = async (id_servicio, id_usuario) => {
 };
 
 /**
- * marcar el trabajo de un servicio como terminado (Operaciones)
- * Transicion permitida: 'En Proceso' -> 'Pendiente de Evaluacion'.
+ * marcar el trabajo de un servicio como terminado 
+ * Cambio permitido: 'En Proceso' -> 'Pendiente de Evaluacion'.
  * Deja el servicio habilitado para que el cliente lo evalue.
  * @param {Number} id_servicio
  * @param {String | undefined} observacion_final observacion opcional del trabajador

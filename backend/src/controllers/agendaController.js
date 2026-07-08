@@ -46,8 +46,7 @@ const obtenerTodasLasAgenda = async (req, res) => {
 
 /** get /agenda/mis-agendas
  * obtiene solo las agendas asignadas al trabajador del usuario autenticado.
- * El id se toma del token (req.user), nunca del frontend, para que un
- * trabajador no pueda consultar las agendas de otro.
+ * El id se toma del token (req.user), para que un trabajador no pueda consultar las agendas de otro.
  */
 const obtenerMisAgendas = async (req, res) => {
     try {
@@ -112,8 +111,8 @@ const actualizarAgenda = async (req, res) => {
 
 /** put /agenda/:id/terminar-trabajo
  * Marca explicitamente el trabajo del servicio como terminado (dominio Operaciones,
- * separado del reloj control de Asistencia). Transicion: 'En Proceso' -> 'Pendiente de Evaluacion'.
- * Un Trabajador solo puede terminar servicios que tiene asignados; los gestores pueden terminar cualquiera.
+ * separado del reloj control de Asistencia). cambios: 'En Proceso' -> 'Pendiente de Evaluacion'.
+ * Un Trabajador solo puede terminar servicios que tiene asignados los coordinadores y administradores pueden terminar cualquiera.
  */
 const terminarTrabajo = async (req, res) => {
     try {
@@ -130,7 +129,7 @@ const terminarTrabajo = async (req, res) => {
         const { id_agenda } = req.params;
 
         // Si quien llama es un Trabajador, verificamos contra la BD que el servicio
-        // le pertenezca (el id se compara via el token, no via datos del frontend)
+        // le pertenezca (el id se compara por tokem)
         if (req.user.nombre_rol === 'Trabajador') {
             const esSuya = await agendaService.esAgendaDelUsuario(id_agenda, req.user.id_usuario);
             if (!esSuya) {
