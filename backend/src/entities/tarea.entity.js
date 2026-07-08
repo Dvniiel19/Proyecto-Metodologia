@@ -13,7 +13,7 @@ module.exports = new EntitySchema({
         descripcion:{
             type: 'varchar',
             length: 255,
-            nullable: false,
+            nullable: true,
         },
         estado: {
             type: 'varchar',

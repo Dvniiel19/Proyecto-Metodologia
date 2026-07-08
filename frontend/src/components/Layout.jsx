@@ -14,8 +14,8 @@ import {
   UserCheck,
   Star,
   Clock,
-  Sun,  // <-- Añadido
-  Moon, // <-- Añadido
+  Sun,  
+  Moon,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
