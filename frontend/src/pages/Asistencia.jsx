@@ -207,12 +207,32 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
 }
 
 /** Formulario de inasistencia manual (Supervisor / Coordinador / Admin) */
-function FormInasistencia({ trabajadores, agenda, onCambio }) {
+function FormInasistencia({ trabajadores, agenda, asignaciones = [], onCambio }) {
   const [idTrabajador, setIdTrabajador] = useState('')
   const [idServicio, setIdServicio] = useState('')
   const [fecha, setFecha] = useState(fechaHoyISO())
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
+
+  // Select dependiente: solo se ofrecen los servicios asignados (via
+  // asignar_servicio) al trabajador elegido, para no poder marcarlo ausente
+  // en un servicio que no le corresponde
+  const serviciosDelTrabajador = idTrabajador
+    ? agenda.filter((s) =>
+        asignaciones.some(
+          (a) =>
+            a.id_trabajador === Number(idTrabajador) &&
+            a.id_servicio === s.id_servicio,
+        ),
+      )
+    : []
+
+  // Al cambiar de trabajador se resetea el servicio elegido, porque la lista
+  // de opciones ya no es la misma
+  const cambiarTrabajador = (e) => {
+    setIdTrabajador(e.target.value)
+    setIdServicio('')
+  }
 
   // Registra una ausencia: crea una asistencia con estado "Ausente" sin horas
   const handleSubmit = async (e) => {
@@ -247,7 +267,7 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
           Trabajador
           <select
             value={idTrabajador}
-            onChange={(e) => setIdTrabajador(e.target.value)}
+            onChange={cambiarTrabajador}
             required
             className={clsInput}
           >
@@ -266,10 +286,17 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
             value={idServicio}
             onChange={(e) => setIdServicio(e.target.value)}
             required
+            disabled={!idTrabajador}
             className={clsInput}
           >
-            <option value="">Seleccionar...</option>
-            {agenda.map((s) => (
+            <option value="">
+              {!idTrabajador
+                ? 'Seleccione un trabajador primero...'
+                : serviciosDelTrabajador.length === 0
+                  ? 'Sin servicios asignados'
+                  : 'Seleccionar...'}
+            </option>
+            {serviciosDelTrabajador.map((s) => (
               <option key={s.id_servicio} value={s.id_servicio}>
                 #{s.id_servicio} — {String(s.fecha_programada).slice(0, 10)}
               </option>
@@ -315,20 +342,24 @@ export default function Asistencia() {
   const [trabajadores, setTrabajadores] = useState([])
   const [agenda, setAgenda] = useState([])
   const [misAgendas, setMisAgendas] = useState([])
+  const [asignaciones, setAsignaciones] = useState([])
 
-  // Carga todo en paralelo; la agenda completa solo se pide si el usuario es
-  // gestor (el trabajador comun solo necesita sus propias agendas)
+  // Carga todo en paralelo; la agenda completa y las asignaciones solo se
+  // piden si el usuario es gestor (el trabajador comun solo necesita sus
+  // propias agendas)
   const cargarDatos = useCallback(async () => {
-    const [asis, trab, mias, ag] = await Promise.all([
+    const [asis, trab, mias, ag, asig] = await Promise.all([
       api.get('/asistencia'),
       api.get('/trabajador'),
       api.get('/agenda/mis-agendas'),
       esGestor ? api.get('/agenda') : Promise.resolve([]),
+      esGestor ? api.get('/asignarServicio') : Promise.resolve([]),
     ])
     setAsistencias(Array.isArray(asis) ? asis : [])
     setTrabajadores(Array.isArray(trab) ? trab : [])
     setMisAgendas(Array.isArray(mias) ? mias : [])
     setAgenda(Array.isArray(ag) ? ag : [])
+    setAsignaciones(Array.isArray(asig) ? asig : [])
   }, [esGestor])
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
@@ -375,7 +406,12 @@ export default function Asistencia() {
           )}
 
           {esGestor && (
-            <FormInasistencia trabajadores={trabajadores} agenda={agenda} onCambio={cargar} />
+            <FormInasistencia
+              trabajadores={trabajadores}
+              agenda={agenda}
+              asignaciones={asignaciones}
+              onCambio={cargar}
+            />
           )}
 
           <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
