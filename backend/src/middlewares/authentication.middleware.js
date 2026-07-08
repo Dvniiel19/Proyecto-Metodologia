@@ -32,13 +32,11 @@ const autenticacion = async (req, res, next) => {
             );
         }
 
-        // Extraer solo el token eliminando el prefijo "Bearer "
         const token = authHeader.slice(7);
 
         // Verificar que el token sea valido y no haya expirado
         const decoded = verificarToken(token);
 
-        // Guardar la informacion del usuario para usarla en los siguientes middlewares
         req.user = {
             id_usuario: decoded.id_usuario,
             id_rol: decoded.id_rol,

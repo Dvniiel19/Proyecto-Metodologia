@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
-import { Eye, EyeOff, Moon, Sun } from 'lucide-react' // 👈 Importamos la Luna y el Sol
+import { Eye, EyeOff, Moon, Sun } from 'lucide-react' // Importamos la Luna y el Sol
 
 export default function Login() {
   const { login } = useAuth()
@@ -48,10 +48,10 @@ export default function Login() {
   }
 
   return (
-    // Se agregó 'relative' y dark:bg-gray-950 para el fondo asfalto
+    // Se agrego 'relative' y dark:bg-gray-950 para el fondo asfalto
     <div className="relative flex min-h-screen items-center justify-center bg-white px-4 transition-colors duration-200 dark:bg-gray-950">
       
-      {/* NUEVO: BOTÓN FLOTANTE DEL MODO OSCURO EN LA ESQUINA */}
+      {/* NUEVO: BOTON FLOTANTE DEL MODO OSCURO EN LA ESQUINA */}
       <button
         type="button"
         onClick={toggleTheme}

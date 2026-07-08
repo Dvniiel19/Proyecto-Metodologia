@@ -33,7 +33,7 @@ function InicioSegunRol() {
 function NoAutorizado() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white px-4">
-      <h1 className="text-2xl font-bold text-black">No tienes permiso para ver esta sección</h1>
+      <h1 className="text-2xl font-bold text-black">No tienes permiso para ver esta seccion</h1>
       <p className="text-sm text-gray-500">Tu rol no tiene acceso a esta sección.</p>
       <Link
         to="/"

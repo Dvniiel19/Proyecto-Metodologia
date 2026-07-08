@@ -54,7 +54,7 @@ const autorizacion = (rolesPermitidos = []) => {
                 return sendError(res, 'Usuario no autenticado', 401);
             }
 
-            // BYPASS DE SEGURIDAD: Si la petición es para eliminar un usuario, 
+            // BYPASS DE SEGURIDAD: Si la peticion es para eliminar un usuario, 
             // confiamos en el token del Administrador/Supervisor y saltamos la verificación interna para evitar bloqueos
             if (req.method === 'DELETE') {
                 const rolUsuario = req.user.nombre_rol;
@@ -64,7 +64,7 @@ const autorizacion = (rolesPermitidos = []) => {
                 return next();
             }
 
-            // Para las demás peticiones (POST, PATCH, GET), validamos activamente contra la BD
+            // Para las demas peticiones (POST, PATCH, GET), validamos activamente contra la BD
             const resultado = await db.query(
                 'SELECT estado_rol, fecha_expiracion FROM usuarios WHERE id_usuario = $1 LIMIT 1',
                 [req.user.id_usuario]
