@@ -123,13 +123,13 @@ const registrarMovimientoInsumo = async(req, res)=> {
             );
         }
         const { id_insumo, cantidad, tipo_movimiento, id_servicio, observaciones } = value;
-
+        const idServicioMovimiento = tipo_movimiento === 'salida' ? Number(id_servicio) : null;
 // Llamamos al servicio para registrar el movimiento, que se encargara de actualizar el stock y evaluar alertas criticas
         const respuesta = await insumosService.registrarMovimientoInsumo(
             id_insumo,
             cantidad,
             tipo_movimiento,
-            id_servicio,
+            idServicioMovimiento,
             observaciones
         );
 

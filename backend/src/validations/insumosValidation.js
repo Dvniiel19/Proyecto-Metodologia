@@ -129,23 +129,22 @@ const movimientoInsumoSchema= Joi.object({
             'any.only': 'El tipo de movimiento debe ser "ingreso" o "salida".',
             'any.required': 'El tipo de movimiento es un campo obligatorio.'
         }),
-    id_servicio: Joi.number()
-        .integer()
-        .positive()
-        .required()
-        .messages({
-            'number.base': 'El ID del servicio debe ser un numero.',
-            'number.integer': 'El ID del servicio debe ser un número entero.',
-            'number.positive': 'El ID del servicio debe ser un número positivo.',
-            'any.required': 'El ID del servicio es un campo obligatorio.'
-        }),
-    observaciones: Joi.string()
-        .max(255)
-        .optional()
-        .messages({
-            'string.base': 'Las observaciones deben ser un texto.',
-            'string.max': 'Las observaciones no pueden exceder 255 caracteres.'
-        }),
+    id_servicio: Joi.when('tipo_movimiento', {
+     is: 'salida',
+     then: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      'number.base': 'El ID del servicio debe ser un número.',
+      'number.integer': 'El ID del servicio debe ser un número entero.',
+      'number.positive': 'El ID del servicio debe ser un número positivo.',
+      'any.required': 'El ID del servicio es obligatorio para una salida.'
+    }),
+  otherwise: Joi.any()
+    .allow(null, '')
+    .optional()
+}),
     });
 
 module.exports = {
