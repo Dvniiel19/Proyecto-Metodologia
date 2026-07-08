@@ -1,3 +1,6 @@
+// Pagina "Gestion de Tareas" (Admin/Coordinador): crea las tareas concretas
+// que el trabajador vera en "Mis Tareas". Cada tarea cuelga de una asignacion
+// (servicio + trabajador) y muestra si ya tiene evidencia fotografica.
 import CrudPage from '../components/CrudPage'
 import { formatearFecha } from '../utils/fechas'
 

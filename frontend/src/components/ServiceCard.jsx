@@ -1,6 +1,10 @@
+// ServiceCard: tarjeta de un servicio en la vista del Cliente ("Mis Servicios").
+// Segun el estado del servicio decide que mostrar: mensaje de espera (en proceso),
+// formulario de evaluacion (pendiente) o la nota ya registrada (con editar/eliminar).
 import { useState } from 'react'
 import StarRating from './StarRating'
 
+// Etiqueta visual del estado del servicio
 function EstadoBadge({ estado, label }) {
   const texto = label ?? (estado === 'en_proceso' ? 'En Proceso' : 'Finalizado')
   return (
@@ -10,10 +14,13 @@ function EstadoBadge({ estado, label }) {
   )
 }
 
+// Formulario de nota + comentario; se reutiliza para evaluar por primera vez
+// y para editar una evaluacion existente (por eso recibe valores iniciales)
 function EvaluationForm({ initialRating = 0, initialComment = '', onSubmit, onCancel }) {
   const [rating, setRating] = useState(initialRating)
   const [comment, setComment] = useState(initialComment)
 
+  // No se puede enviar sin al menos 1 estrella; el comentario es opcional
   const canSubmit = rating > 0
 
   return (
@@ -58,10 +65,13 @@ function EvaluationForm({ initialRating = 0, initialComment = '', onSubmit, onCa
 export default function ServiceCard({ service, onEvaluate, onDelete }) {
   const [editing, setEditing] = useState(false)
 
+  // Reglas de la tarjeta: solo se evalua un servicio finalizado; si ya tiene
+  // calificacion se muestra en modo lectura con opcion de editar
   const yaEvaluado = service.estado === 'finalizado' && service.calificacion != null
   const pendienteEvaluar = service.estado === 'finalizado' && service.calificacion == null
   const enProceso = service.estado === 'en_proceso'
 
+  // Delega el guardado a la pagina padre (que llama a la API) y cierra el modo edicion
   const handleSubmit = ({ rating, comment }) => {
     onEvaluate(service.id, { calificacion: rating, comentario: comment })
     setEditing(false)

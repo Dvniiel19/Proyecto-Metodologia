@@ -1,3 +1,6 @@
+// Pagina de Usuarios (solo Administrador): gestion de cuentas y sus roles.
+// Cumple la parte administrativa del requisito RBAC: asignar rol, ver el
+// estado del rol y su fecha de expiracion, y crear cuentas de personal.
 import { useState } from 'react'
 import { UserPlus } from 'lucide-react'
 import CrudPage from '../components/CrudPage'
@@ -47,9 +50,11 @@ export default function Usuarios() {
             { key: 'id_usuario', label: 'ID' },
             { key: 'correo', label: 'Correo' },
             { key: 'id_rol', label: 'Rol (ID)' },
-            { 
-              key: 'estado_rol', 
+            {
+              key: 'estado_rol',
               label: 'Estado del Rol',
+              // Columna calculada: si la fecha de expiracion ya paso se muestra
+              // "Rol expirado" en rojo aunque la BD aun no se haya actualizado
               render: (fila) => {
                 if (fila.fecha_expiracion) {
                   const ahora = new Date();

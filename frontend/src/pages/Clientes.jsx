@@ -1,3 +1,6 @@
+// Pagina de Clientes: tabla y edicion de los perfiles de cliente.
+// ocultarCrear: los clientes se crean solos desde el registro publico,
+// aqui solo se consultan y corrigen sus datos.
 import CrudPage from '../components/CrudPage'
 
 export default function Clientes() {

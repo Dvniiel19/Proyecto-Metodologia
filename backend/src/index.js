@@ -1,5 +1,8 @@
-require('dotenv').config(); 
-require('reflect-metadata');
+// Punto de entrada del backend: configura Express (CORS, JSON, archivos
+// estaticos), monta las rutas de cada modulo, conecta la BD con TypeORM
+// y levanta el cron de expiracion de roles.
+require('dotenv').config(); // carga las variables de entorno del .env
+require('reflect-metadata'); // requerido por TypeORM para leer los metadatos de las entidades
 
 const express = require('express');
 const path = require('path');
@@ -13,18 +16,22 @@ const autorizacionMiddleware = require('./middlewares/autorizacionMiddleware');
 
 const app = express();
 
+// Solo se aceptan peticiones desde el frontend en desarrollo (Vite usa 5173/5174)
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
-app.use(express.json()); 
+app.use(express.json()); // parsea el body JSON de todas las peticiones
 
+// Middleware global: normaliza cualquier fecha del body a formato local
+// YYYY-MM-DD antes de llegar a los controladores (evita corrimientos por zona horaria)
 const { normalizarFechasBody } = require('./utils/fechas');
 app.use((req, res, next) => {
   if (req.body) normalizarFechasBody(req.body);
   next();
 });
 
+// Sirve las fotos de evidencia como archivos estaticos (ej: /uploads/evidencias/tarea-123.jpg)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/', (req, res) => {
@@ -51,8 +58,12 @@ const trabajadorRoutes = require('./routes/trabajadorRoutes');
 const authRoutes = require('./routes/authRoutes');
 const reportesRoutes = require('./routes/reportesRoutes');
 
-app.use('/auth', authRoutes); 
+// /auth va ANTES del middleware de verificacion de rol: el login debe ser
+// accesible sin token (si no, nadie podria autenticarse)
+app.use('/auth', authRoutes);
 
+// A partir de aqui, toda ruta pasa por verificarEstadoRol: si el rol del
+// usuario expiro, la peticion se bloquea con 403 sin llegar al controlador.
 // === CONTROL SEGURO DE MIDDLEWARE PARA EVITAR CAÍDAS DE EXPRESS ===
 if (typeof autorizacionMiddleware === 'function') {
     app.use(autorizacionMiddleware);
@@ -79,6 +90,7 @@ app.use('/validacionSupervisor', validacionSupervisorRoutes);
 app.use('/trabajador', trabajadorRoutes);
 app.use('/reportes', reportesRoutes);
 
+// Catch-all: cualquier ruta no registrada responde 404 en formato JSON estandar
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -86,6 +98,8 @@ app.use((req, res) => {
     });
 });
 
+// El servidor solo se levanta si la conexion a la BD fue exitosa;
+// asi se evita atender peticiones sin base de datos disponible
 db.initialize()
     .then(() => {
         console.log('✅ Base de datos conectada con TypeORM');

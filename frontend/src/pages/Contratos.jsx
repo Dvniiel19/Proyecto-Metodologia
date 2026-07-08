@@ -1,3 +1,6 @@
+// Pagina de Contratos: CRUD de los contratos de servicio. El contrato une al
+// cliente con los servicios agendados y es la base de la validacion de
+// titularidad (solo el titular puede evaluar/validar sus servicios).
 import CrudPage from '../components/CrudPage'
 
 export default function Contratos() {

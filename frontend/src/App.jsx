@@ -83,7 +83,9 @@ function App() {
               </Route>
 
               {/* Cualquier usuario autenticado (principalmente Trabajador) */}
-              <Route path="/mis-tareas" element={<MisTareas />} />
+              <Route element={<ProtectedRoute rolesPermitidos={['Trabajador']} />}>
+                <Route path="/mis-tareas" element={<MisTareas />} />
+              </Route>
 
               {/* Perfil propio: cualquier usuario autenticado */}
               <Route path="/perfil" element={<Perfil />} />

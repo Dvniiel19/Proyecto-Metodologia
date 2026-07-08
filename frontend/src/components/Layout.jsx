@@ -20,6 +20,8 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
+// Menu lateral completo: cada item declara que roles pueden verlo.
+// El sidebar filtra esta lista segun el rol del usuario logueado.
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
   { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador'] },
@@ -30,7 +32,7 @@ const NAV_ITEMS = [
   { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador'] },
   { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador'] },
   { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
+  { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Trabajador'] }, //adminstrar porsiaka
   { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
   { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
   { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
@@ -43,6 +45,7 @@ function Sidebar() {
   const navigate = useNavigate()
 
   // --- LÓGICA MODO OSCURO ---
+  // El tema elegido se persiste en localStorage para recordarlo entre sesiones
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark'
@@ -50,6 +53,7 @@ function Sidebar() {
     return false
   })
 
+  // Aplica u oculta la clase "dark" en <html>, que activa los estilos dark: de Tailwind
   useEffect(() => {
     const root = window.document.documentElement
     if (darkMode) {
@@ -62,11 +66,13 @@ function Sidebar() {
   }, [darkMode])
   // ---------------------------
 
+  // Avatar con la inicial del correo, y menu filtrado por el rol del usuario
   const inicial = usuario?.correo?.charAt(0).toUpperCase() ?? '?'
   const itemsVisibles = NAV_ITEMS.filter(
     (item) => item.roles == null || item.roles.includes(rol),
   )
 
+  // Cierra la sesion (limpia token) y redirige al login
   const handleLogout = () => {
     logout()
     navigate('/login', { replace: true })

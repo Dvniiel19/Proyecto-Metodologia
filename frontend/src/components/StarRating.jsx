@@ -1,5 +1,8 @@
+// StarRating: selector de nota de 1 a 5 estrellas. En modo readOnly solo
+// muestra la nota; en modo interactivo permite elegir con click y hover.
 import { useState } from 'react'
 
+// Una estrella individual (SVG); "filled" la pinta negra si esta dentro de la nota
 function Star({ filled, onClick, onMouseEnter, onMouseLeave, interactive }) {
   return (
     <svg
@@ -28,6 +31,8 @@ export default function StarRating({
 }) {
   const [hovered, setHovered] = useState(0)
 
+  // Mientras el mouse pasa por encima se previsualiza esa nota;
+  // al salir (hovered = 0) vuelve a mostrarse el valor confirmado
   const displayValue = readOnly ? value : hovered || value
 
   return (

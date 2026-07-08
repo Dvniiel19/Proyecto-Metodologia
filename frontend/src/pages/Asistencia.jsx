@@ -1,3 +1,7 @@
+// Pagina de Asistencia: cumple el requisito de marcaje de llegada/salida.
+// Tiene dos caras segun el rol: el Trabajador ve su "reloj control" (fichar
+// entrada/salida y marcar trabajo terminado) y los gestores (Supervisor,
+// Coordinador, Admin) pueden ademas registrar inasistencias manuales.
 import { useCallback, useState } from 'react'
 import { CheckCircle, Clock, LogIn, LogOut, UserX } from 'lucide-react'
 import { api } from '../services/api'
@@ -5,6 +9,7 @@ import { useAuth } from '../context/AuthContext'
 import useCarga from '../hooks/useCarga'
 import { fechaHoyISO } from '../helpers/fechas'
 
+// Roles con permisos de gestion en esta pantalla
 const ROLES_GESTOR = ['Administrador', 'Coordinador', 'Supervisor']
 
 // Estilos de input integrados aquí para añadir fácilmente las clases de modo oscuro
@@ -18,14 +23,18 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // Solo se puede marcar como terminado un servicio que este "En Proceso"
   const serviciosEnProceso = agenda.filter((s) => s.estado === 'En Proceso')
   const misAsistencias = asistencias.filter(
     (a) => a.id_trabajador === miTrabajador.id_trabajador,
   )
+  // Jornada abierta = tiene hora de entrada pero aun no registra salida.
+  // Determina que formulario se muestra: fichar entrada o fichar salida.
   const entradaAbierta = misAsistencias.find(
     (a) => a.hora_entrada != null && a.hora_salida == null,
   )
 
+  // Registra la hora de llegada del trabajador en el servicio elegido
   const ficharEntrada = async (e) => {
     e.preventDefault()
     setError(null)
@@ -44,6 +53,9 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
     }
   }
 
+  // Marca el servicio como terminado: el backend lo pasa a estado "Finalizado"
+  // y desde ese momento el cliente puede evaluarlo (es distinto de fichar salida,
+  // que solo registra la asistencia personal)
   const terminarTrabajo = async (e) => {
     e.preventDefault()
     setError(null)
@@ -63,6 +75,7 @@ function RelojControl({ miTrabajador, agenda, asistencias, onCambio }) {
     }
   }
 
+  // Cierra la jornada abierta registrando la hora de salida
   const ficharSalida = async () => {
     setError(null)
     setGuardando(true)
@@ -201,6 +214,7 @@ function FormInasistencia({ trabajadores, agenda, onCambio }) {
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // Registra una ausencia: crea una asistencia con estado "Ausente" sin horas
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
@@ -302,6 +316,8 @@ export default function Asistencia() {
   const [agenda, setAgenda] = useState([])
   const [misAgendas, setMisAgendas] = useState([])
 
+  // Carga todo en paralelo; la agenda completa solo se pide si el usuario es
+  // gestor (el trabajador comun solo necesita sus propias agendas)
   const cargarDatos = useCallback(async () => {
     const [asis, trab, mias, ag] = await Promise.all([
       api.get('/asistencia'),
@@ -317,7 +333,10 @@ export default function Asistencia() {
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
 
+  // Vincula el usuario logueado con su perfil de trabajador (si lo tiene);
+  // sin este vinculo no se muestra el reloj control
   const miTrabajador = trabajadores.find((t) => t.id_usuario === usuario.id_usuario)
+  // Traduce id_trabajador a nombre legible para la tabla
   const nombreTrabajador = (id) => {
     const t = trabajadores.find((x) => x.id_trabajador === id)
     return t ? `${t.nombre} ${t.apellido}` : `#${id}`
@@ -379,6 +398,7 @@ export default function Asistencia() {
                     </td>
                   </tr>
                 ) : (
+                  // El gestor ve todas las asistencias; el trabajador solo las suyas
                   asistencias
                     .filter((a) => esGestor || a.id_trabajador === miTrabajador?.id_trabajador)
                     .map((a) => (

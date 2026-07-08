@@ -1,9 +1,15 @@
+// Pagina de Insumos: cumple el requisito de inventario con alerta de stock
+// critico. Combina tres piezas: el panel de alertas (insumos bajo el limite),
+// el formulario de movimientos (ingreso/salida) y el CRUD generico de insumos.
 import { useEffect, useState } from 'react'
 import { AlertTriangle, ArrowDownUp, X } from 'lucide-react'
 import CrudPage from '../components/CrudPage'
 import { api } from '../services/api'
 import { inputClase } from '../helpers/estilos'
 
+// Panel de alertas de reabastecimiento: consulta al backend los insumos cuyo
+// stock quedo bajo el limite de seguridad. "version" cambia tras cada
+// movimiento y fuerza a recargar las alertas.
 function AlertasInsumos({ version, onReabastecer }) {
   const [alertas, setAlertas] = useState([])
 
@@ -14,6 +20,7 @@ function AlertasInsumos({ version, onReabastecer }) {
       .catch(() => setAlertas([]))
   }, [version])
 
+  // Sin alertas no se renderiza nada
   if (alertas.length === 0) return null
 
   return (
@@ -45,6 +52,9 @@ function AlertasInsumos({ version, onReabastecer }) {
   )
 }
 
+// Formulario de ingreso/salida de insumos. "prefill" permite abrirlo ya
+// configurado (ej: el boton Reabastecer de una alerta lo abre como ingreso
+// con el insumo seleccionado).
 function MovimientoForm({ prefill, onClose, onGuardado }) {
   const [insumos, setInsumos] = useState([])
   const [agenda, setAgenda] = useState([])
@@ -56,6 +66,8 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
   const [errores, setErrores] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  // Carga los insumos (para el select y conocer el stock actual) y la agenda
+  // (una salida debe asociarse al servicio que consumio el material)
   useEffect(() => {
     api.get('/insumos').then((d) => setInsumos(Array.isArray(d) ? d : [])).catch(() => {})
     api.get('/agenda').then((d) => setAgenda(Array.isArray(d) ? d : [])).catch(() => {})
@@ -71,6 +83,9 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
     Number.isInteger(cantidadNum) &&
     cantidadNum > insumoSeleccionado.stock
 
+  // Validaciones de cliente: insumo elegido, cantidad entera positiva,
+  // servicio obligatorio en salidas y que la salida no exceda el stock.
+  // El backend repite estas validaciones (aqui son solo UX temprana).
   const puedeGuardar =
     idInsumo !== '' &&
     Number.isInteger(cantidadNum) &&
@@ -78,6 +93,7 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
     (tipo !== 'salida' || idServicio !== '') &&
     !salidaExcedeStock
 
+  // Registra el movimiento; el backend actualiza el stock y genera la alerta si corresponde
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrores(null)
@@ -235,6 +251,7 @@ export default function Insumos() {
   const [version, setVersion] = useState(0)
   const [movimiento, setMovimiento] = useState(null) // null | { prefill }
 
+  // Tras guardar un movimiento: cierra el formulario y recarga tabla + alertas
   const handleGuardado = () => {
     setMovimiento(null)
     setVersion((v) => v + 1)
@@ -286,6 +303,7 @@ export default function Insumos() {
             {
            key: 'estado_insumo',
            label: 'Estado',
+           // Columna calculada: marca en rojo los insumos bajo su limite de seguridad
            render: (fila) => {
       const esCritico = Number(fila.stock) < Number(fila.limite_seguridad)
       const estadoCalculado = esCritico ? 'Stock Critico' : 'Normal'

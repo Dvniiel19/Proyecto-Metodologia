@@ -1,3 +1,6 @@
+// Pagina "Validar Servicios" (rol Cliente): muestra las tareas que el
+// trabajador finalizo con evidencia y permite al cliente aprobar o rechazar
+// cada una. El backend ya filtra por titularidad: solo llegan tareas de SUS contratos.
 import { useCallback, useState } from 'react'
 import { CheckCircle, XCircle, Clock, User, Camera, Search } from 'lucide-react'
 import { api, API_URL } from '../services/api'
@@ -5,9 +8,11 @@ import { useAuth } from '../context/AuthContext'
 import useCarga from '../hooks/useCarga'
 import { formatearFecha } from '../helpers/fechas'
 
+// Tarjeta de una tarea pendiente: enlace a la foto de evidencia + botones Aprobar/Rechazar
 function TareaPendiente({ tarea, onValidar }) {
   const [guardando, setGuardando] = useState(false)
 
+  // Envia la decision del cliente ('aprobado' | 'rechazado') al backend
   const handleValidar = async (accion) => {
     setGuardando(true)
     try {
@@ -20,6 +25,8 @@ function TareaPendiente({ tarea, onValidar }) {
     }
   }
 
+  // Construye la URL de la foto; soporta rutas antiguas (solo nombre de archivo)
+  // y nuevas (con prefijo uploads/)
   const rutaEvidencia = tarea.foto_evidencia
     ? tarea.foto_evidencia.startsWith('uploads/')
       ? `${API_URL}/${tarea.foto_evidencia}`
@@ -89,6 +96,7 @@ function TareaPendiente({ tarea, onValidar }) {
   )
 }
 
+// Tarjeta de solo lectura para el historial: tareas ya aprobadas o rechazadas
 function TareaValidada({ tarea }) {
   const esAprobada = tarea.estado === 'Aprobado'
 
@@ -162,12 +170,14 @@ export default function ValidarServicios() {
 
   const { cargando, error, recargar: cargar } = useCarga(cargarDatos)
 
+  // Tras validar: muestra confirmacion temporal (5s) y recarga la lista
   const handleValidar = useCallback(() => {
     setMensajeExito('Tarea validada correctamente.')
     setTimeout(() => setMensajeExito(null), 5000)
     cargar()
   }, [cargar])
 
+  // Separa la lista en dos secciones: por validar e historial
   const pendientes = tareas.filter((t) => t.estado === 'Pendiente de Validación')
   const validadas = tareas.filter((t) => t.estado !== 'Pendiente de Validación')
 

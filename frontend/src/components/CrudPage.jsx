@@ -1,3 +1,7 @@
+// CrudPage: componente generico reutilizable para todas las pantallas de
+// mantenimiento (Clientes, Contratos, Roles, etc.). Cada pagina solo le pasa
+// el endpoint, las columnas de la tabla y los campos del formulario, y este
+// componente resuelve listar, buscar, crear, editar y eliminar.
 import { useEffect, useState, useCallback } from 'react'
 import { Pencil, Trash2, Plus, X, Search } from 'lucide-react' // <-- Importamos Search
 import { api } from '../services/api'
@@ -5,14 +9,18 @@ import { useAuth } from '../context/AuthContext'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 
 export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, rolesEscritura, valoresFijos, ocultarCrear = false, }) {
+  // Control de permisos visual: si el rol del usuario no esta en rolesEscritura
+  // se ocultan los botones Crear/Editar/Eliminar (la restriccion real la hace el backend)
   const { rol } = useAuth()
   const puedeEscribir = rolesEscritura == null || rolesEscritura.includes(rol)
 
+  // Estado de la tabla
   const [filas, setFilas] = useState([])
   const [opciones, setOpciones] = useState({}) // key de campo = lista de opciones
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
 
+  // Estado del formulario de crear/editar
   const [formVisible, setFormVisible] = useState(false)
   const [editando, setEditando] = useState(null) // fila en edicion o null (creando)
   const [valores, setValores] = useState({})
@@ -22,6 +30,8 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   // --- NUEVO: ESTADO PARA EL BUSCADOR ---
   const [busqueda, setBusqueda] = useState('')
 
+  // Trae las filas del endpoint; useCallback evita recrear la funcion en cada
+  // render y permite reutilizarla despues de guardar o eliminar
   const cargar = useCallback(async () => {
     try {
       const data = await api.get(endpoint)
@@ -54,6 +64,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endpoint])
 
+  // Abre el formulario vacio en modo "crear"
   const abrirCrear = () => {
     setEditando(null)
     setValores({})
@@ -61,10 +72,12 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     setFormVisible(true)
   }
 
+  // Abre el formulario en modo "editar", precargando los valores de la fila
   const abrirEditar = (fila) => {
     setEditando(fila)
     const iniciales = {}
     campos.forEach((c) => {
+      // Las contraseñas nunca se precargan (el backend no las devuelve)
       if (c.type === 'password') return
       if (fila[c.key] == null) return
       // El backend envía fechas en DD/MM/YYYY, pero <input type="date"> exige ISO
@@ -82,14 +95,17 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     setErroresForm(null)
   }
 
+  // Envia el formulario: PATCH si se esta editando, POST si es un registro nuevo
   const handleGuardar = async (e) => {
     e.preventDefault()
     setErroresForm(null)
-    setGuardando(true)
+    setGuardando(true) // deshabilita el boton para evitar doble envio
 
+    // Arma el body solo con los campos con valor; los numericos y selects
+    // se convierten a Number porque los inputs siempre entregan strings
     const body = { ...valoresFijos }
     campos.forEach((c) => {
-      if (editando && c.soloCrear) return
+      if (editando && c.soloCrear) return // campos que solo aplican al crear (ej: contraseña)
       const v = valores[c.key]
       if (v == null || v === '') return
       body[c.key] = c.type === 'number' || c.type === 'select' ? Number(v) || v : v
@@ -102,14 +118,16 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
         await api.post(endpoint, body)
       }
       cerrarForm()
-      cargar()
+      cargar() // recarga la tabla para reflejar el cambio
     } catch (err) {
+      // Muestra los errores de validacion del backend dentro del formulario
       setErroresForm(err.errors?.length ? err.errors : [err.message])
     } finally {
       setGuardando(false)
     }
   }
 
+  // Elimina una fila previa confirmacion del usuario
   const handleEliminar = async (fila) => {
     if (!window.confirm('¿Seguro que quieres eliminar este registro?')) return
     try {
@@ -120,6 +138,7 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
     }
   }
 
+  // Renderiza el input adecuado segun el tipo de campo (texto, numero, fecha o select)
   const renderInput = (campo) => {
     const comun = {
       value: valores[campo.key] ?? '',
@@ -137,6 +156,9 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
         const v = e.target.value
         setValores((prev) => {
           const siguiente = { ...prev, [campo.key]: v }
+          // autoRellenar: al elegir una opcion puede completar otros campos
+          // relacionados (ej: elegir contrato rellena el precio), sin pisar
+          // valores que el usuario ya escribio
           if (campo.autoRellenar && v !== '') {
             const opcionElegida = lista.find((op) => String(valorDeOpcion(op)) === v)
             const derivados = opcionElegida ? campo.autoRellenar(opcionElegida) ?? {} : {}
@@ -170,6 +192,8 @@ export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, ro
   }
 
   // --- NUEVO: LÓGICA DE FILTRADO ---
+  // Busqueda en memoria: compara el termino contra el texto visible de todas
+  // las columnas (incluyendo las calculadas con render)
   const filasFiltradas = filas.filter((fila) => {
     if (!busqueda) return true
     

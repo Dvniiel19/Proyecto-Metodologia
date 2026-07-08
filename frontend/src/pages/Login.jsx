@@ -4,6 +4,9 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { rutaInicioPorRol } from '../services/authService'
 import { Eye, EyeOff, Moon, Sun } from 'lucide-react' // 👈 Importamos la Luna y el Sol
 
+// Pantalla de Login: unica ruta publica junto al registro. Envia las
+// credenciales al backend y, con el token recibido, redirige a la pagina de
+// inicio que corresponde al rol del usuario.
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -33,6 +36,7 @@ export default function Login() {
     }
   }
 
+  // Intenta iniciar sesion; si el backend acepta, cada rol entra a su vista inicial
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
