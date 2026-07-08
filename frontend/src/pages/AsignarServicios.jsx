@@ -19,6 +19,7 @@ export default function AsignarServicios() {
         { key: 'fecha_asignada', label: 'Fecha Asignada' },
         { key: 'id_servicio', label: 'Servicio (ID)' },
         { key: 'id_trabajador', label: 'Trabajador (ID)' },
+        { key: 'descripcion', label: 'Descripción' },
         { key: 'estado', label: 'Estado' },
       ]}
       campos={[
@@ -46,7 +47,13 @@ export default function AsignarServicios() {
           opcionesEndpoint: '/trabajador',
           opcionValor: 'id_trabajador',
           opcionEtiqueta: (t) => `${t.nombre} ${t.apellido}`,
-         
+
+        },
+        {
+          key: 'descripcion',
+          label: 'Descripción de la tarea',
+          type: 'text',
+          required: true,
         },
       ]}
     />
