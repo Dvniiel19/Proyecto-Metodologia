@@ -86,7 +86,9 @@ const finalizarTareaConEvidencia = async (id_tarea, archivoEvidencia) => {
                 await notificarClienteTareaPendienteValidacion({
                     correoCliente,
                     idTarea: tarea.id_tarea,
-                    descripcionTarea: tarea.descripcion,
+                    // La descripcion vive en la asignacion; las tareas antiguas
+                    // conservan la propia como respaldo
+                    descripcionTarea: tarea.asignacion_servicio?.descripcion ?? tarea.descripcion,
                     rutaEvidencia: archivoEvidencia.path,
                 });
                 emailEnviado = true;
@@ -159,7 +161,9 @@ const obtenerMisTareas = async (id_usuario) => {
         for (const t of asig.tareas || []) {
             mapa[idServicio].tareas.push({
                 id_tarea: t.id_tarea,
-                descripcion: t.descripcion,
+                // La descripcion vive en la asignacion; las tareas antiguas
+                // conservan la propia como respaldo
+                descripcion: asig.descripcion ?? t.descripcion,
                 estado: t.estado,
                 foto_evidencia: t.foto_evidencia,
             });

@@ -7,16 +7,17 @@ const Joi = require('joi');
  * POST /tarea
  */
 const createTareaSchema = Joi.object({
+    // La descripcion ahora se registra en la asignacion de servicio;
+    // se mantiene opcional aqui por compatibilidad con tareas antiguas
     descripcion: Joi.string()
-        .min(3) 
-        .max(255) 
-        .required() 
+        .min(3)
+        .max(255)
+        .optional()
         .messages({
             'string.base': 'La descripción debe ser un texto.',
             'string.empty': 'La descripción no puede estar vacía.',
             'string.min': 'La descripción debe tener al menos 3 caracteres.',
-            'string.max': 'La descripción no puede exceder los 255 caracteres.',
-            'any.required': 'La descripción es un campo obligatorio.'
+            'string.max': 'La descripción no puede exceder los 255 caracteres.'
             }),
     id_asignacion: Joi.number()
         .integer()
@@ -38,15 +39,14 @@ const createTareaSchema = Joi.object({
  */
 const updateTareaSchema = Joi.object({
     descripcion: Joi.string()
-        .min(3) 
-        .max(255) 
-        .required() 
+        .min(3)
+        .max(255)
+        .optional()
         .messages({
             'string.base': 'La descripción debe ser un texto.',
             'string.empty': 'La descripción no puede estar vacía.',
             'string.min': 'La descripción debe tener al menos 3 caracteres.',
-            'string.max': 'La descripción no puede exceder los 255 caracteres.',
-            'any.required': 'La descripción es un campo obligatorio.'
+            'string.max': 'La descripción no puede exceder los 255 caracteres.'
             }),
     id_asignacion: Joi.number()
         .integer()

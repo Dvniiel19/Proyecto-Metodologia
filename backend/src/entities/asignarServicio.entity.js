@@ -26,6 +26,13 @@ module.exports = new EntitySchema({
             type: 'int',
             nullable: false,
         },
+        descripcion: {
+            // Descripcion de la tarea a realizar; nullable porque las
+            // asignaciones creadas antes de este campo no la tienen
+            type: 'varchar',
+            length: 255,
+            nullable: true,
+        },
     },
   
     relations: {
