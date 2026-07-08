@@ -1,12 +1,5 @@
-require('dotenv').config(); // <-- ESTO VA AQUI, EN LA LINEA 1 DEL INDEX.JS
-
-
+require('dotenv').config(); 
 require('reflect-metadata');
-
-/**
- * punto de entrada de la aplicacion
- * inicia el servidor express
- */
 
 const express = require('express');
 const path = require('path');
@@ -15,27 +8,24 @@ const config = require('./config/config');
 const db = require('./config/db');
 const { iniciarVerificacionRoles } = require('./utils/expiracionCron');
 
+const { autenticarToken } = require('./middlewares/authMiddleware'); 
+const { verificarEstadoRol } = require('./middlewares/rolMiddleware');   
+
 const app = express();
 
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
-app.use(express.json()); // parsea el body JSON de las peticiones y lo deja en req.body
+app.use(express.json()); 
 
-// Acepta fechas en formato chileno (DD/MM/YYYY) en cualquier body y las
-// normaliza a ISO, que es lo que esperan las validaciones y la base de datos
 const { normalizarFechasBody } = require('./utils/fechas');
 app.use((req, res, next) => {
   if (req.body) normalizarFechasBody(req.body);
   next();
 });
-// Sirve las fotos de evidencia como archivos estaticos: /uploads/evidencias/<archivo>
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
-
-
-
 
 app.get('/', (req, res) => {
   res.json({
@@ -44,7 +34,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// manejo de rutas no encontradas
 const clienteRoutes = require('./routes/clienteRoutes');
 const contratoRoutes = require('./routes/contratoRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
@@ -62,10 +51,14 @@ const trabajadorRoutes = require('./routes/trabajadorRoutes');
 const authRoutes = require('./routes/authRoutes');
 const reportesRoutes = require('./routes/reportesRoutes');
 
+app.use('/auth', authRoutes); 
+
+app.use(autenticarToken);
+app.use(verificarEstadoRol);
+
 app.use('/asignarServicio', asignarServicioRoutes);
 app.use('/contrato', contratoRoutes);
 app.use('/rol', rolRoutes);
-app.use('/auth', authRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/agenda', agendaRoutes);
 app.use('/cliente', clienteRoutes);
@@ -78,19 +71,17 @@ app.use('/evaluacionFinal', evaluacionFinalRoutes);
 app.use('/validacionSupervisor', validacionSupervisorRoutes);
 app.use('/trabajador', trabajadorRoutes);
 app.use('/reportes', reportesRoutes);
-app.use((req,res)=> {
+
+app.use((req, res) => {
     res.status(404).json({
         success: false,
         mensaje: 'ruta no encontrada'
-
     });
 });
-
 
 db.initialize()
     .then(() => {
         console.log('✅ Base de datos conectada con TypeORM');
-
        
         iniciarVerificacionRoles();
 
