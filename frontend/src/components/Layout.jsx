@@ -14,26 +14,28 @@ import {
   UserCheck,
   Star,
   Clock,
-  Sun,  // <-- Añadido
-  Moon, // <-- Añadido
+  ThumbsUp,
+  Sun,  
+  Moon,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador'] },
-  { label: 'Rol', icon: ShieldCheck, to: '/rol', roles: ['Administrador'] },
-  { label: 'Clientes', icon: Building2, to: '/clientes', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
-  { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador'] },
-  { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
-  { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
-  { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
-  { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario'] },
-  { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador'] },
+    { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard', roles: ['Administrador', 'Coordinador'] },
+    { label: 'Usuarios', icon: Users, to: '/usuarios', roles: ['Administrador','Supervisor'] },
+    { label: 'Rol', icon: ShieldCheck, to: '/rol', roles: ['Administrador', 'Supervisor'] },
+    { label: 'Clientes', icon: Building2, to: '/clientes', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Contratos', icon: FileText, to: '/contratos', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Agenda de Servicios', icon: CalendarDays, to: '/agenda', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Trabajadores', icon: Users, to: '/trabajadores', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Asignar Servicios', icon: UserCheck, to: '/asignar-servicios', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Gestión de Tareas', icon: ListChecks, to: '/tareas', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
+    { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Supervisor', 'Trabajador'] },
+    { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
+    { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
+    { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
+    { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario', 'Supervisor'] },
+    { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador', 'Supervisor'] },
 ]
 
 function Sidebar() {
@@ -74,8 +76,8 @@ function Sidebar() {
     // Se agregan clases dark:border-gray-800 dark:bg-gray-900 para oscurecer la barra lateral
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-gray-300 bg-white dark:border-gray-800 dark:bg-gray-900 transition-colors duration-200">
       <div className="border-b border-gray-200 px-6 py-5 dark:border-gray-800">
-        <h2 className="text-lg font-bold text-black dark:text-white">Aseo Gestión</h2>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Panel Administrativo</p>
+        <h2 className="text-lg font-bold text-black dark:text-white">Sistema de Aseo </h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Panel </p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">

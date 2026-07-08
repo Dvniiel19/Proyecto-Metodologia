@@ -97,21 +97,67 @@ const actualizarContrato = async (req, res) => {
 /** delete /contrato/:id
  * eliminar contrato
  */
+const db = require('../config/db');
+
+
+
 const eliminarContrato = async (req, res) => {
     try {
-        const { id_contrato } = req.params;
-        // llamar al servicio eliminarContrato(id_contrato)
-        const eliminado = await contratoService.eliminarContrato(id_contrato);
-        
-        // si no se elimino retornar error 404
-        if (!eliminado) {
-            return sendError(res, 'contrato no encontrado', 404);
-        } else {
-            return sendSuccess(res, null, 'contrato eliminado correctamente');
+        // Extraemos id_contrato tal como viene definido en tu archivo de rutas
+        const { id_contrato } = req.params; 
+
+        if (!id_contrato) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'ID de contrato no proporcionado.'
+            });
         }
+
+        // Ejecutamos la query directa
+        await db.query('DELETE FROM contrato WHERE id_contrato = $1', [id_contrato]);
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Contrato eliminado correctamente'
+        });
+
     } catch (error) {
-        return sendError(res, 'Error al eliminar contrato', 500);
+        console.error('Error crítico al eliminar contrato:', error.message);
+        
+        // Captura el error en español si está amarrado a otra tabla
+        if (error.message.includes('foreign key') || error.message.includes('violates')) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'No se puede eliminar este contrato porque tiene servicios agendados o tareas activas vinculadas.'
+            });
+        }
+
+        // Por si la tabla se llama 'contratos' en plural en tu BD
+        if (error.message.includes('relation') && error.message.includes('does not exist')) {
+            try {
+                await db.query('DELETE FROM contratos WHERE id_contrato = $1', [id_contrato]);
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Contrato eliminado correctamente'
+                });
+            } catch (pluralError) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'No se pudo eliminar el contrato debido a un error de consistencia.'
+                });
+            }
+        }
+
+        return res.status(400).json({
+            status: 'error',
+            message: 'No se puede eliminar este contrato debido a restricciones o dependencias activas en el sistema.'
+        });
     }
+};
+
+
+module.exports = {
+   
 };
 
 module.exports = {

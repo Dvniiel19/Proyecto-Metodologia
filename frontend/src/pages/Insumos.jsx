@@ -3,9 +3,11 @@ import { AlertTriangle, ArrowDownUp, X } from 'lucide-react'
 import CrudPage from '../components/CrudPage'
 import { api } from '../services/api'
 import { inputClase } from '../helpers/estilos'
+import { useAuth } from '../context/AuthContext' // 1. Importamos el hook de autenticación
 
 function AlertasInsumos({ version, onReabastecer }) {
   const [alertas, setAlertas] = useState([])
+  const { rol } = useAuth() // Obtenemos el rol actual
 
   useEffect(() => {
     api
@@ -39,14 +41,17 @@ function AlertasInsumos({ version, onReabastecer }) {
                 tiene {insumo.stock} unidades disponibles (límite de seguridad:{' '}
                 {insumo.limite_seguridad ?? 10}).
               </p>
-
-              <button
-                type="button"
-                onClick={() => onReabastecer(insumo)}
-                className="mt-3 rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-green-700"
-              >
-                Reabastecer
-              </button>
+              
+              {/* 2. Solo Administrador, Gestor o Supervisor pueden ver el botón de Reabastecer */}
+              {(rol === 'Administrador' || rol === 'GestorInventario' || rol === 'Supervisor') && (
+                <button
+                  type="button"
+                  onClick={() => onReabastecer(insumo)}
+                  className="mt-3 rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-green-700"
+                >
+                  Reabastecer
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -162,7 +167,6 @@ function MovimientoForm({ prefill, onClose, onGuardado }) {
               value={tipo}
               onChange={(e) => {
                 setTipo(e.target.value)
-
                 if (e.target.value === 'ingreso') {
                   setIdServicio('')
                 }

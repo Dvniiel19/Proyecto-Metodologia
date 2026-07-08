@@ -14,7 +14,7 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 // POST /contrato - Crear un nuevo contrato
 // Requiere: Administrador o Coordinador
-router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.crearContrato);
+router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), contratoController.crearContrato);
 
 // GET /contrato - Obtener todos los contratos
 // Requiere: Autenticacion (clientes pueden ver sus contratos)
@@ -26,10 +26,10 @@ router.get('/:id_contrato', autenticacion, contratoController.obtenerContratoPor
 
 // PATCH /contrato/:id - Actualizar un contrato
 // Requiere: Administrador o Coordinador
-router.patch('/:id_contrato', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.actualizarContrato);
+router.patch('/:id_contrato', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), contratoController.actualizarContrato);
 
 // DELETE /contrato/:id - Eliminar un contrato
 // Requiere: Administrador o Coordinador
-router.delete('/:id_contrato', autenticacion, autorizacion(['Administrador', 'Coordinador']), contratoController.eliminarContrato);
+router.delete('/:id_contrato', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), contratoController.eliminarContrato);
 
 module.exports = router;

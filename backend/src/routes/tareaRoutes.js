@@ -7,11 +7,13 @@ const { subirFotoEvidencia } = require('../middlewares/evidenciaUploadMiddleware
 const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
-router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), tareaController.crearTarea);
+router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), tareaController.crearTarea);
 
 router.get('/', autenticacion, tareaController.obtenerTodasLasTarea);
 
 router.get('/mis-tareas', autenticacion, tareaController.obtenerMisTareas);
+
+router.get('/pendientes-cliente', autenticacion, autorizacion(['Cliente']), tareaController.obtenerTareasPendientesCliente);
 
 router.get('/:id_tarea', autenticacion, tareaController.obtenerTareaPorId);
 
@@ -23,8 +25,15 @@ router.put(
     tareaController.finalizarTarea
 );
 
-router.patch('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordinador']), tareaController.actualizarTarea);
+router.put(
+    '/:id_tarea/validar-cliente',
+    autenticacion,
+    autorizacion(['Cliente']),
+    tareaController.validarTareaCliente
+);
 
-router.delete('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordinador']), tareaController.eliminarTarea);
+router.patch('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), tareaController.actualizarTarea);
+
+router.delete('/:id_tarea', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), tareaController.eliminarTarea);
 
 module.exports = router;

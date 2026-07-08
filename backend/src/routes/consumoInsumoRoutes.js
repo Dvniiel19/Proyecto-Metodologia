@@ -26,10 +26,10 @@ router.get('/:id_consumo', autenticacion, consumoInsumoController.obtenerConsumo
 
 // PATCH /consumo_insumo/:id - Actualizar un consumo_insumo
 // Requiere: Administrador o GestorInventario
-router.patch('/:id_consumo', autenticacion, autorizacion(['Administrador', 'GestorInventario']), consumoInsumoController.actualizarConsumoInsumo);
+router.patch('/:id_consumo', autenticacion, autorizacion(['Administrador', 'GestorInventario','Supervisor']), consumoInsumoController.actualizarConsumoInsumo);
 
 // DELETE /consumo_insumo/:id - Eliminar un consumo_insumo
 // Requiere: Administrador o GestorInventario
-router.delete('/:id_consumo', autenticacion, autorizacion(['Administrador', 'GestorInventario']), consumoInsumoController.eliminarConsumoInsumo);
+router.delete('/:id_consumo', autenticacion, autorizacion(['Administrador', 'GestorInventario','Supervisor']), consumoInsumoController.eliminarConsumoInsumo);
 
 module.exports = router;

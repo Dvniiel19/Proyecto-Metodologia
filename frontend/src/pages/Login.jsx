@@ -68,7 +68,7 @@ export default function Login() {
       <div className="w-full max-w-sm">
         {/* Recuadro de login oscurecido */}
         <div className="rounded-xl border-2 border-black bg-white p-8 transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
-          <h1 className="text-2xl font-bold text-black dark:text-white">Aseo Gestión</h1>
+          <h1 className="text-2xl font-bold text-black dark:text-white">Sistema de Aseo</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Inicia sesión para continuar</p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
@@ -92,7 +92,7 @@ export default function Login() {
                   value={contrasena}
                   onChange={(e) => setContrasena(e.target.value)}
                   required
-                  placeholder="••••••••"
+                  placeholder="Ejemplo123!"
                   className="w-full rounded-md border border-gray-400 p-2 pr-10 text-sm text-black placeholder-gray-400 focus:border-black focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-gray-400 transition-colors"
                 />
                 <button

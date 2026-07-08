@@ -36,7 +36,7 @@ function ServiciosHoyTable({ servicios }) {
     <div className="rounded-lg border border-gray-300 bg-white transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900">
       <div className="flex items-center gap-2 border-b border-gray-200 px-5 py-4 dark:border-gray-700">
         <ClipboardList className="h-4 w-4 text-black dark:text-white" />
-        <h3 className="text-base font-semibold text-black dark:text-white">Servicios de Hoy</h3>
+        <h3 className="text-base font-semibold text-black dark:text-white">Servicios para Hoy</h3>
       </div>
 
       {servicios.length === 0 ? (

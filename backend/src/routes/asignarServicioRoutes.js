@@ -14,7 +14,7 @@ const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 // POST /asignarServicio - Crear un nuevo asignarServicio
 // Requiere: Administrador o Coordinador
-router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), asignarServicioController.crearAsignacion);
+router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), asignarServicioController.crearAsignacion);
 
 // GET /asignarServicio - Obtener todos los asignarServicios
 // Requiere: Autenticacion (acceso menos restrictivo)
@@ -30,6 +30,6 @@ router.patch('/:id_asignacion', autenticacion, autorizacion(['Administrador', 'C
 
 // DELETE /asignarServicio/:id - Eliminar un asignarServicio
 // Requiere: Administrador o Coordinador
-router.delete('/:id_asignacion', autenticacion, autorizacion(['Administrador', 'Coordinador']), asignarServicioController.eliminarAsignacion);
+router.delete('/:id_asignacion', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), asignarServicioController.eliminarAsignacion);
 
 module.exports = router;

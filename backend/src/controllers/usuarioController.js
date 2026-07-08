@@ -335,20 +335,28 @@ const actualizarUsuario = async (req, res) => {
 /** delete /usuario/:id
  * eliminar usuario
  */
+
+
 const eliminarUsuario = async (req, res) => {
     try {
         const { id_usuario } = req.params;
-        // llamar al servicio eliminarUsuario(id_usuario)
-        const eliminado = await usuarioService.eliminarUsuario(id_usuario);
-        
-        // si no se elimino retornar error 404
-        if (!eliminado) {
-            return sendError(res, 'Usuario no encontrado', 404);
-        } else {
-            return sendSuccess(res, null, 'Usuario eliminado correctamente');
-        }
+
+        // Aquí va tu lógica original (la que usaba db.query para borrar de trabajadores, cliente y usuarios)
+        await db.query('DELETE FROM trabajadores WHERE id_usuario = $1', [id_usuario]);
+        await db.query('DELETE FROM cliente WHERE id_usuario = $1', [id_usuario]);
+        await db.query('DELETE FROM usuarios WHERE id_usuario = $1', [id_usuario]);
+
+        return sendSuccess(res, null, 'Usuario eliminado correctamente');
+
     } catch (error) {
-        return sendError(res, 'Error al eliminar un usuario', 500);
+        console.error('Error crítico al eliminar usuario:', error.message);
+        
+        // === AQUÍ CAMBIAMOS EL MENSAJE EN INGLÉS POR UNO PROFESIONAL EN ESPAÑOL ===
+        return sendError(
+            res, 
+            'No se puede eliminar este usuario porque tiene servicios asignados o registros activos en el sistema.', 
+            400
+        );
     }
 };
 

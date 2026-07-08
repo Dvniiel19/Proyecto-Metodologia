@@ -18,7 +18,7 @@ export default function Trabajadores() {
             className="flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
           >
             <Plus className="h-4 w-4" />
-            Crear Nuevo
+            Crear Nuevo Trabajador
           </button>
         </div>
 
@@ -40,7 +40,7 @@ export default function Trabajadores() {
           titulo="Trabajadores"
           endpoint="/trabajador"
           idKey="id_trabajador"
-          rolesEscritura={['Administrador', 'Coordinador']}
+          rolesEscritura={['Administrador', 'Coordinador', 'Supervisor']} // Solo estos roles pueden crear, editar o eliminar trabajadores
           ocultarCrear
           columnas={[
             { key: 'id_trabajador', label: 'ID' },

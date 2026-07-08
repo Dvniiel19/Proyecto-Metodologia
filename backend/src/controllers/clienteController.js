@@ -99,18 +99,40 @@ const actualizarCliente = async (req, res) => {
  */
 const eliminarCliente = async (req, res) => {
     try {
-        const { id_cliente } = req.params;
-        // llamar al servicio eliminarcliente(id_cliente)
-        const eliminado = await clienteService.eliminarCliente(id_cliente);
-        
-        // si no se elimino retornar error 404
-        if (!eliminado) {
-            return sendError(res, 'cliente no encontrado', 404);
-        } else {
-            return sendSuccess(res, null, 'cliente eliminado correctamente');
+        // CORREGIDO: Ahora extrae id_cliente exactamente como se llama en tus rutas
+        const { id_cliente } = req.params; 
+
+        if (!id_cliente) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'ID de cliente no proporcionado.'
+            });
         }
+
+        // Ejecutamos tu servicio pasándole la variable correcta
+        await clienteService.eliminarCliente(id_cliente); 
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Cliente eliminado correctamente'
+        });
+
     } catch (error) {
-        return sendError(res, 'Error al eliminar cliente', 500);
+        console.error('Error crítico al eliminar cliente:', error.message);
+        
+        // Atajamos el bloqueo de llaves foráneas (si tiene contratos o servicios activos)
+        if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'No se puede eliminar este cliente porque cuenta con contratos vigentes o servicios registrados en el sistema.'
+            });
+        }
+
+        // Error de respaldo limpio
+        return res.status(400).json({
+            status: 'error',
+            message: 'No se pudo completar la eliminación del cliente debido a restricciones en el registro.'
+        });
     }
 };
 

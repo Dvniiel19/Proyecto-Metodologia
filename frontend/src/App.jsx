@@ -19,6 +19,7 @@ import Tareas from './pages/Tareas'
 import Insumos from './pages/Insumos'
 import Reportes from './pages/Reportes'
 import HistorialEvaluaciones from './pages/HistorialEvaluaciones'
+import ValidarServicios from './pages/ValidarServicios'
 import Asistencia from './pages/Asistencia'
 import Perfil from './pages/Perfil'
 
@@ -60,7 +61,7 @@ function App() {
               <Route path="/" element={<InicioSegunRol />} />
 
               {/* Solo Admin y Coordinador */}
-              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Coordinador']} />}>
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Coordinador', 'Supervisor']} />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/clientes" element={<Clientes />} />
                 <Route path="/contratos" element={<Contratos />} />
@@ -71,7 +72,7 @@ function App() {
               </Route>
 
               {/* Solo Admin */}
-              <Route element={<ProtectedRoute rolesPermitidos={['Administrador']} />}>
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Supervisor']} />}>
                 <Route path="/usuarios" element={<Usuarios />} />
                 <Route path="/rol" element={<Roles />} />
               </Route>
@@ -95,10 +96,11 @@ function App() {
               {/* Cliente: evaluacion de sus servicios (el backend solo permite crear al rol Cliente) */}
               <Route element={<ProtectedRoute rolesPermitidos={['Cliente']} />}>
                 <Route path="/mis-servicios" element={<HistorialEvaluaciones />} />
+                <Route path="/validar-servicios" element={<ValidarServicios />} />
               </Route>
 
               {/* Admin y Gestor de Inventario */}
-              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'GestorInventario']} />}>
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'GestorInventario','Supervisor']} />}>
                 <Route path="/insumos" element={<Insumos />} />
               </Route>
             </Route>
