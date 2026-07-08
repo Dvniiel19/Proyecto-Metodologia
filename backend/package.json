@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon --signal SIGTERM src/index.js"
+    "dev": "nodemon --signal SIGTERM src/index.js",
+    "seed": "node src/seed.js"
   },
   "keywords": [
     "backend",
