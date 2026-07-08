@@ -14,8 +14,9 @@ import {
   UserCheck,
   Star,
   Clock,
-  Sun,  // <-- Añadido
-  Moon, // <-- Añadido
+  ThumbsUp,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
   { label: 'Tareas', icon: ListChecks, to: '/mis-tareas', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
   { label: 'Asistencia', icon: Clock, to: '/asistencia', roles: ['Administrador', 'Coordinador', 'Supervisor', 'Trabajador'] },
   { label: 'Mis Servicios', icon: Star, to: '/mis-servicios', roles: ['Cliente'] },
+  { label: 'Validar Servicios', icon: ThumbsUp, to: '/validar-servicios', roles: ['Cliente'] },
   { label: 'Insumos', icon: Boxes, to: '/insumos', roles: ['Administrador', 'GestorInventario'] },
   { label: 'Reportes', icon: BarChart3, to: '/reportes', roles: ['Administrador', 'Coordinador'] },
 ]

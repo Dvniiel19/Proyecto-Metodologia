@@ -175,6 +175,125 @@ const obtenerMisTareas = async (id_usuario) => {
     );
 };
 
+const obtenerTareasPendientesCliente = async (id_usuario) => {
+    const repo = db.getRepository(Tareas);
+
+    const tareas = await repo.find({
+        where: { estado: 'Pendiente de Validación' },
+        relations: {
+            asignacion_servicio: {
+                agenda: {
+                    contrato: {
+                        cliente: { usuario: true },
+                    },
+                },
+                trabajador: true,
+            },
+        },
+    });
+
+    // Filtramos solo las tareas del cliente autenticado
+    return tareas.filter(
+        (t) => t.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.id_usuario === Number(id_usuario),
+    ).map((t) => ({
+        id_tarea: t.id_tarea,
+        descripcion: t.asignacion_servicio?.descripcion ?? t.descripcion,
+        estado: t.estado,
+        foto_evidencia: t.foto_evidencia,
+        id_servicio: t.asignacion_servicio?.agenda?.id_servicio,
+        fecha_servicio: t.asignacion_servicio?.agenda?.fecha_programada,
+        trabajador: t.asignacion_servicio?.trabajador
+            ? `${t.asignacion_servicio.trabajador.nombre} ${t.asignacion_servicio.trabajador.apellido}`
+            : null,
+        cliente: t.asignacion_servicio?.agenda?.contrato?.cliente
+            ? {
+                  nombre: t.asignacion_servicio.agenda.contrato.cliente.nombre,
+                  apellido: t.asignacion_servicio.agenda.contrato.cliente.apellido,
+              }
+            : null,
+    }));
+};
+
+const validarTareaCliente = async (id_tarea, id_usuario, accion) => {
+    return await db.transaction(async (manager) => {
+        const repositorioTx = manager.getRepository(Tareas);
+
+        const tarea = await repositorioTx.findOne({
+            where: { id_tarea: Number(id_tarea) },
+            relations: {
+                asignacion_servicio: {
+                    agenda: {
+                        contrato: {
+                            cliente: { usuario: true },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!tarea) {
+            return null;
+        }
+
+        // Verificar que sea el dueño
+        const idUsuarioTitular = tarea.asignacion_servicio?.agenda?.contrato?.cliente?.usuario?.id_usuario;
+        if (Number(idUsuarioTitular) !== Number(id_usuario)) {
+            const error = new Error('No tienes permiso para validar esta tarea');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        // Solo se puede validar una tarea en "Pendiente de Validación"
+        if (tarea.estado !== 'Pendiente de Validación') {
+            const error = new Error(`La tarea no se puede validar porque su estado actual es "${tarea.estado}".`);
+            error.statusCode = 409;
+            throw error;
+        }
+
+        const nuevosEstados = {
+            aprobado: 'Aprobado',
+            rechazado: 'Rechazado',
+        };
+
+        if (!nuevosEstados[accion]) {
+            const error = new Error(`Acción inválida: "${accion}". Use "aprobado" o "rechazado".`);
+            error.statusCode = 400;
+            throw error;
+        }
+
+        tarea.estado = nuevosEstados[accion];
+        await repositorioTx.save(tarea);
+
+        // Si se aprobó la tarea, actualizamos el estado de la agenda si todas las tareas están completadas
+        if (accion === 'aprobado') {
+            const agendaRepo = manager.getRepository('Agenda');
+            const agenda = await agendaRepo.findOne({
+                where: { id_servicio: tarea.asignacion_servicio.agenda.id_servicio },
+                relations: { asignar_servicio: { tareas: true } },
+            });
+
+            if (agenda) {
+                const todasLasTareas = agenda.asignar_servicio
+                    ?.flatMap((asig) => asig.tareas ?? [])
+                    .filter((t) => t.id_tarea !== tarea.id_tarea) ?? [];
+
+                const todasCompletadas = todasLasTareas.every(
+                    (t) => t.estado === 'Aprobado' || t.estado === 'Rechazado',
+                );
+
+                if (todasCompletadas) {
+                    await agendaRepo.update(agenda.id_servicio, { estado: 'Pendiente de Evaluacion' });
+                }
+            }
+        }
+
+        return {
+            id_tarea: tarea.id_tarea,
+            estado: tarea.estado,
+        };
+    });
+};
+
 module.exports = {
     crearTarea,
     obtenerTodasLasTarea,
@@ -183,4 +302,6 @@ module.exports = {
     eliminarTarea,
     finalizarTareaConEvidencia,
     obtenerMisTareas,
+    obtenerTareasPendientesCliente,
+    validarTareaCliente,
 };
