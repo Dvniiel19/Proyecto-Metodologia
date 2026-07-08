@@ -129,9 +129,10 @@ SMTP_PASS=tu_contraseña_de_aplicacion
 SMTP_FROM=tu_correo@gmail.com
 SMTP_ALERT_TO=correo_supervisor@gmail.com
 ```
----
-JWT_SECRET: Cambia el secreto por defecto por una cadena larga, aleatoria y compleja. Puedes generar una usando:
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+- **JWT_SECRET**: Cambia el secreto por defecto por una cadena larga, aleatoria y compleja. Puedes generar una usando:
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
 ---
 
 ## 🗄️ Configuración de Base de Datos
