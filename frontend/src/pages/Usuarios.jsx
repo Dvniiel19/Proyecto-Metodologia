@@ -78,8 +78,8 @@ export default function Usuarios() {
             {
               key: 'fecha_expiracion',
               label: 'Fecha de Expiración del Rol',
-              type: 'date',
-              required: true
+              type: 'datetime-local',
+              required: false
             }
           ]}
         />
