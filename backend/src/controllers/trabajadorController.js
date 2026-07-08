@@ -100,17 +100,28 @@ const actualizarTrabajador = async (req, res) => {
 const eliminarTrabajador = async (req, res) => {
     try {
         const { id_trabajador } = req.params;
-        // llamar al servicio eliminarTrabajador(id_trabajador)
+
         const eliminado = await trabajadorService.eliminarTrabajador(id_trabajador);
-        
-        // si no se elimino retornar error 404
+
         if (!eliminado) {
             return sendError(res, 'Trabajador no encontrado', 404);
         } else {
             return sendSuccess(res, null, 'Trabajador eliminado correctamente');
         }
+
     } catch (error) {
-        return sendError(res, 'Error al eliminar trabajador', 500);
+        console.error('Error crítico al eliminar trabajador:', error.message);
+        
+        // Atajamos si el trabajador está amarrado a asignación de servicios, tareas o asistencia
+        if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
+            return sendError(
+                res, 
+                'No se puede eliminar este trabajador porque cuenta con servicios asignados, tareas activas o registros de asistencia en el sistema.', 
+                400
+            );
+        }
+
+        return sendError(res, 'No se pudo completar la eliminación del trabajador debido a restricciones del sistema.', 400);
     }
 };
 

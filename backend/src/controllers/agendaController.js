@@ -163,17 +163,28 @@ const terminarTrabajo = async (req, res) => {
 const eliminarAgenda = async (req, res) => {
     try {
         const { id_agenda } = req.params;
-        // llamar al servicio eliminaragenda(id_agenda)
+
         const eliminado = await agendaService.eliminarAgenda(id_agenda);
-        
-        // si no se elimino retornar error 404
+
         if (!eliminado) {
-            return sendError(res, 'agenda no encontrada', 404);
+            return sendError(res, 'Agenda no encontrada', 404);
         } else {
-            return sendSuccess(res, null, 'agenda eliminada correctamente');
+            return sendSuccess(res, null, 'Agenda eliminada correctamente');
         }
+
     } catch (error) {
-        return sendError(res, 'Error al eliminar agenda', 500);
+        console.error('Error crítico al eliminar agenda:', error.message);
+        
+        // Atajamos el bloqueo si la agenda ya tiene personal asignado o checklist activo
+        if (error.message.includes('foreign key') || error.message.includes('violates') || error.message.includes('constraint')) {
+            return sendError(
+                res, 
+                'No se puede eliminar esta agenda porque cuenta con asignaciones de personal o tareas iniciadas.', 
+                400
+            );
+        }
+
+        return sendError(res, 'No se pudo completar la eliminación de la agenda debido a restricciones del sistema.', 400);
     }
 };
 
