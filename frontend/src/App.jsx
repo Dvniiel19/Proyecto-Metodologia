@@ -61,7 +61,7 @@ function App() {
               <Route path="/" element={<InicioSegunRol />} />
 
               {/* Solo Admin y Coordinador */}
-              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Coordinador']} />}>
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Coordinador', 'Supervisor']} />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/clientes" element={<Clientes />} />
                 <Route path="/contratos" element={<Contratos />} />
@@ -72,7 +72,7 @@ function App() {
               </Route>
 
               {/* Solo Admin */}
-              <Route element={<ProtectedRoute rolesPermitidos={['Administrador']} />}>
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'Supervisor']} />}>
                 <Route path="/usuarios" element={<Usuarios />} />
                 <Route path="/rol" element={<Roles />} />
               </Route>
@@ -102,7 +102,7 @@ function App() {
               </Route>
 
               {/* Admin y Gestor de Inventario */}
-              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'GestorInventario']} />}>
+              <Route element={<ProtectedRoute rolesPermitidos={['Administrador', 'GestorInventario','Supervisor']} />}>
                 <Route path="/insumos" element={<Insumos />} />
               </Route>
             </Route>

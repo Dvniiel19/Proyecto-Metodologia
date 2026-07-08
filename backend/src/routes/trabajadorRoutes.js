@@ -12,7 +12,7 @@ const { autenticacion } = require('../middlewares/authentication.middleware');
 const { autorizacion } = require('../middlewares/autorizacionMiddleware');
 
 // POST /trabajador - Crear un nuevo trabajador (PROTEGIDA - Administrador o Coordinador)
-router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador']), trabajadorController.crearTrabajador);
+router.post('/', autenticacion, autorizacion(['Administrador', 'Coordinador','Supervisor']), trabajadorController.crearTrabajador);
 
 // GET /trabajador - Obtener todos los trabajadores (PROTEGIDA - Autenticado)
 router.get('/', autenticacion, trabajadorController.obtenerTodosLosTrabajador);
@@ -21,9 +21,9 @@ router.get('/', autenticacion, trabajadorController.obtenerTodosLosTrabajador);
 router.get('/:id_trabajador', autenticacion, trabajadorController.obtenerTrabajadorPorId);
 
 // PATCH /trabajador/:id - Actualizar un trabajador (PROTEGIDA - Administrador, Coordinador o el trabajador mismo)
-router.patch('/:id_trabajador', autenticacion, trabajadorController.actualizarTrabajador);
+router.patch('/:id_trabajador', autenticacion, autorizacion(['Administrador','Supervisor']), trabajadorController.actualizarTrabajador);
 
 // DELETE /trabajador/:id - Eliminar un trabajador (PROTEGIDA - Solo Administrador)
-router.delete('/:id_trabajador', autenticacion, autorizacion(['Administrador']), trabajadorController.eliminarTrabajador);
+router.delete('/:id_trabajador', autenticacion, autorizacion(['Administrador', 'Supervisor']), trabajadorController.eliminarTrabajador);
 
 module.exports = router;

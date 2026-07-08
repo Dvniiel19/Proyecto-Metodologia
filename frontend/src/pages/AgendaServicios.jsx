@@ -11,7 +11,7 @@ export default function AgendaServicios() {
       titulo="Agenda de Servicios"
       endpoint="/agenda"
       idKey="id_servicio"
-      rolesEscritura={['Administrador', 'Coordinador']}
+      rolesEscritura={['Administrador', 'Coordinador', 'Supervisor']} // Solo estos roles pueden crear, editar o eliminar servicios
       columnas={[
         { key: 'id_servicio', label: 'ID' },
         { key: 'fecha_programada', label: 'Fecha Programada' },

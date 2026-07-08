@@ -10,7 +10,7 @@ export default function Tareas() {
       titulo="Tareas"
       endpoint="/tarea"
       idKey="id_tarea"
-      rolesEscritura={['Administrador', 'Coordinador']}
+      rolesEscritura={['Administrador', 'Coordinador', 'Supervisor']} // Solo estos roles pueden crear, editar o eliminar tareas
       columnas={[
         { key: 'id_tarea', label: 'ID' },
         {

@@ -9,7 +9,7 @@ export default function Contratos() {
       titulo="Contratos"
       endpoint="/contrato"
       idKey="id_contrato"
-      rolesEscritura={['Administrador', 'Coordinador']}
+      rolesEscritura={['Administrador', 'Coordinador', 'Supervisor']} // Solo estos roles pueden crear, editar o eliminar contratos
       columnas={[
         { key: 'id_contrato', label: 'ID' },
         { key: 'nombre', label: 'Nombre' },

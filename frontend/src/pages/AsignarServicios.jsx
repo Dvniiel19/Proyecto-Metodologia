@@ -13,7 +13,7 @@ export default function AsignarServicios() {
       titulo="Asignar Servicios"
       endpoint="/asignarServicio"
       idKey="id_asignacion"
-      rolesEscritura={['Administrador', 'Coordinador']}
+      rolesEscritura={['Administrador', 'Coordinador','Supervisor']} // Solo estos roles pueden crear, editar o eliminar asignaciones
       // El backend exige id_usuario (quién asigna); usamos el de la sesión actual
       valoresFijos={{ id_usuario: usuario?.id_usuario }}
       columnas={[
