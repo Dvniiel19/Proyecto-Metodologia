@@ -46,6 +46,18 @@ const createAsignarServicioSchema = Joi.object({
             'number.integer': 'El ID del usuario Coordinador debe ser un numero entero.',
             'number.positive': 'El ID del usuario Coordinador debe ser un numero positivo.',
             'any.required': 'El ID del usuario Coordinador es un campo obligatorio.'
+        }),
+
+    descripcion: Joi.string()
+        .min(3)
+        .max(255)
+        .required()
+        .messages({
+            'string.base': 'La descripción de la tarea debe ser un texto.',
+            'string.empty': 'La descripción de la tarea no puede estar vacía.',
+            'string.min': 'La descripción de la tarea debe tener al menos 3 caracteres.',
+            'string.max': 'La descripción de la tarea no puede exceder los 255 caracteres.',
+            'any.required': 'La descripción de la tarea es un campo obligatorio.'
         })
 });
 
@@ -96,10 +108,21 @@ const updateAsignarServicioSchema = Joi.object({
             'number.integer': 'El ID del usuario Coordinador debe ser un numero entero.',
             'number.positive': 'El ID del usuario Coordinador debe ser un numero positivo.',
             'any.required': 'El ID del usuario Coordinador es un campo obligatorio.'
+        }),
+
+    descripcion: Joi.string()
+        .min(3)
+        .max(255)
+        .optional()
+        .messages({
+            'string.base': 'La descripción de la tarea debe ser un texto.',
+            'string.empty': 'La descripción de la tarea no puede estar vacía.',
+            'string.min': 'La descripción de la tarea debe tener al menos 3 caracteres.',
+            'string.max': 'La descripción de la tarea no puede exceder los 255 caracteres.'
         })
 }).min(1).messages({
   'object.min': 'Debes enviar al menos un campo para actualizar'
-}); 
+});
 
 module.exports = {
   createAsignarServicioSchema,

@@ -10,7 +10,13 @@ export default function Tareas() {
       rolesEscritura={['Administrador', 'Coordinador']}
       columnas={[
         { key: 'id_tarea', label: 'ID' },
-        { key: 'descripcion', label: 'Descripción' },
+        {
+          key: 'descripcion',
+          label: 'Descripción',
+          // La descripcion ahora vive en la asignacion; se conserva el valor
+          // propio de la tarea como respaldo para registros antiguos
+          render: (fila) => fila.asignacion_servicio?.descripcion ?? fila.descripcion ?? '—',
+        },
         { key: 'estado', label: 'Estado' },
         {
           key: 'foto_evidencia',
@@ -19,12 +25,6 @@ export default function Tareas() {
         },
       ]}
       campos={[
-        {
-          key: 'descripcion',
-          label: 'Descripción de la tarea',
-          type: 'text',
-          required: true,
-        },
         {
           key: 'id_asignacion',
           label: 'Asignación (Servicio + Trabajador)',

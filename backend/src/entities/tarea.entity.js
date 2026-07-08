@@ -11,9 +11,11 @@ module.exports = new EntitySchema({
             generated: true,
         },
         descripcion:{
+            // La descripcion de la tarea ahora se registra en la asignacion
+            // de servicio; se conserva nullable para las tareas antiguas
             type: 'varchar',
             length: 255,
-            nullable: false,
+            nullable: true,
         },
         estado: {
             type: 'varchar',
