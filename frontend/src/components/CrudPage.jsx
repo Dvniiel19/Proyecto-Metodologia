@@ -4,7 +4,7 @@ import { api } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { formatearFecha, fechaChileAIso } from '../utils/fechas'
 
-export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, rolesEscritura, valoresFijos, ocultarCrear = false }) {
+export default function CrudPage({ titulo, endpoint, idKey, columnas, campos, rolesEscritura, valoresFijos, ocultarCrear = false, }) {
   const { rol } = useAuth()
   const puedeEscribir = rolesEscritura == null || rolesEscritura.includes(rol)
 
